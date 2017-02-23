@@ -14,7 +14,7 @@
   "content_scripts": [
     {
       "matches": ["https://script.google.com/*"],
-      "js": ["injectColor-min.js"]
+      "js": ["injectColor.js"]
     }
   ]
 }

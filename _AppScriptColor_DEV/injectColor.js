@@ -28,7 +28,7 @@
 					'listItemSelected': '#F5F7FA'
 				},
 				cssRules: {
-					'.editor .code-area .CodeMirror': {'background-color': '{{codeBackGround}}','font-family': 'monospace', 'line-height': '17px'},
+					'.editor .code-area .CodeMirror': {'background-color': '{{codeBackGround}}', 'line-height': '17px'},
 					'.editor .code-area .CodeMirror pre': {'color': '#CDD7E0'}, // punctuation
 
 					'.editor .code-area .CodeMirror-cursor': {'border-left': '1px solid #fff!important'},
@@ -136,7 +136,7 @@
 					'listItemSelected': '#bbbbbb'
 				},
 				cssRules: {
-					'.editor .code-area .CodeMirror': {'background-color': '{{codeBackGround}}','font-family': 'monospace', 'line-height': '17px'},
+					'.editor .code-area .CodeMirror': {'background-color': '{{codeBackGround}}', 'line-height': '17px'},
 					'.editor .code-area .CodeMirror pre': {'color': '{{generalText}}'}, // punctuation
 
 					'.editor .code-area .CodeMirror-cursor': {'border-left': '1px solid #fff!important'},
