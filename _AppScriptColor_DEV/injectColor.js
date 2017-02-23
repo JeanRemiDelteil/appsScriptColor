@@ -609,13 +609,13 @@
 			var self = asc.folders;
 
 			var cbFindResourceList = function (node) {
-				console.log('FOUND : %o', node);
+				// console.log('FOUND : %o', node);
 
 				self.addFolders(node);
 			};
 
 			var cbFindWorspace = function (node) {
-				console.log('FOUND : %o', node);
+				// console.log('FOUND : %o', node);
 				self.setObserver(node, self.selector.listFile, cbFindResourceList);
 			};
 
