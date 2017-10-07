@@ -1,0 +1,17 @@
+{
+  "name": "AppScriptColor",
+  "version": "1.0.0",
+  "description": "Chrome Extension that apply color themes to script.google.com",
+  "private": true,
+  "repository": {
+    "type": "git"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify-es": "^0.1.3"
+  },
+  "scripts": {
+    "build": "node .\\gulpfile.js"
+  }
+}
