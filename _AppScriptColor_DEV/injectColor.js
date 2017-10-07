@@ -9,7 +9,7 @@
 
 (function(){
 	// quit if the current page is not editing the script
-	if (!/https:\/\/script\.google\.com\/.*?\/edit/.test(document.URL)) return;
+	if (!/\/edit$/.test(document.location.pathname)) return;
 	
 	let asc = {
 		defaultTheme: 'Darcula',
