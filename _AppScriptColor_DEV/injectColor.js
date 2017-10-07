@@ -488,42 +488,182 @@ height: 7px;`
 		}
 	};
 	
-	asc.folders = {
+	
+	let Folders = {
 		selector: {
 			workspace: 'div.workspace',
 			listFile: '.resource-list>.project-items-list-wrapper',
 			listItem: '.project-items-list'
 		},
 		
-		DOMcontainerFolder: document.createElement('div'),
+		domContainerFolder: null,
 		folderList: [],
 		itemMap: {},
 		key: document.location.pathname.match(/\/([^\/]+?)\/edit/)[1],
 		
 		/**
+		 * Wait for a specific node to be added in the DOM by the page
+		 *
+		 * @param {Node} target
+		 * @param {string} childSelector
+		 *
+		 * @return {Promise.<Node>}
+		 */
+		setObserver: function (target, childSelector) {
+			return new Promise(resolve => {
+				
+				/**
+				 * @param {MutationRecord[]} mutations
+				 * @param {MutationObserver} observer
+				 */
+				function observerCB (mutations, observer) {
+					mutations.forEach(mutation => {
+						for (let item in mutation.addedNodes) {
+							if (!mutation.addedNodes.hasOwnProperty(item)) continue;
+							
+							let node = mutation.addedNodes[item],
+								domChild = node.querySelector(childSelector);
+							
+							if (!domChild) continue;
+							
+							// We found the node, stop observing
+							observer.disconnect();
+							
+							resolve(domChild);
+						}
+					});
+				}
+				
+				let observer = new MutationObserver(observerCB);
+				
+				// pass in the target node, as well as the observer options
+				//noinspection JSCheckFunctionSignatures
+				observer.observe(target, {
+					childList: true,
+					attributes: false,
+					characterData: false/*,
+				 subtree: false,
+				 attributeOldValue: false,
+				 characterDataOldValue: false,
+				 attributeFilter: []
+				 */
+				});
+			});
+		},
+		/**
+		 * Detect page initialization by App Script, then init Folders
+		 */
+		waitInitialization: function () {
+			// Find App script Workspace node
+			this.setObserver(document.body, this.selector.workspace)
+				// Find App script Resource list node
+				.then(node => this.setObserver(node, this.selector.listFile))
+				
+				// Start adding folders
+				.then(node => { this.addFolders(node) });
+		},
+		/**
+		 * Folders CSS sheet
+		 */
+		insertCSS: function(){
+			document.head.insertAdjacentHTML('beforeEnd',
+`<style>
+	.asc_FolderAdd_container {
+		padding: 8px;
+		text-align: center;
+	}
+	.asc_FolderAdd {
+		padding: 5px;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+	.asc_folder_container{
+		padding-bottom: 10px;
+	}
+	.asc_Folder>div.item {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		padding-left: 10px!important;
+	}
+	.asc_folder_ChildList{
+		transition: max-height 500ms;
+		overflow: hidden;
+		position: relative;
+	}
+	.asc_Folder.asc_folder_closed>.asc_folder_ChildList{
+		max-height: 0;
+	}
+	.asc_Folder:not(.asc_folder_closed)>.asc_folder_ChildList{
+		max-height: 1000px;
+	}
+	.asc_Folder.asc_folder_closed>.item::before {
+		content: "+	";
+		font-family: monospace;
+	}
+	.asc_Folder:not(.asc_folder_closed)>.item::before {
+		content: "-	";
+		font-family: monospace;
+	}
+	.asc_Folder:not(.asc_folder_closed){
+		padding-bottom: 5px;
+	}
+	.asc_glass-panel{
+		opacity: 1!important;
+		background-color: rgba(153, 153, 153, 0.4);
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 1050;
+		display: flex;
+		}
+	.asc_Dialog{
+		margin: auto;
+	}
+	.asc_popMenu{
+		position: absolute;
+		right: 0;
+	}
+	.asc_popMenu .gwt-MenuItem:hover {
+		background-color: #efefef;
+	}
+</style>`
+			);
+		},
+		
+		/**
+		 * Insert all initial folders if any
+		 *
 		 * @param {HTMLElement} node
 		 */
 		addFolders: function(node){
-			var self = asc.folders;
+			// Init folders
+			this.domContainerFolder = document.createElement('div');
+			this.domContainerFolder.classList.add('asc_folder_container');
 			
-			self.DOMcontainerFolder.classList.add('asc_folder_container');
+			this.domListFile = node;
+			this.domList = node.querySelector(this.selector.listItem);
 			
-			self.DOMlistFile = node;
-			self.DOMlist = node.querySelector(self.selector.listItem);
+			// Drag & drop listeners
+			this.domListFile.addEventListener('drop', this.onItemDrop.bind(this));
+			this.domListFile.addEventListener('dragover', this.onItemDragOver.bind(this));
 			
-			self.DOMlistFile.addEventListener('drop', self.onItemDrop);
-			self.DOMlistFile.addEventListener('dragover', self.onItemDragOver);
+			// Folder Create Button
+			let domFolderCreateButton = document.createElement('div');
+			domFolderCreateButton.classList.add('asc_FolderAdd_container');
 			
-			var DOMfolderCreateButton = document.createElement('div');
-			DOMfolderCreateButton.classList.add('asc_FolderAdd_container');
-			
-			DOMfolderCreateButton.innerHTML = '<div class="asc_FolderAdd">New Folder</div>';
-			DOMfolderCreateButton.querySelector('.asc_FolderAdd').addEventListener('click', function(){
-				self.createDialog('Create Folder', 'Enter new folder name', '', self.addNewFolder);
-			});
+			domFolderCreateButton.innerHTML = `<div class="asc_FolderAdd">New Folder</div>`;
+			domFolderCreateButton.querySelector('.asc_FolderAdd')
+				.addEventListener('click', () => {
+					this.createDialog('Create Folder', 'Enter new folder name', '', this.addNewFolder);
+				});
 			
 			// insert Menu button
-			self.DOMlistFile.insertBefore(DOMfolderCreateButton, self.DOMlistFile.firstChild);
+			this.domListFile.insertBefore(domFolderCreateButton, this.domListFile.firstChild);
+			
 			
 			// add observer to detect list rebuild
 			
@@ -531,28 +671,31 @@ height: 7px;`
 			 * @param {MutationRecord[]} mutations
 			 * @param {MutationObserver} observer
 			 */
-			function mutationCB(mutations, observer) {
-				mutations.forEach(function (mutation) {
-					for (var item in mutation.removedNodes) {
+			let mutationCB = (mutations, observer) => {
+				mutations.forEach(mutation => {
+					for (let item in mutation.removedNodes) {
 						if (!mutation.removedNodes.hasOwnProperty(item)) continue;
 						
 						/**
 						 * @type {HTMLElement}
 						 */
-						var node = mutation.removedNodes[item];
-						if (node.classList.contains('asc_folder_container')){
-							self.rebuildFolderList(true);
+						let node = mutation.removedNodes[item];
+						
+						// Make sure to rebuild ONLY if there are no parentNode
+						if (node.classList.contains('asc_folder_container') && !node.parentNode){
+							this.rebuildFolderList(true);
+							
 							break;
 						}
 					}
 				});
-			}
+			};
 			
-			var observer = new MutationObserver(mutationCB);
+			let observer = new MutationObserver(mutationCB);
 			
 			// pass in the target node, as well as the observer options
 			//noinspection JSCheckFunctionSignatures
-			observer.observe(self.DOMlist, {
+			observer.observe(this.domList, {
 				childList: true,
 				attributes: false,
 				characterData: false/*,
@@ -563,174 +706,48 @@ height: 7px;`
 				 */
 			});
 			
-			self.restoreFolder();
-		},
-		
-		setObserver: function (target, childSelector, callBack) {
-			
-			/**
-			 * @param {MutationRecord[]} mutations
-			 * @param {MutationObserver} observer
-			 */
-			function observerCB (mutations, observer) {
-				mutations.forEach(function (mutation) {
-					for (var item in mutation.addedNodes) {
-						if (!mutation.addedNodes.hasOwnProperty(item)) continue;
-						
-						var node = mutation.addedNodes[item],
-							DOMchild = node.querySelector(childSelector);
-						
-						if (DOMchild){
-							// stop observing
-							observer.disconnect();
-							
-							callBack(DOMchild);
-						}
-					}
-				});
-			}
-			
-			var observer = new MutationObserver(observerCB);
-			
-			// pass in the target node, as well as the observer options
-			//noinspection JSCheckFunctionSignatures
-			observer.observe(target, {
-				childList: true,
-				attributes: false,
-				characterData: false/*,
-				 subtree: false,
-				 attributeOldValue: false,
-				 characterDataOldValue: false,
-				 attributeFilter: []
-				 */
-			});
-		},
-		addMenuObserver: function () {
-			var self = asc.folders;
-			
-			var cbFindResourceList = function (node) {
-				// console.log('FOUND : %o', node);
-				
-				self.addFolders(node);
-			};
-			
-			var cbFindWorspace = function (node) {
-				// console.log('FOUND : %o', node);
-				self.setObserver(node, self.selector.listFile, cbFindResourceList);
-			};
-			
-			self.setObserver(document.body, self.selector.workspace, cbFindWorspace);
-		},
-		insertCSS: function(){
-			document.head.insertAdjacentHTML('beforeEnd', '\
-<style>\
-	.asc_FolderAdd_container {\
-		padding: 8px;\
-		text-align: center;\
-	}\
-	.asc_FolderAdd {\
-		padding: 5px;\
-		text-overflow: ellipsis;\
-		overflow: hidden;\
-		white-space: nowrap;\
-	}\
-	.asc_folder_container{\
-		padding-bottom: 10px;\
-	}\
-	.asc_Folder>div.item {\
-		overflow: hidden;\
-		white-space: nowrap;\
-		text-overflow: ellipsis;\
-		padding-left: 10px!important;\
-	}\
-	.asc_folder_ChildList{\
-		transition: max-height 500ms;\
-		overflow: hidden;\
-		position: relative;\
-	}\
-	.asc_Folder.asc_folder_closed>.asc_folder_ChildList{\
-		max-height: 0;\
-	}\
-	.asc_Folder:not(.asc_folder_closed)>.asc_folder_ChildList{\
-		max-height: 1000px;\
-	}\
-	.asc_Folder.asc_folder_closed>.item::before {\
-		content: "+	";\
-		font-family: monospace;\
-	}\
-	.asc_Folder:not(.asc_folder_closed)>.item::before {\
-		content: "-	";\
-		font-family: monospace;\
-	}\
-	.asc_Folder:not(.asc_folder_closed){\
-		padding-bottom: 5px;\
-	}\
-	.asc_glass-panel{\
-		opacity: 1!important;\
-		background-color: rgba(153, 153, 153, 0.4);\
-		position: fixed;\
-		top: 0;\
-		bottom: 0;\
-		left: 0;\
-		right: 0;\
-		z-index: 1050;\
-		display: flex;\
-		}\
-	.asc_Dialog{\
-		margin: auto;\
-	}\
-	.asc_popMenu{\
-		position: absolute;\
-		right: 0;\
-	}\
-	.asc_popMenu .gwt-MenuItem:hover {\
-		background-color: #efefef;\
-	}\
-</style>'
-			);
+			this.restoreFolder();
 		},
 		
 		dragDropNode: undefined,
 		onItemDrag: function(event){
-			self.dragDropNode = event.currentTarget;
+			this.dragDropNode = event.currentTarget;
 		},
 		onItemDrop: function(event){
-			var node = event.currentTarget,
-				i;
-			
-			var label = self.dragDropNode.getAttribute('aria-label');
+			let node = event.currentTarget;
+			let label = this.dragDropNode.getAttribute('aria-label');
 			
 			// find the child in case it was in another folder
-			if (self.dragDropNode.parentFolder){
-				var folder = self.dragDropNode.parentFolder.folder;
-				for (i = 0; i < folder.childList.length; i++){
-					if (folder.childList[i] == label){
+			if (this.dragDropNode.parentFolder){
+				let folder = this.dragDropNode.parentFolder.folder;
+				
+				for (let i = 0; i < folder.childList.length; i++){
+					if (folder.childList[i] === label){
 						folder.childList.splice(i, 1);
 						
-						//console.log('found in %o', self.dragDropNode.parentFolder);
 						break;
 					}
 				}
 			}
 			
 			// back in the main item list
-			if (node == asc.folders.DOMlistFile){
-				asc.folders.DOMlist.appendChild(self.dragDropNode);
+			if (node === this.domListFile){
+				this.domList.appendChild(this.dragDropNode);
 				
-				self.dragDropNode.parentFolder = undefined;
+				this.dragDropNode.parentFolder = undefined;
 			}
 			else{
 				// add item to folder list
 				node.folder.childList.push(label);
 				
 				// add folder to item parentFolder
-				self.dragDropNode.parentFolder = node;
+				this.dragDropNode.parentFolder = node;
 				
 				// move item node to folder
-				node.folder.domChildList.appendChild(self.dragDropNode);
+				node.folder.domChildList.appendChild(this.dragDropNode);
 			}
 			
-			asc.folders.saveFolder();
+			this.saveFolder();
 			event.cancelBubble = true;
 		},
 		onItemDragOver: function(event){
@@ -738,60 +755,57 @@ height: 7px;`
 		},
 		
 		toggleFolder: function (event) {
-			for (var i = 0; i < event.path.length; i++){
+			// Don't toggle when popMenu || inside child list
+			for (let i = 0; i < event.path.length; i++){
 				if (event.path[i].isCreatingPopMenu || event.path[i].classList && event.path[i].classList.contains('asc_folder_ChildList')){
 					return;
 				}
 			}
 			
-			var childList = event.currentTarget.querySelector('.asc_folder_ChildList');
+			let childList = event.currentTarget.querySelector('.asc_folder_ChildList');
 			
 			if (!event.currentTarget.classList.contains('asc_folder_closed')){
 				childList.style.maxHeight = 'initial';
-				var rect = childList.getBoundingClientRect();
-				childList.style.maxHeight = '' + rect.height + 'px';
+				let rect = childList.getBoundingClientRect();
+				childList.style.maxHeight = `${rect.height}px`;
 				childList.getBoundingClientRect();
 				childList.style.maxHeight = '';
 			}
 			else{
 				childList.style.maxHeight = 'initial';
-				rect = childList.getBoundingClientRect();
+				let rect = childList.getBoundingClientRect();
 				childList.style.maxHeight = '';
 				childList.getBoundingClientRect();
-				childList.style.maxHeight = '' + rect.height + 'px';
+				childList.style.maxHeight = `${rect.height}px`;
 			}
 			event.currentTarget.classList.toggle('asc_folder_closed');
 			
-			asc.folders.saveFolder();
+			this.saveFolder();
 		},
 		
 		newFolder: function(name){
 			if (!name) return;
-			var self = asc.folders;
 			
-			var DOMnewFolder = document.createElement('div');
+			let domNewFolder = document.createElement('div');
+			domNewFolder.classList.add('asc_Folder');
+			domNewFolder.innerHTML =
+`<div class="item">
+	<div class="gwt-Label piece name">${name}</div>
+	<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAECAYAAABCxiV9AAAAG0lEQVR42mOIjIz8jwszgABOCRjAKYGsAJkPAKT/IKHcRfUJAAAAAElFTkSuQmCC" width="7" height="4" class="gwt-Image dropdown" role="button" aria-label="More options" tabindex="0">
+</div>
+<div class="asc_folder_ChildList"></div>`;
 			
-			DOMnewFolder.classList.add('asc_Folder');
-			DOMnewFolder.innerHTML = '\
-<div class="item">\
-	<div class="gwt-Label piece name">' + name + '</div>\
-	<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAECAYAAABCxiV9AAAAG0lEQVR42mOIjIz8jwszgABOCRjAKYGsAJkPAKT/IKHcRfUJAAAAAElFTkSuQmCC" width="7" height="4" class="gwt-Image dropdown" role="button" aria-label="More options" tabindex="0">\
-</div>\
-<div class="asc_folder_ChildList"></div>';
 			
-			DOMnewFolder.addEventListener('drop', self.onItemDrop);
-			DOMnewFolder.addEventListener('dragover', self.onItemDragOver);
-			
-			DOMnewFolder.querySelector('img.dropdown').addEventListener('click', function(event){
-				var parent = DOMnewFolder.querySelector('.item');
+			domNewFolder.querySelector('img.dropdown').addEventListener('click', function(){
+				let parent = domNewFolder.querySelector('.item');
 				
 				parent.isCreatingPopMenu = true;
-				self.popMenu(parent);
+				Folders.popMenu(parent);
 			});
 			
-			DOMnewFolder.addEventListener('drop', self.onItemDrop);
-			DOMnewFolder.addEventListener('dragover', self.onItemDragOver);
-			DOMnewFolder.addEventListener('click', self.toggleFolder);
+			domNewFolder.addEventListener('drop', Folders.onItemDrop.bind(Folders));
+			domNewFolder.addEventListener('dragover', Folders.onItemDragOver.bind(Folders));
+			domNewFolder.addEventListener('click', Folders.toggleFolder.bind(Folders));
 			
 			
 			/**
@@ -800,7 +814,7 @@ height: 7px;`
 			 */
 			function observerCB (mutations, observer) {
 				mutations.forEach(function (mutation) {
-					var item,
+					let item,
 						reCalculateHeight = 0;
 					
 					for (item in mutation.addedNodes) {
@@ -815,17 +829,17 @@ height: 7px;`
 					}
 					
 					if (reCalculateHeight){
-						var max = parseInt(mutation.target.style.maxHeight) + reCalculateHeight;
-						mutation.target.style.maxHeight = max + 'px';
+						let max = parseInt(mutation.target.style.maxHeight) + reCalculateHeight;
+						mutation.target.style.maxHeight = `${max}px`;
 					}
 				});
 			}
 			
-			var observer = new MutationObserver(observerCB);
+			let observer = new MutationObserver(observerCB);
 			
 			// pass in the target node, as well as the observer options
 			//noinspection JSCheckFunctionSignatures
-			observer.observe(DOMnewFolder.querySelector('.asc_folder_ChildList'), {
+			observer.observe(domNewFolder.querySelector('.asc_folder_ChildList'), {
 				childList: true,
 				attributes: false,
 				characterData: false/*,
@@ -837,67 +851,66 @@ height: 7px;`
 			});
 			
 			
-			return DOMnewFolder;
+			return domNewFolder;
 		},
 		addNewFolder: function (name){
-			var self = asc.folders;
+			let domNewFolder = Folders.newFolder(name);
 			
-			var DOMnewFolder = self.newFolder(name);
-			
-			self.folderList.push({
+			Folders.folderList.push({
 				name: name,
-				dom: DOMnewFolder,
-				domChildList: DOMnewFolder.querySelector('.asc_folder_ChildList'),
+				dom: domNewFolder,
+				domChildList: domNewFolder.querySelector('.asc_folder_ChildList'),
 				childList: [],
-				position: self.folderList.length
+				position: Folders.folderList.length
 			});
 			
-			self.rebuildFolderList();
+			Folders.rebuildFolderList();
 		},
 		rebuildFolderList: function(state){
-			console.log('REBUILD');
-			
-			var self = asc.folders,
-				node, i, j;
+			let self = Folders,
+				node;
 			
 			// set existing children properties
-			for (i = 0; i < self.DOMlist.childNodes.length; i++){
+			for (let i = 0; i < self.domList.childNodes.length; i++){
 				/**
 				 * @type {HTMLElement}
 				 */
-				node = self.DOMlist.childNodes[i];
+				node = self.domList.childNodes[i];
 				if (node.classList.contains('asc_folder_container')) continue;
 				
-				var label = node.getAttribute('aria-label');
-				if (self.itemMap[label] && self.itemMap[label] != node){
+				let label = node.getAttribute('aria-label');
+				if (self.itemMap[label] && self.itemMap[label] !== node){
 					self.itemMap[label].remove();
 				}
 				self.itemMap[label] = node;
 				
 				node.setAttribute('draggable', 'true');
-				node.addEventListener('dragstart', self.onItemDrag);
+				node.addEventListener('dragstart', Folders.onItemDrag.bind(Folders));
 			}
 			
 			self.folderList.sort(function(a, b){
 				return a.position - b.position;
 			});
 			
-			self.DOMlist.insertBefore(self.DOMcontainerFolder, self.DOMlist.firstChild);
-			for (i = self.folderList.length - 1; i >= 0; i--){
-				node = self.folderList[i].dom;
-				if(self.DOMcontainerFolder.firstChild){
-					self.DOMcontainerFolder.insertBefore(node, self.DOMcontainerFolder.firstChild);
+			// Make sure the folders are first in the DOM
+			self.domList.insertBefore(self.domContainerFolder, self.domList.firstChild);
+			
+			for (let i = self.folderList.length - 1; i >= 0; i--){
+				let node = self.folderList[i].dom;
+				
+				if(self.domContainerFolder.firstChild){
+					self.domContainerFolder.insertBefore(node, self.domContainerFolder.firstChild);
 				}
 				else{
-					self.DOMcontainerFolder.appendChild(node);
+					self.domContainerFolder.appendChild(node);
 				}
 				
 				node.folder = self.folderList[i];
 				
-				for (j = 0; j < self.folderList[i].childList.length; j++){
-					var item = self.itemMap[self.folderList[i].childList[j]];
+				for (let j = 0; j < self.folderList[i].childList.length; j++){
+					let item = self.itemMap[self.folderList[i].childList[j]];
 					
-					if (!item || (item.parentNode != self.DOMlist && state)){
+					if (!item || (item.parentNode !== self.domList && state)){
 						self.folderList[i].childList.splice(j, 1);
 						item.remove();
 						
@@ -936,183 +949,195 @@ height: 7px;`
 			localStorage.setItem('appScriptColor-Folders-' + asc.folders.key, JSON.stringify(save));
 		},
 		restoreFolder: function(){
-			var self = asc.folders,
-				folders = localStorage['appScriptColor-Folders-' + asc.folders.key],
-				i, j, DOMnewFolder,
+			let foldersJSON = localStorage['appScriptColor-Folders-' + asc.folders.key],
 				children = {};
 			
-			if (!folders) return;
-			folders = JSON.parse(folders);
+			// Nothing to restore
+			if (!foldersJSON) return;
+			
+			/**
+			 * @type {Array.<{
+			 *   n: string,
+			 *   c: Array.<string>,
+			 *   s: Boolean
+			 * }>}
+			 */
+			let folders = JSON.parse(foldersJSON);
 			
 			// build map of children
-			for (i = 0; i < self.DOMlist.childNodes.length; i++){
-				if (!self.DOMlist.childNodes[i].classList.contains('asc_folder_container')){
-					children[self.DOMlist.childNodes[i].getAttribute('aria-label')] = self.DOMlist.childNodes[i];
+			for (let i = 0; i < this.domList.childNodes.length; i++){
+				if (!this.domList.childNodes[i].classList.contains('asc_folder_container')){
+					children[this.domList.childNodes[i].getAttribute('aria-label')] = this.domList.childNodes[i];
 				}
 			}
 			
-			for (i = 0; i < folders.length; i++){
+			for (let i = 0; i < folders.length; i++){
 				
 				/**
 				 * @type {HTMLElement}
 				 */
-				DOMnewFolder = self.newFolder(folders[i].n);
+				let domNewFolder = this.newFolder(folders[i].n);
 				
-				var DOMFolderchildList = DOMnewFolder.querySelector('.asc_folder_ChildList');
-				DOMnewFolder.classList.toggle('asc_folder_closed', folders[i].s);
-				if (!folders[i].s) DOMFolderchildList.style.maxHeight = '0px';
+				// Set folder open state
+				let domFolderChildList = domNewFolder.querySelector('.asc_folder_ChildList');
+				domNewFolder.classList.toggle('asc_folder_closed', folders[i].s);
+				if (!folders[i].s) domFolderChildList.style.maxHeight = '0px';
 				
-				var childList = [];
+				let childList = [];
+				
 				// rebuild whole child list
-				for (j = 0; j < folders[i].c.length; j++){
-					var child = children[folders[i].c[j]];
+				for (let j = 0; j < folders[i].c.length; j++){
+					let child = children[folders[i].c[j]];
 					if (!child) continue;
 					
 					childList.push(folders[i].c[j]);
 				}
 				
-				self.folderList.push({
+				this.folderList.push({
 					name: folders[i].n,
-					dom: DOMnewFolder,
-					domChildList: DOMFolderchildList,
+					dom: domNewFolder,
+					domChildList: domFolderChildList,
 					childList: childList,
-					position: self.folderList.length
+					position: this.folderList.length
 				});
 				
 			}
 			
 			// rebuild all list !
-			self.rebuildFolderList(true);
+			this.rebuildFolderList(true);
 		},
 		
 		createDialog: function (title, message, defaultValue, callBack_OK) {
-			var self = asc.folders,
-				DOMdialog = document.createElement('div');
+			let DOMdialog = document.createElement('div');
 			
 			defaultValue = defaultValue || '';
 			
 			DOMdialog.classList.add('glass_panel', 'asc_glass-panel');
-			DOMdialog.innerHTML = '\
-<div class="asc_Dialog maestro-dialog">\
-	<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAA6UlEQVR42oWRywqCUBCGzwNFm8BF0AWCNj2I+4M3vG/EoGfoPaS1tTJtIRkUFK16hyD7J05iKnTgZ5yZby6ewxiOrusJJLOOYxiGj1zEamAJHZEY1EFN02aIX6EXcQTLCN6pAPZgWZZEoG3bc/gn0SivJuNjDJ1VVS0dx0nDMFzDFuQjvkeR9LMbEhN02wEq0b10XZfspgV+j+/7K4I55x/Y8zzeCWLcAp1SgkkEm6YZ46enLRDBm9g5DoJgiZUysXNeFYh7fIjb2GJ0n+IoGsHPxG1ciKOukQgkiqL0GhOHUAE9mw/z9wXfJTmqxGHESosAAAAASUVORK5CYII=" width="11" height="11" class="gwt-Image dialog-close-image" role="button" tabindex="0" aria-label="Close">\
-	<div class="Caption">'+ title +'</div>\
-	<div class="rename-box">\
-		<div class="asc_Dialog_input panel">\
-			<div class="gwt-Label rename-label">'+ message +'</div>\
-			<input class="gwt-TextBox rename-input" value="'+ defaultValue +'"/>\
-		</div>\
-	</div>\
-	<div class="buttons">\
-		<button class="gwt-Button asc_ok">OK</button>\
-		<button class="gwt-Button asc_cancel">Cancel</button>\
-	</div>\
-</div>';
+			DOMdialog.innerHTML =
+`<div class="asc_Dialog maestro-dialog">
+	<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAA6UlEQVR42oWRywqCUBCGzwNFm8BF0AWCNj2I+4M3vG/EoGfoPaS1tTJtIRkUFK16hyD7J05iKnTgZ5yZby6ewxiOrusJJLOOYxiGj1zEamAJHZEY1EFN02aIX6EXcQTLCN6pAPZgWZZEoG3bc/gn0SivJuNjDJ1VVS0dx0nDMFzDFuQjvkeR9LMbEhN02wEq0b10XZfspgV+j+/7K4I55x/Y8zzeCWLcAp1SgkkEm6YZ46enLRDBm9g5DoJgiZUysXNeFYh7fIjb2GJ0n+IoGsHPxG1ciKOukQgkiqL0GhOHUAE9mw/z9wXfJTmqxGHESosAAAAASUVORK5CYII=" width="11" height="11" class="gwt-Image dialog-close-image" role="button" tabindex="0" aria-label="Close">
+	<div class="Caption">${title}</div>
+	<div class="rename-box">
+		<div class="asc_Dialog_input panel">
+			<div class="gwt-Label rename-label">${message}</div>
+			<input class="gwt-TextBox rename-input" value="${defaultValue}"/>
+		</div>
+	</div>
+	<div class="buttons">
+		<button class="gwt-Button asc_ok">OK</button>
+		<button class="gwt-Button asc_cancel">Cancel</button>
+	</div>
+</div>`;
 			
-			function close(){
+			function onClose(){
 				DOMdialog.remove();
 			}
 			
-			var DOM_OK = DOMdialog.querySelector('.asc_ok'),
+			let DOM_OK = DOMdialog.querySelector('.asc_ok'),
 				DOM_Cancel = DOMdialog.querySelector('.asc_cancel');
 			
 			DOMdialog.querySelector('.rename-input').addEventListener('keydown', function(event){
-				if (event.defaultPrevented) {
-					return; // Should do nothing if the key event was already consumed.
-				}
+				// Should do nothing if the key event was already consumed.
+				if (event.defaultPrevented) return;
 				
-				if (event.code == 'Enter'){
+				
+				if (event.code === 'Enter'){
 					DOM_OK.click();
 				}
-				else if (event.code == 'Escape'){
+				else if (event.code === 'Escape'){
 					DOM_Cancel.click();
 				}
 			});
 			
 			DOM_OK.addEventListener('click', function () {
 				callBack_OK(DOMdialog.querySelector('.rename-input').value);
-				close();
+				onClose();
 			});
-			DOM_Cancel.addEventListener('click', close);
-			DOMdialog.querySelector('.dialog-close-image').addEventListener('click', close);
+			DOM_Cancel.addEventListener('click', onClose);
+			DOMdialog.querySelector('.dialog-close-image').addEventListener('click', onClose);
 			
 			document.body.appendChild(DOMdialog);
 			DOMdialog.querySelector('.rename-input').focus();
 		},
 		popMenu: function (parent) {
-			var self = asc.folders;
+			let domPopMenu = document.createElement('div');
+			domPopMenu.classList.add('resource-context-menu', 'asc_popMenu');
 			
-			var DOMpopMenu = document.createElement('div');
-			DOMpopMenu.classList.add('resource-context-menu', 'asc_popMenu');
+			domPopMenu.innerHTML =
+`<div class="gwt-MenuItem asc_menu_Rename">Rename</div>
+<div class="gwt-MenuItem asc_menu_Delete">Delete</div>`;
 			
-			DOMpopMenu.innerHTML = '\
-<div class="gwt-MenuItem asc_menu_Rename">Rename</div>\
-<div class="gwt-MenuItem asc_menu_Delete">Delete</div>\
-';
-			
-			function close(){
+			// Callbacks
+			function onClose(){
 				if (parent.isCreatingPopMenu){
 					parent.isCreatingPopMenu = false;
 					return;
 				}
-				DOMpopMenu.remove();
-				document.removeEventListener('click', close);
+				domPopMenu.remove();
+				document.removeEventListener('click', onClose);
 			}
-			
-			function click(event){
+			function onClick(event){
 				event.cancelBubble = true;
 			}
-			
-			document.addEventListener('click', close);
-			DOMpopMenu.addEventListener('click', function (event){
-				event.cancelBubble = true;
-			});
-			DOMpopMenu.querySelector('.asc_menu_Rename').addEventListener('click', function (){
-				self.createDialog('Rename Folder', 'Enter new folder name', parent.parentNode.folder.name, function(name){
-					if (name){
-						parent.parentNode.folder.name = name;
-						parent.querySelector('.gwt-Label').innerHTML = name;
-						
-						self.saveFolder();
-					}
+			function menuRename() {
+				Folders.createDialog('Rename Folder', 'Enter new folder name', parent.parentNode.folder.name, function(name){
+					if (!name) return;
+					
+					parent.parentNode.folder.name = name;
+					parent.querySelector('.gwt-Label').innerHTML = name;
+					
+					Folders.saveFolder();
 				});
 				
-				close();
-			});
-			DOMpopMenu.querySelector('.asc_menu_Delete').addEventListener('click', function (){
-				for (var i = 0; i < self.folderList.length; i++){
-					if (self.folderList[i] == parent.parentNode.folder){
-						self.folderList.splice(i, 1);
-						
-						// move all child node back
-						var node = parent.parentNode.querySelector('.asc_folder_ChildList');
-						if (node){
-							for (var j = node.childNodes.length - 1; j > -1; j--){
-								self.DOMlist.appendChild(node.childNodes[j]);
-							}
+				onClose();
+			}
+			function menuDelete(){
+				for (let i = 0; i < Folders.folderList.length; i++){
+					if (Folders.folderList[i] !== parent.parentNode.folder) continue;
+					
+					Folders.folderList.splice(i, 1);
+					
+					// move all child node back
+					let node = parent.parentNode.querySelector('.asc_folder_ChildList');
+					if (node){
+						for (let j = node.childNodes.length - 1; j > -1; j--){
+							Folders.domList.appendChild(node.childNodes[j]);
 						}
-						
-						parent.parentNode.remove();
-						
-						self.rebuildFolderList();
-						
-						break;
 					}
+					
+					parent.parentNode.remove();
+					Folders.rebuildFolderList();
+					
+					break;
 				}
 				
-				close();
-			});
+				onClose();
+			}
 			
-			parent.appendChild(DOMpopMenu);
+			// Add listeners
+			document.addEventListener('click', onClose);
+			domPopMenu.addEventListener('click', onClick);
+			domPopMenu.querySelector('.asc_menu_Rename').addEventListener('click', menuRename);
+			domPopMenu.querySelector('.asc_menu_Delete').addEventListener('click', menuDelete);
+			
+			parent.appendChild(domPopMenu);
 		}
 	};
 	
+	asc.folders = Folders;
+	
+	
+	
+	//<editor-fold desc="# Initialization">
+	
+	window['asc'] = asc;
 	
 	asc.initColors();
 	asc.insertMenuButton();
 	
-	asc.folders.insertCSS();
-	asc.folders.addMenuObserver();
+	Folders.insertCSS();
+	Folders.waitInitialization();
 	
-	//window['appScriptColor'] = asc;
-	window['asc'] = asc;
+	//</editor-fold>
+	
 })();
