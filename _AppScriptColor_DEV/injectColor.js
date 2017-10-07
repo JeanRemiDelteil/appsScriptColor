@@ -256,32 +256,27 @@
 		},
 		userTheme: '',
 		
-		_divStyle: null,
+		_divCmCustomStyle: null,
 		
 		initColors: function (){
+			// Fetch user pref
 			asc.userTheme = localStorage.getItem('appScriptColor-theme') || asc.defaultTheme;
 			
-			// create an observer instance to detect
-			let observer = new MutationObserver(function (mutations) {
-				mutations.forEach(function (mutation) {
+			// inject custom CSS
+			asc.useCustomStyle(asc.theme[asc.userTheme] || 'Default');
+			
+			
+			// create an observer instance to detect <style> insertion: when need to be the last styleSheet
+			let observer = new MutationObserver(mutations => {
+				mutations.forEach(mutation => {
 					for (let item in mutation.addedNodes) {
-						if (!mutation.addedNodes.hasOwnProperty(item)) continue;
-						
 						let node = mutation.addedNodes[item];
 						
-						// Filter for the element containing the editor style
-						if (node.tagName !== 'STYLE' || node.innerHTML.indexOf('.save-box{') === - 1) continue;
+						// Filter for STYLE elements (other than our styleSheet)
+						if (node.tagName !== 'STYLE' || node.id === 'cmCustomStyle') continue;
 						
-						// inject custom CSS
-						if (asc.theme[asc.userTheme]){
-							asc.useCustomStyle(asc.theme[asc.userTheme]);
-						}
-						else{
-							asc.useCustomStyle('Default');
-						}
-						
-						// stop observing
-						observer.disconnect();
+						// Move style node to the end for the HEAD
+						document.head.appendChild(this._divCmCustomStyle);
 					}
 				});
 			});
@@ -303,17 +298,21 @@
 			observer.observe(document.head, config);
 		},
 		useCustomStyle: function (customTheme) {
-			
-			// Init the custom style element
-			if (!this._divStyle) {
-				this._divStyle = document.createElement('style');
-				this._divStyle.setAttribute('id', 'cmCustomStyle');
+			// Select theme if a theme name is passed
+			if (typeof customTheme !== 'object'){
+				customTheme = asc.theme[ customTheme || 'Default' ];
 			}
 			
-			this._divStyle.innerHTML = this.cssBuilder(customTheme.cssRules, customTheme.generalVariables);
+			// Init the custom style element
+			if (!this._divCmCustomStyle) {
+				this._divCmCustomStyle = document.createElement('style');
+				this._divCmCustomStyle.setAttribute('id', 'cmCustomStyle');
+			}
+			
+			this._divCmCustomStyle.innerHTML = this.cssBuilder(customTheme.cssRules, customTheme.generalVariables);
 			
 			// add style element last in the HEAD
-			document.head.appendChild(this._divStyle);
+			document.head.appendChild(this._divCmCustomStyle);
 		},
 		/**
 		 * build css string
