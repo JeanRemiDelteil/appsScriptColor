@@ -681,7 +681,8 @@ height: 7px;`
 						 */
 						let node = mutation.removedNodes[item];
 						
-						if (node.classList.contains('asc_folder_container')){
+						// Make sure to rebuild ONLY if there are no parentNode
+						if (node.classList.contains('asc_folder_container') && !node.parentNode){
 							this.rebuildFolderList(true);
 							
 							break;
