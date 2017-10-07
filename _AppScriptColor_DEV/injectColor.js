@@ -3,8 +3,6 @@
 // @output_file_name default.js
 // ==/ClosureCompiler==
 
-// TODO: write an article to explain the implementation
-
 // TODO: keyboard shortcut to navigate between coding tab
 // TODO: custom auto-complete functions list
 
@@ -13,7 +11,7 @@
 	// quit if the current page is not editing the script
 	if (!/https:\/\/script\.google\.com\/.*?\/edit/.test(document.URL)) return;
 	
-	var asc = {
+	let asc = {
 		defaultTheme: 'Darcula',
 		theme: {
 			'Black fox Console': {
@@ -258,65 +256,21 @@
 		},
 		userTheme: '',
 		
-		useCustomStyle: function (customTheme) {
-			
-			// get or create the custom style element
-			var divStyle = document.getElementById('cmCustomStyle');
-			if (divStyle == null) {
-				divStyle = document.createElement('style');
-				divStyle.setAttribute('id', 'cmCustomStyle');
-			}
-			
-			var css = customTheme.cssRules;
-			
-			// build css string
-			var cssStr = '';
-			for (var selector in css){
-				if (!css.hasOwnProperty(selector)) continue;
-				
-				// build one rule
-				var propertyStr = '{';
-				for (var property in css[selector]){
-					if (!css[selector].hasOwnProperty(property)) continue;
-					
-					// replace declared general variables
-					var cssTmp = css[selector][property].replace(/{{(\w+)}}/g, function(m, p1){
-						if (p1 in customTheme.generalVariables){
-							return customTheme.generalVariables[p1];
-						}
-						else{
-							return m;
-						}
-					});
-					
-					propertyStr += property + ':' + cssTmp + ';';
-				}
-				cssStr += selector + propertyStr + '}';
-			}
-			
-			divStyle.innerHTML = cssStr;
-			
-			// add style element last in the HEAD
-			document.head.appendChild(divStyle);
-		},
+		_divStyle: null,
 		
-		storeThemeChosen: function(themeName){
-			localStorage.setItem('appScriptColor-theme', themeName);
-			asc.userTheme = themeName;
-		},
 		initColors: function (){
 			asc.userTheme = localStorage.getItem('appScriptColor-theme') || asc.defaultTheme;
 			
-			// create an observer instance to detect 
-			var observer = new MutationObserver(function (mutations) {
+			// create an observer instance to detect
+			let observer = new MutationObserver(function (mutations) {
 				mutations.forEach(function (mutation) {
-					for (var item in mutation.addedNodes) {
+					for (let item in mutation.addedNodes) {
 						if (!mutation.addedNodes.hasOwnProperty(item)) continue;
 						
-						var node = mutation.addedNodes[item];
+						let node = mutation.addedNodes[item];
 						
 						// Filter for the element containing the editor style
-						if (node.tagName != 'STYLE' || node.innerHTML.indexOf('.save-box{') == - 1) continue;
+						if (node.tagName !== 'STYLE' || node.innerHTML.indexOf('.save-box{') === - 1) continue;
 						
 						// inject custom CSS
 						if (asc.theme[asc.userTheme]){
@@ -333,7 +287,7 @@
 			});
 			
 			// configuration of the observer:
-			var config = {
+			let config = {
 				childList: true,
 				attributes: false,
 				characterData: false/*,
@@ -348,20 +302,59 @@
 			//noinspection JSCheckFunctionSignatures
 			observer.observe(document.head, config);
 		},
+		useCustomStyle: function (customTheme) {
+			
+			// Init the custom style element
+			if (!this._divStyle) {
+				this._divStyle = document.createElement('style');
+				this._divStyle.setAttribute('id', 'cmCustomStyle');
+			}
+			
+			this._divStyle.innerHTML = this.cssBuilder(customTheme.cssRules, customTheme.generalVariables);
+			
+			// add style element last in the HEAD
+			document.head.appendChild(this._divStyle);
+		},
+		/**
+		 * build css string
+		 */
+		cssBuilder: function (css, variables) {
+			let cssSheet = '';
+			
+			for (let selector in css){
+				// build one rule
+				let propertyStr = '',
+					cssSettings = css[selector];
+				
+				for (let property in cssSettings){
+					// replace declared variables
+					propertyStr += `${ property }:${ cssSettings[property].replace(/{{(\w+)}}/g, (m, p1) => p1 in variables ? variables[p1] : m) };`;
+				}
+				
+				cssSheet += `${selector}{${propertyStr}}`;
+			}
+			
+			return cssSheet;
+		},
+		
+		storeThemeChosen: function(themeName){
+			localStorage.setItem('appScriptColor-theme', themeName);
+			asc.userTheme = themeName;
+		},
 		
 		menuColorState: false,
 		addSubMenuItem: function(domSubMenu, text, callBack){
-			var domItem = document.createElement('div');
+			let domItem = document.createElement('div');
 			domItem.classList.add('goog-menuitem');
 			domItem.classList.add('apps-menuitem');
 			
 			domItem.innerHTML =
-				'<div class="goog-menuitem-content" style="-webkit-user-select: none;">' +
-				'<div class="docs-icon goog-inline-block goog-menuitem-icon asc-menu-item-icon" data-theme="' + text + '" style="-webkit-user-select:none;">' +
-				'<div class="docs-icon-img-container docs-icon-img docs-icon-arrow-more" style="-webkit-user-select: none;"></div>' +
-				'</div>' +
-				'<span class="goog-menuitem-label" style="-webkit-user-select: none;">' + text + '</span>' +
-				'</div>';
+`<div class="goog-menuitem-content" style="-webkit-user-select: none;">
+	<div class="docs-icon goog-inline-block goog-menuitem-icon asc-menu-item-icon" data-theme="${text}" style="-webkit-user-select:none;">
+		<div class="docs-icon-img-container docs-icon-img docs-icon-arrow-more" style="-webkit-user-select: none;"></div>
+	</div>
+	<span class="goog-menuitem-label" style="-webkit-user-select: none;">${text}</span>
+</div>`;
 			
 			domSubMenu.appendChild(domItem);
 			
@@ -376,15 +369,15 @@
 		},
 		insertMenuButton: function(){
 			//noinspection CssUnusedSymbol
-			document.head.insertAdjacentHTML('beforeEnd', '<style>.asc-menu-item-icon{display: none;}.asc-menu-item-icon-display{display: inherit;}</style>');
+			document.head.insertAdjacentHTML('beforeEnd', `<style>.asc-menu-item-icon{display: none;}.asc-menu-item-icon-display{display: inherit;}</style>`);
 			
-			var googleScriptMenu = document.getElementById('docs-menubar');
+			let googleScriptMenu = document.getElementById('docs-menubar');
 			// no menu, we quit now
 			if (!googleScriptMenu) return;
 			
-			var menuColor = '<div id="macros-color-menu" class="menu-button goog-control goog-inline-block" style="-webkit-user-select: none;">Colors</div>';
+			let menuColor = '<div id="macros-color-menu" class="menu-button goog-control goog-inline-block" style="-webkit-user-select: none;">Colors</div>';
 			
-			var domMenuColorSub = document.createElement('div');
+			let domMenuColorSub = document.createElement('div');
 			domMenuColorSub.classList.add('goog-menu');
 			domMenuColorSub.classList.add('goog-menu-vertical');
 			domMenuColorSub.classList.add('goog-menu-noaccel');
@@ -392,21 +385,17 @@
 			domMenuColorSub.setAttribute('style', 'display: None;');
 			
 			// add menu item for each theme
-			for (var theme in asc.theme){
-				if (!asc.theme.hasOwnProperty(theme)) continue;
-				
+			for (let theme in asc.theme){
 				asc.addSubMenuItem(
 					domMenuColorSub,
 					theme,
-					(function(e, t){
-						return function(){
-							asc.useCustomStyle(e);
-							asc.storeThemeChosen(t);
-							
-							domMenuColor.classList.toggle('goog-control-open', false);
-							domMenuColorSub.setAttribute('style', 'display: None;');
-						}
-					})(asc.theme[theme], theme)
+					function(theme){
+						asc.useCustomStyle(asc.theme[theme]);
+						asc.storeThemeChosen(theme);
+						
+						domMenuColor.classList.toggle('goog-control-open', false);
+						domMenuColorSub.setAttribute('style', 'display: None;');
+					}.bind(null, theme)
 				);
 			}
 			
@@ -415,7 +404,7 @@
 			// insert SubMenu
 			document.body.appendChild(domMenuColorSub);
 			
-			var domMenuColor = document.getElementById('macros-color-menu'),
+			let domMenuColor = document.getElementById('macros-color-menu'),
 				domMenuShield = document.getElementById('docs-menu-shield');
 			
 			// add similar behaviour then other menu buttons
@@ -429,38 +418,39 @@
 			// display the menu
 			domMenuColor.addEventListener('click', function(){
 				
-				var domItemIcons = domMenuColorSub.querySelectorAll('.asc-menu-item-icon');
-				for (var i = 0; i < domItemIcons.length; i++){
-					domItemIcons[i].classList.toggle('asc-menu-item-icon-display', (domItemIcons[i].getAttribute('data-theme') == asc.userTheme));
+				let domItemIcons = domMenuColorSub.querySelectorAll('.asc-menu-item-icon');
+				for (let i = 0; i < domItemIcons.length; i++){
+					domItemIcons[i].classList.toggle('asc-menu-item-icon-display', (domItemIcons[i].getAttribute('data-theme') === asc.userTheme));
 				}
 				
 				domMenuColor.classList.toggle('goog-control-hover', false);
 				domMenuColor.classList.toggle('goog-control-open', true);
 				
-				var menuRect = domMenuColor.getBoundingClientRect();
+				let menuRect = domMenuColor.getBoundingClientRect();
 				
 				domMenuColorSub.setAttribute('style',
-					'-webkit-user-select: none;' +
-					'visibility: visible;' +
-					'left: ' + menuRect.left + 'px;' +
-					'top: ' + menuRect.bottom + 'px;'
+`user-select: none;
+visibility: visible;
+left: ${menuRect.left}px;
+top: ${menuRect.bottom}px;`
 				);
 				
 				domMenuShield.setAttribute('style',
-					'left: ' + (menuRect.left + 1) + 'px;' +
-					'top: ' + (menuRect.bottom - 1) + 'px;' +
-					'width: ' + (menuRect.width - 2) + 'px;' +
-					'height: 7px;'
+`left: ${menuRect.left + 1}px;
+top: ${menuRect.bottom - 1}px;
+width: ${menuRect.width - 2}px;
+height: 7px;`
 				);
 				
 				asc.menuColorState = true;
 			});
 			
-			document.body.addEventListener('click', function(e){
-				if (asc.menuColorState != true) return;
+			// Close menu when click event on document
+			document.body.addEventListener('click', function(event){
+				if (!asc.menuColorState) return;
 				
-				for (var i = 0; i < e['path'].length; i++){
-					if (e['path'][i] == domMenuColorSub || e['path'][i] == domMenuColor) return;
+				for (let i = 0; i < event['path'].length; i++){
+					if (event['path'][i] === domMenuColorSub || event['path'][i] === domMenuColor) return;
 				}
 				
 				domMenuColor.classList.toggle('goog-control-open', false);
