@@ -496,7 +496,7 @@ height: 7px;`
 			listItem: '.project-items-list'
 		},
 		
-		DOMcontainerFolder: document.createElement('div'),
+		domContainerFolder: null,
 		folderList: [],
 		itemMap: {},
 		key: document.location.pathname.match(/\/([^\/]+?)\/edit/)[1],
@@ -640,26 +640,30 @@ height: 7px;`
 		 * @param {HTMLElement} node
 		 */
 		addFolders: function(node){
-			let self = Folders;
+			// Init folders
+			this.domContainerFolder = document.createElement('div');
+			this.domContainerFolder.classList.add('asc_folder_container');
 			
-			self.DOMcontainerFolder.classList.add('asc_folder_container');
+			this.domListFile = node;
+			this.domList = node.querySelector(this.selector.listItem);
 			
-			self.DOMlistFile = node;
-			self.DOMlist = node.querySelector(self.selector.listItem);
+			// Drag & drop listeners
+			this.domListFile.addEventListener('drop', this.onItemDrop.bind(this));
+			this.domListFile.addEventListener('dragover', this.onItemDragOver.bind(this));
 			
-			self.DOMlistFile.addEventListener('drop', self.onItemDrop);
-			self.DOMlistFile.addEventListener('dragover', self.onItemDragOver);
+			// Folder Create Button
+			let domFolderCreateButton = document.createElement('div');
+			domFolderCreateButton.classList.add('asc_FolderAdd_container');
 			
-			let DOMfolderCreateButton = document.createElement('div');
-			DOMfolderCreateButton.classList.add('asc_FolderAdd_container');
-			
-			DOMfolderCreateButton.innerHTML = '<div class="asc_FolderAdd">New Folder</div>';
-			DOMfolderCreateButton.querySelector('.asc_FolderAdd').addEventListener('click', function(){
-				self.createDialog('Create Folder', 'Enter new folder name', '', Folders.addNewFolder);
-			});
+			domFolderCreateButton.innerHTML = `<div class="asc_FolderAdd">New Folder</div>`;
+			domFolderCreateButton.querySelector('.asc_FolderAdd')
+				.addEventListener('click', () => {
+					this.createDialog('Create Folder', 'Enter new folder name', '', this.addNewFolder);
+				});
 			
 			// insert Menu button
-			self.DOMlistFile.insertBefore(DOMfolderCreateButton, self.DOMlistFile.firstChild);
+			this.domListFile.insertBefore(domFolderCreateButton, this.domListFile.firstChild);
+			
 			
 			// add observer to detect list rebuild
 			
@@ -667,28 +671,30 @@ height: 7px;`
 			 * @param {MutationRecord[]} mutations
 			 * @param {MutationObserver} observer
 			 */
-			function mutationCB(mutations, observer) {
-				mutations.forEach(function (mutation) {
-					for (var item in mutation.removedNodes) {
+			let mutationCB = (mutations, observer) => {
+				mutations.forEach(mutation => {
+					for (let item in mutation.removedNodes) {
 						if (!mutation.removedNodes.hasOwnProperty(item)) continue;
 						
 						/**
 						 * @type {HTMLElement}
 						 */
-						var node = mutation.removedNodes[item];
+						let node = mutation.removedNodes[item];
+						
 						if (node.classList.contains('asc_folder_container')){
-							self.rebuildFolderList(true);
+							this.rebuildFolderList(true);
+							
 							break;
 						}
 					}
 				});
-			}
+			};
 			
 			let observer = new MutationObserver(mutationCB);
 			
 			// pass in the target node, as well as the observer options
 			//noinspection JSCheckFunctionSignatures
-			observer.observe(self.DOMlist, {
+			observer.observe(this.domList, {
 				childList: true,
 				attributes: false,
 				characterData: false/*,
@@ -699,50 +705,48 @@ height: 7px;`
 				 */
 			});
 			
-			self.restoreFolder();
+			this.restoreFolder();
 		},
 		
 		dragDropNode: undefined,
 		onItemDrag: function(event){
-			self.dragDropNode = event.currentTarget;
+			this.dragDropNode = event.currentTarget;
 		},
 		onItemDrop: function(event){
-			var node = event.currentTarget,
-				i;
-			
-			var label = self.dragDropNode.getAttribute('aria-label');
+			let node = event.currentTarget;
+			let label = this.dragDropNode.getAttribute('aria-label');
 			
 			// find the child in case it was in another folder
-			if (self.dragDropNode.parentFolder){
-				var folder = self.dragDropNode.parentFolder.folder;
-				for (i = 0; i < folder.childList.length; i++){
-					if (folder.childList[i] == label){
+			if (this.dragDropNode.parentFolder){
+				let folder = this.dragDropNode.parentFolder.folder;
+				
+				for (let i = 0; i < folder.childList.length; i++){
+					if (folder.childList[i] === label){
 						folder.childList.splice(i, 1);
 						
-						//console.log('found in %o', self.dragDropNode.parentFolder);
 						break;
 					}
 				}
 			}
 			
 			// back in the main item list
-			if (node == asc.folders.DOMlistFile){
-				asc.folders.DOMlist.appendChild(self.dragDropNode);
+			if (node === this.domListFile){
+				this.domList.appendChild(this.dragDropNode);
 				
-				self.dragDropNode.parentFolder = undefined;
+				this.dragDropNode.parentFolder = undefined;
 			}
 			else{
 				// add item to folder list
 				node.folder.childList.push(label);
 				
 				// add folder to item parentFolder
-				self.dragDropNode.parentFolder = node;
+				this.dragDropNode.parentFolder = node;
 				
 				// move item node to folder
-				node.folder.domChildList.appendChild(self.dragDropNode);
+				node.folder.domChildList.appendChild(this.dragDropNode);
 			}
 			
-			asc.folders.saveFolder();
+			this.saveFolder();
 			event.cancelBubble = true;
 		},
 		onItemDragOver: function(event){
@@ -750,6 +754,7 @@ height: 7px;`
 		},
 		
 		toggleFolder: function (event) {
+			// Don't toggle when popMenu || inside child list
 			for (let i = 0; i < event.path.length; i++){
 				if (event.path[i].isCreatingPopMenu || event.path[i].classList && event.path[i].classList.contains('asc_folder_ChildList')){
 					return;
@@ -774,34 +779,32 @@ height: 7px;`
 			}
 			event.currentTarget.classList.toggle('asc_folder_closed');
 			
-			asc.folders.saveFolder();
+			this.saveFolder();
 		},
 		
 		newFolder: function(name){
 			if (!name) return;
 			
-			let DOMnewFolder = document.createElement('div');
-			DOMnewFolder.classList.add('asc_Folder');
-			DOMnewFolder.innerHTML =
+			let domNewFolder = document.createElement('div');
+			domNewFolder.classList.add('asc_Folder');
+			domNewFolder.innerHTML =
 `<div class="item">
 	<div class="gwt-Label piece name">${name}</div>
 	<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAECAYAAABCxiV9AAAAG0lEQVR42mOIjIz8jwszgABOCRjAKYGsAJkPAKT/IKHcRfUJAAAAAElFTkSuQmCC" width="7" height="4" class="gwt-Image dropdown" role="button" aria-label="More options" tabindex="0">
 </div>
 <div class="asc_folder_ChildList"></div>`;
 			
-			DOMnewFolder.addEventListener('drop', Folders.onItemDrop);
-			DOMnewFolder.addEventListener('dragover', Folders.onItemDragOver);
 			
-			DOMnewFolder.querySelector('img.dropdown').addEventListener('click', function(){
-				let parent = DOMnewFolder.querySelector('.item');
+			domNewFolder.querySelector('img.dropdown').addEventListener('click', function(){
+				let parent = domNewFolder.querySelector('.item');
 				
 				parent.isCreatingPopMenu = true;
 				Folders.popMenu(parent);
 			});
 			
-			DOMnewFolder.addEventListener('drop', Folders.onItemDrop);
-			DOMnewFolder.addEventListener('dragover', Folders.onItemDragOver);
-			DOMnewFolder.addEventListener('click', Folders.toggleFolder);
+			domNewFolder.addEventListener('drop', Folders.onItemDrop.bind(Folders));
+			domNewFolder.addEventListener('dragover', Folders.onItemDragOver.bind(Folders));
+			domNewFolder.addEventListener('click', Folders.toggleFolder.bind(Folders));
 			
 			
 			/**
@@ -810,7 +813,7 @@ height: 7px;`
 			 */
 			function observerCB (mutations, observer) {
 				mutations.forEach(function (mutation) {
-					var item,
+					let item,
 						reCalculateHeight = 0;
 					
 					for (item in mutation.addedNodes) {
@@ -825,8 +828,8 @@ height: 7px;`
 					}
 					
 					if (reCalculateHeight){
-						var max = parseInt(mutation.target.style.maxHeight) + reCalculateHeight;
-						mutation.target.style.maxHeight = max + 'px';
+						let max = parseInt(mutation.target.style.maxHeight) + reCalculateHeight;
+						mutation.target.style.maxHeight = `${max}px`;
 					}
 				});
 			}
@@ -835,7 +838,7 @@ height: 7px;`
 			
 			// pass in the target node, as well as the observer options
 			//noinspection JSCheckFunctionSignatures
-			observer.observe(DOMnewFolder.querySelector('.asc_folder_ChildList'), {
+			observer.observe(domNewFolder.querySelector('.asc_folder_ChildList'), {
 				childList: true,
 				attributes: false,
 				characterData: false/*,
@@ -847,7 +850,7 @@ height: 7px;`
 			});
 			
 			
-			return DOMnewFolder;
+			return domNewFolder;
 		},
 		addNewFolder: function (name){
 			let domNewFolder = Folders.newFolder(name);
@@ -863,19 +866,15 @@ height: 7px;`
 			Folders.rebuildFolderList();
 		},
 		rebuildFolderList: function(state){
-			console.log('REBUILD');
-			debugger;
-			
-			
-			let self = asc.folders,
+			let self = Folders,
 				node;
 			
 			// set existing children properties
-			for (let i = 0; i < self.DOMlist.childNodes.length; i++){
+			for (let i = 0; i < self.domList.childNodes.length; i++){
 				/**
 				 * @type {HTMLElement}
 				 */
-				node = self.DOMlist.childNodes[i];
+				node = self.domList.childNodes[i];
 				if (node.classList.contains('asc_folder_container')) continue;
 				
 				let label = node.getAttribute('aria-label');
@@ -885,22 +884,24 @@ height: 7px;`
 				self.itemMap[label] = node;
 				
 				node.setAttribute('draggable', 'true');
-				node.addEventListener('dragstart', self.onItemDrag);
+				node.addEventListener('dragstart', Folders.onItemDrag.bind(Folders));
 			}
 			
 			self.folderList.sort(function(a, b){
 				return a.position - b.position;
 			});
 			
-			self.DOMlist.insertBefore(self.DOMcontainerFolder, self.DOMlist.firstChild);
+			// Make sure the folders are first in the DOM
+			self.domList.insertBefore(self.domContainerFolder, self.domList.firstChild);
+			
 			for (let i = self.folderList.length - 1; i >= 0; i--){
 				let node = self.folderList[i].dom;
 				
-				if(self.DOMcontainerFolder.firstChild){
-					self.DOMcontainerFolder.insertBefore(node, self.DOMcontainerFolder.firstChild);
+				if(self.domContainerFolder.firstChild){
+					self.domContainerFolder.insertBefore(node, self.domContainerFolder.firstChild);
 				}
 				else{
-					self.DOMcontainerFolder.appendChild(node);
+					self.domContainerFolder.appendChild(node);
 				}
 				
 				node.folder = self.folderList[i];
@@ -908,7 +909,7 @@ height: 7px;`
 				for (let j = 0; j < self.folderList[i].childList.length; j++){
 					let item = self.itemMap[self.folderList[i].childList[j]];
 					
-					if (!item || (item.parentNode !== self.DOMlist && state)){
+					if (!item || (item.parentNode !== self.domList && state)){
 						self.folderList[i].childList.splice(j, 1);
 						item.remove();
 						
@@ -947,53 +948,62 @@ height: 7px;`
 			localStorage.setItem('appScriptColor-Folders-' + asc.folders.key, JSON.stringify(save));
 		},
 		restoreFolder: function(){
-			var self = asc.folders,
-				folders = localStorage['appScriptColor-Folders-' + asc.folders.key],
-				i, j, DOMnewFolder,
+			let foldersJSON = localStorage['appScriptColor-Folders-' + asc.folders.key],
 				children = {};
 			
-			if (!folders) return;
-			folders = JSON.parse(folders);
+			// Nothing to restore
+			if (!foldersJSON) return;
+			
+			/**
+			 * @type {Array.<{
+			 *   n: string,
+			 *   c: Array.<string>,
+			 *   s: Boolean
+			 * }>}
+			 */
+			let folders = JSON.parse(foldersJSON);
 			
 			// build map of children
-			for (i = 0; i < self.DOMlist.childNodes.length; i++){
-				if (!self.DOMlist.childNodes[i].classList.contains('asc_folder_container')){
-					children[self.DOMlist.childNodes[i].getAttribute('aria-label')] = self.DOMlist.childNodes[i];
+			for (let i = 0; i < this.domList.childNodes.length; i++){
+				if (!this.domList.childNodes[i].classList.contains('asc_folder_container')){
+					children[this.domList.childNodes[i].getAttribute('aria-label')] = this.domList.childNodes[i];
 				}
 			}
 			
-			for (i = 0; i < folders.length; i++){
+			for (let i = 0; i < folders.length; i++){
 				
 				/**
 				 * @type {HTMLElement}
 				 */
-				DOMnewFolder = self.newFolder(folders[i].n);
+				let domNewFolder = this.newFolder(folders[i].n);
 				
-				var DOMFolderchildList = DOMnewFolder.querySelector('.asc_folder_ChildList');
-				DOMnewFolder.classList.toggle('asc_folder_closed', folders[i].s);
-				if (!folders[i].s) DOMFolderchildList.style.maxHeight = '0px';
+				// Set folder open state
+				let domFolderChildList = domNewFolder.querySelector('.asc_folder_ChildList');
+				domNewFolder.classList.toggle('asc_folder_closed', folders[i].s);
+				if (!folders[i].s) domFolderChildList.style.maxHeight = '0px';
 				
-				var childList = [];
+				let childList = [];
+				
 				// rebuild whole child list
-				for (j = 0; j < folders[i].c.length; j++){
-					var child = children[folders[i].c[j]];
+				for (let j = 0; j < folders[i].c.length; j++){
+					let child = children[folders[i].c[j]];
 					if (!child) continue;
 					
 					childList.push(folders[i].c[j]);
 				}
 				
-				self.folderList.push({
+				this.folderList.push({
 					name: folders[i].n,
-					dom: DOMnewFolder,
-					domChildList: DOMFolderchildList,
+					dom: domNewFolder,
+					domChildList: domFolderChildList,
 					childList: childList,
-					position: self.folderList.length
+					position: this.folderList.length
 				});
 				
 			}
 			
 			// rebuild all list !
-			self.rebuildFolderList(true);
+			this.rebuildFolderList(true);
 		},
 		
 		createDialog: function (title, message, defaultValue, callBack_OK) {
@@ -1090,12 +1100,11 @@ height: 7px;`
 					let node = parent.parentNode.querySelector('.asc_folder_ChildList');
 					if (node){
 						for (let j = node.childNodes.length - 1; j > -1; j--){
-							Folders.DOMlist.appendChild(node.childNodes[j]);
+							Folders.domList.appendChild(node.childNodes[j]);
 						}
 					}
 					
 					parent.parentNode.remove();
-					
 					Folders.rebuildFolderList();
 					
 					break;
