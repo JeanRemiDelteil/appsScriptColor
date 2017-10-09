@@ -927,40 +927,38 @@ height: 7px;`
 		},
 		
 		saveFolder: function () {
-			var self = asc.folders,
-				save = [], child,
-				i, j;
+			let save = [];
 			
-			for (i = 0; i < self.folderList.length; i++){
+			for (let i = 0; i < Folders.folderList.length; i++){
 				
 				// establish child item list
-				child = [];
-				for (j = 0; j < self.folderList[i].childList.length; j++){
-					child.push(self.folderList[i].childList[j]);
+				let child = [];
+				for (let j = 0; j < Folders.folderList[i].childList.length; j++){
+					child.push(Folders.folderList[i].childList[j]);
 				}
 				
 				save.push({
-					n: self.folderList[i].name,
-					c: child,
-					s: self.folderList[i].dom.classList.contains('asc_folder_closed')
+					"name": Folders.folderList[i].name,
+					"files": child,
+					"state": Folders.folderList[i].dom.classList.contains('asc_folder_closed')
 				});
 			}
 			
-			localStorage.setItem('appScriptColor-Folders-' + asc.folders.key, JSON.stringify(save));
+			localStorage.setItem(`appScriptColor-Folders-${Folders.key}`, JSON.stringify(save));
 		},
 		restoreFolder: function(){
-			let foldersJSON = localStorage['appScriptColor-Folders-' + asc.folders.key],
+			let foldersJSON = localStorage[`appScriptColor-Folders-${asc.folders.key}`],
 				children = {};
 			
 			// Nothing to restore
 			if (!foldersJSON) return;
 			
 			/**
-			 * @type {Array.<{
-			 *   n: string,
-			 *   c: Array.<string>,
-			 *   s: Boolean
-			 * }>}
+			 * @typed {Array.<{
+			 *   name: string,
+			 *   files: Array.<string>,
+			 *   state: Boolean
+			 * }>} 
 			 */
 			let folders = JSON.parse(foldersJSON);
 			
@@ -974,27 +972,43 @@ height: 7px;`
 			for (let i = 0; i < folders.length; i++){
 				
 				/**
+				 * @typed {{
+				 *   name: string,
+				 *   files: Array.<string>,
+				 *   state: Boolean
+				 * }}
+				 */
+				let readFolder = folders[i];
+				// Load old names TODO: remove in January 2018
+				if (readFolder['n']) readFolder['name'] = readFolder['n'];
+				if (readFolder['w']) readFolder['files'] = readFolder['w'];
+				if (readFolder['c']) readFolder['files'] = readFolder['c'];
+				if (readFolder['L']) readFolder['state'] = readFolder['L'];
+				if (readFolder['s']) readFolder['state'] = readFolder['s'];
+				
+				
+				/**
 				 * @type {HTMLElement}
 				 */
-				let domNewFolder = this.newFolder(folders[i].n);
+				let domNewFolder = this.newFolder(readFolder['name']);
 				
 				// Set folder open state
 				let domFolderChildList = domNewFolder.querySelector('.asc_folder_ChildList');
-				domNewFolder.classList.toggle('asc_folder_closed', folders[i].s);
-				if (!folders[i].s) domFolderChildList.style.maxHeight = '0px';
+				domNewFolder.classList.toggle('asc_folder_closed', readFolder['state']);
+				if (!readFolder['state']) domFolderChildList.style.maxHeight = '0px';
 				
 				let childList = [];
 				
 				// rebuild whole child list
-				for (let j = 0; j < folders[i].c.length; j++){
-					let child = children[folders[i].c[j]];
+				for (let j = 0; j < readFolder['files'].length; j++){
+					let child = children[ readFolder['files'][j] ];
 					if (!child) continue;
 					
-					childList.push(folders[i].c[j]);
+					childList.push(readFolder['files'][j]);
 				}
 				
 				this.folderList.push({
-					name: folders[i].n,
+					name: readFolder['name'],
 					dom: domNewFolder,
 					domChildList: domFolderChildList,
 					childList: childList,
