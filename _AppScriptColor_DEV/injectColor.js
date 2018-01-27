@@ -898,7 +898,7 @@ height: 7px;`
 			for (let i = self.folderList.length - 1; i >= 0; i--){
 				let node = self.folderList[i].dom;
 				
-				if(self.domContainerFolder.firstChild){
+				if (self.domContainerFolder.firstChild){
 					self.domContainerFolder.insertBefore(node, self.domContainerFolder.firstChild);
 				}
 				else{
@@ -907,11 +907,11 @@ height: 7px;`
 				
 				node.folder = self.folderList[i];
 				
-				for (let j = 0; j < self.folderList[i].childList.length; j++){
-					let item = self.itemMap[self.folderList[i].childList[j]];
+				for (let j = 0; j < node.folder.childList.length; j++){
+					let item = self.itemMap[node.folder.childList[j]];
 					
 					if (!item || (item.parentNode !== self.domList && state)){
-						self.folderList[i].childList.splice(j, 1);
+						node.folder.childList.splice(j, 1);
 						item.remove();
 						
 						j--;
@@ -920,6 +920,12 @@ height: 7px;`
 					
 					item.parentFolder = node;
 					node.folder.domChildList.appendChild(item);
+					
+					if (node.folder.staticFolder){
+						let domLabel = item.querySelector('div.gwt-Label[title]');
+						
+						domLabel && (domLabel.innerHTML = node.folder.childList[j].replace(/^[^\/]+\//, ''));
+					}
 				}
 			}
 			
@@ -930,6 +936,8 @@ height: 7px;`
 			let save = [];
 			
 			for (let i = 0; i < Folders.folderList.length; i++){
+				
+				if (Folders.folderList[i].dom.classList.contains('staticFolder')) continue;
 				
 				// establish child item list
 				let child = [];
@@ -947,7 +955,7 @@ height: 7px;`
 			localStorage.setItem(`appScriptColor-Folders-${Folders.key}`, JSON.stringify(save));
 		},
 		restoreFolder: function(){
-			let foldersJSON = localStorage[`appScriptColor-Folders-${asc.folders.key}`],
+			let foldersJSON = localStorage[`appScriptColor-Folders-${asc.folders.key}`] || '[]',
 				children = {};
 			
 			// Nothing to restore
@@ -963,11 +971,41 @@ height: 7px;`
 			let folders = JSON.parse(foldersJSON);
 			
 			// build map of children
+			let staticFolders = {};
+			
 			for (let i = 0; i < this.domList.childNodes.length; i++){
-				if (!this.domList.childNodes[i].classList.contains('asc_folder_container')){
-					children[this.domList.childNodes[i].getAttribute('aria-label')] = this.domList.childNodes[i];
+				if (this.domList.childNodes[i].classList.contains('asc_folder_container')) continue;
+				
+				let fileName = this.domList.childNodes[i].getAttribute('aria-label');
+				children[fileName] = this.domList.childNodes[i];
+				
+				let res = fileName.split('/');
+				// There are static folders
+				if (res.length > 1){
+					staticFolders[res[0]] && staticFolders[res[0]].push(fileName) || (staticFolders[res[0]] = [fileName]);
 				}
 			}
+			
+			// build static folder list
+			for (let folder in staticFolders){
+				
+				/**
+				 * @type {HTMLElement}
+				 */
+				let domNewFolder = this.newFolder(folder);
+				
+				domNewFolder.classList.add('staticFolder');
+				
+				this.folderList.push({
+					name:folder,
+					dom: domNewFolder,
+					domChildList: domNewFolder.querySelector('.asc_folder_ChildList'),
+					childList: staticFolders[folder],
+					position: this.folderList.length,
+					staticFolder: true,
+				});
+			}
+			
 			
 			for (let i = 0; i < folders.length; i++){
 				
