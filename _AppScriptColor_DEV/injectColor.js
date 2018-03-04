@@ -7,7 +7,7 @@
 // TODO: custom auto-complete functions list
 
 
-(function(){
+(function () {
 	// quit if the current page is not editing the script
 	if (!/\/edit$/.test(document.location.pathname)) return;
 	
@@ -38,8 +38,16 @@
 					'.autocomplete .selected': {'background-color': '{{codeBackGround}}', 'color': '{{listItemSelected}}'},
 					
 					// line number area
-					'.editor .code-area .CodeMirror-gutter': {'background-color': '{{codeBackGround}}', 'border-left': '1px solid', 'border-right': '1px solid', 'border-color': '{{border}}'},
-					'.editor .code-area .CodeMirror-gutter-text': {'background-color': '{{codeBackGround}}', 'box-shadow': '-1px 0px 0px 0px {{border}}, 1px 0px 0px 0px {{border}}'}, // background des numéros de ligne
+					'.editor .code-area .CodeMirror-gutter': {
+						'background-color': '{{codeBackGround}}',
+						'border-left': '1px solid',
+						'border-right': '1px solid',
+						'border-color': '{{border}}'
+					},
+					'.editor .code-area .CodeMirror-gutter-text': {
+						'background-color': '{{codeBackGround}}',
+						'box-shadow': '-1px 0px 0px 0px {{border}}, 1px 0px 0px 0px {{border}}'
+					}, // background des numéros de ligne
 					'.editor .code-area .CodeMirror-gutter-text pre': {'color': '{{border}}'}, // line number
 					
 					// color of code
@@ -77,8 +85,14 @@
 					// resource panel
 					'.resource-list': {'background-color': '{{generalBackGround}}', 'color': '{{generalText}}'},
 					'.resource-list .project-items-list .item': {'border-bottom': '1px solid {{border}}'},
-					'.resource-list .project-items-list .selected, .resource-list .project-items-list .selected:hover': {'background-color': '{{listItemBackground}}', 'color': '{{listItemSelected}}'},
-					'.resource-list .project-items-list .focused, .resource-list .project-items-list .item:hover': {'background-color': '{{listItemBackgroundSelected}}', 'color': '{{generalText}}'},
+					'.resource-list .project-items-list .selected, .resource-list .project-items-list .selected:hover': {
+						'background-color': '{{listItemBackground}}',
+						'color': '{{listItemSelected}}'
+					},
+					'.resource-list .project-items-list .focused, .resource-list .project-items-list .item:hover': {
+						'background-color': '{{listItemBackgroundSelected}}',
+						'color': '{{generalText}}'
+					},
 					
 					// drag bar
 					'.workspace .gwt-SplitLayoutPanel-HDragger': {'background-color': '#000!important', 'border-left': '1px solid {{border}}!important'},
@@ -117,7 +131,7 @@
 					'.asc_folder_container': {
 						'border-bottom': '5px solid {{border}}'
 					},
-					'.asc_Folder:not(.asc_folder_closed)':{
+					'.asc_Folder:not(.asc_folder_closed)': {
 						'border-bottom': '5px solid {{border}}'
 					}
 				}
@@ -146,8 +160,16 @@
 					'.autocomplete .selected': {'background-color': '{{codeBackGround}}', 'color': '{{listItemSelected}}'},
 					
 					// line number area
-					'.editor .code-area .CodeMirror-gutter': {'background-color': '{{codeBackGround}}', 'border-left': '1px solid', 'border-right': '1px solid', 'border-color': '{{border}}'},
-					'.editor .code-area .CodeMirror-gutter-text': {'background-color': '{{codeBackGround}}', 'box-shadow': '-1px 0px 0px 0px {{border}}, 1px 0px 0px 0px {{border}}'}, // background des numéros de ligne
+					'.editor .code-area .CodeMirror-gutter': {
+						'background-color': '{{codeBackGround}}',
+						'border-left': '1px solid',
+						'border-right': '1px solid',
+						'border-color': '{{border}}'
+					},
+					'.editor .code-area .CodeMirror-gutter-text': {
+						'background-color': '{{codeBackGround}}',
+						'box-shadow': '-1px 0px 0px 0px {{border}}, 1px 0px 0px 0px {{border}}'
+					}, // background des numéros de ligne
 					'.editor .code-area .CodeMirror-gutter-text pre': {'color': '888888'}, // line number
 					
 					// color of code
@@ -185,8 +207,14 @@
 					// resource panel
 					'.resource-list': {'background-color': '{{generalBackGround}}', 'color': '{{generalText}}'},
 					'.resource-list .project-items-list .item': {'border-bottom': '1px solid {{border}}'},
-					'.resource-list .project-items-list .selected, .resource-list .project-items-list .selected:hover': {'background-color': '{{listItemBackground}}', 'color': '{{listItemSelected}}'},
-					'.resource-list .project-items-list .focused, .resource-list .project-items-list .item:hover': {'background-color': '{{listItemBackgroundSelected}}', 'color': '{{generalText}}'},
+					'.resource-list .project-items-list .selected, .resource-list .project-items-list .selected:hover': {
+						'background-color': '{{listItemBackground}}',
+						'color': '{{listItemSelected}}'
+					},
+					'.resource-list .project-items-list .focused, .resource-list .project-items-list .item:hover': {
+						'background-color': '{{listItemBackgroundSelected}}',
+						'color': '{{generalText}}'
+					},
 					
 					// drag bar
 					'.workspace .gwt-SplitLayoutPanel-HDragger': {'background-color': '{{generalBackGround}}!important', 'border-left': '1px solid {{border}}!important'},
@@ -225,7 +253,7 @@
 					'.asc_folder_container': {
 						'border-bottom': '5px solid {{border}}'
 					},
-					'.asc_Folder:not(.asc_folder_closed)':{
+					'.asc_Folder:not(.asc_folder_closed)': {
 						'border-bottom': '5px solid {{border}}'
 					}
 				}
@@ -248,7 +276,7 @@
 					'.asc_folder_container': {
 						'border-bottom': '5px solid {{border}}'
 					},
-					'.asc_Folder:not(.asc_folder_closed)':{
+					'.asc_Folder:not(.asc_folder_closed)': {
 						'border-bottom': '5px solid {{border}}'
 					}
 				}
@@ -258,7 +286,7 @@
 		
 		_divCmCustomStyle: null,
 		
-		initColors: function (){
+		initColors: function () {
 			// Fetch user pref
 			asc.userTheme = localStorage.getItem('appScriptColor-theme') || asc.defaultTheme;
 			
@@ -299,8 +327,8 @@
 		},
 		useCustomStyle: function (customTheme) {
 			// Select theme if a theme name is passed
-			if (typeof customTheme !== 'object'){
-				customTheme = asc.theme[ customTheme || 'Default' ];
+			if (typeof customTheme !== 'object') {
+				customTheme = asc.theme[customTheme || 'Default'];
 			}
 			
 			// Init the custom style element
@@ -320,12 +348,12 @@
 		cssBuilder: function (css, variables) {
 			let cssSheet = '';
 			
-			for (let selector in css){
+			for (let selector in css) {
 				// build one rule
 				let propertyStr = '',
 					cssSettings = css[selector];
 				
-				for (let property in cssSettings){
+				for (let property in cssSettings) {
 					// replace declared variables
 					propertyStr += `${ property }:${ cssSettings[property].replace(/{{(\w+)}}/g, (m, p1) => p1 in variables ? variables[p1] : m) };`;
 				}
@@ -336,19 +364,19 @@
 			return cssSheet;
 		},
 		
-		storeThemeChosen: function(themeName){
+		storeThemeChosen: function (themeName) {
 			localStorage.setItem('appScriptColor-theme', themeName);
 			asc.userTheme = themeName;
 		},
 		
 		menuColorState: false,
-		addSubMenuItem: function(domSubMenu, text, callBack){
+		addSubMenuItem: function (domSubMenu, text, callBack) {
 			let domItem = document.createElement('div');
 			domItem.classList.add('goog-menuitem');
 			domItem.classList.add('apps-menuitem');
 			
 			domItem.innerHTML =
-`<div class="goog-menuitem-content" style="-webkit-user-select: none;">
+				`<div class="goog-menuitem-content" style="-webkit-user-select: none;">
 	<div class="docs-icon goog-inline-block goog-menuitem-icon asc-menu-item-icon" data-theme="${text}" style="-webkit-user-select:none;">
 		<div class="docs-icon-img-container docs-icon-img docs-icon-arrow-more" style="-webkit-user-select: none;"></div>
 	</div>
@@ -358,15 +386,15 @@
 			domSubMenu.appendChild(domItem);
 			
 			// add function listeners
-			domItem.addEventListener('mouseenter', function(){
+			domItem.addEventListener('mouseenter', function () {
 				domItem.classList.toggle('goog-menuitem-highlight', true);
 			});
-			domItem.addEventListener('mouseleave', function(){
+			domItem.addEventListener('mouseleave', function () {
 				domItem.classList.toggle('goog-menuitem-highlight', false);
 			});
 			domItem.addEventListener('click', callBack);
 		},
-		insertMenuButton: function(){
+		insertMenuButton: function () {
 			//noinspection CssUnusedSymbol
 			document.head.insertAdjacentHTML('beforeEnd', `<style>.asc-menu-item-icon{display: none;}.asc-menu-item-icon-display{display: inherit;}</style>`);
 			
@@ -384,11 +412,11 @@
 			domMenuColorSub.setAttribute('style', 'display: None;');
 			
 			// add menu item for each theme
-			for (let theme in asc.theme){
+			for (let theme in asc.theme) {
 				asc.addSubMenuItem(
 					domMenuColorSub,
 					theme,
-					function(theme){
+					function (theme) {
 						asc.useCustomStyle(asc.theme[theme]);
 						asc.storeThemeChosen(theme);
 						
@@ -407,18 +435,18 @@
 				domMenuShield = document.getElementById('docs-menu-shield');
 			
 			// add similar behaviour then other menu buttons
-			domMenuColor.addEventListener('mouseenter', function(){
+			domMenuColor.addEventListener('mouseenter', function () {
 				domMenuColor.classList.toggle('goog-control-hover', true);
 			});
-			domMenuColor.addEventListener('mouseleave', function(){
+			domMenuColor.addEventListener('mouseleave', function () {
 				domMenuColor.classList.toggle('goog-control-hover', false);
 			});
 			
 			// display the menu
-			domMenuColor.addEventListener('click', function(){
+			domMenuColor.addEventListener('click', function () {
 				
 				let domItemIcons = domMenuColorSub.querySelectorAll('.asc-menu-item-icon');
-				for (let i = 0; i < domItemIcons.length; i++){
+				for (let i = 0; i < domItemIcons.length; i++) {
 					domItemIcons[i].classList.toggle('asc-menu-item-icon-display', (domItemIcons[i].getAttribute('data-theme') === asc.userTheme));
 				}
 				
@@ -428,14 +456,14 @@
 				let menuRect = domMenuColor.getBoundingClientRect();
 				
 				domMenuColorSub.setAttribute('style',
-`user-select: none;
+					`user-select: none;
 visibility: visible;
 left: ${menuRect.left}px;
 top: ${menuRect.bottom}px;`
 				);
 				
 				domMenuShield.setAttribute('style',
-`left: ${menuRect.left + 1}px;
+					`left: ${menuRect.left + 1}px;
 top: ${menuRect.bottom - 1}px;
 width: ${menuRect.width - 2}px;
 height: 7px;`
@@ -445,10 +473,10 @@ height: 7px;`
 			});
 			
 			// Close menu when click event on document
-			document.body.addEventListener('click', function(event){
+			document.body.addEventListener('click', function (event) {
 				if (!asc.menuColorState) return;
 				
-				for (let i = 0; i < event['path'].length; i++){
+				for (let i = 0; i < event['path'].length; i++) {
 					if (event['path'][i] === domMenuColorSub || event['path'][i] === domMenuColor) return;
 				}
 				
@@ -495,8 +523,19 @@ height: 7px;`
 			listFile: '.resource-list>.project-items-list-wrapper',
 			listItem: '.project-items-list'
 		},
+		/**
+		 * @type {Object.<HTMLElement>}
+		 */
+		dom: {
+			gasProjectFiles: undefined,
+			gasFileList: undefined,
+			folderContainer: undefined,
+		},
 		
-		domContainerFolder: null,
+		CLASSNAME: {
+			folderContainer: 'asc_folder_container',
+		},
+		
 		folderList: [],
 		itemMap: {},
 		key: document.location.pathname.match(/\/([^\/]+?)\/edit/)[1],
@@ -516,7 +555,7 @@ height: 7px;`
 				 * @param {MutationRecord[]} mutations
 				 * @param {MutationObserver} observer
 				 */
-				function observerCB (mutations, observer) {
+				function observerCB(mutations, observer) {
 					mutations.forEach(mutation => {
 						for (let item in mutation.addedNodes) {
 							if (!mutation.addedNodes.hasOwnProperty(item)) continue;
@@ -542,16 +581,18 @@ height: 7px;`
 					childList: true,
 					attributes: false,
 					characterData: false/*,
-				 subtree: false,
-				 attributeOldValue: false,
-				 characterDataOldValue: false,
-				 attributeFilter: []
-				 */
+					 subtree: false,
+					 attributeOldValue: false,
+					 characterDataOldValue: false,
+					 attributeFilter: []
+					 */
 				});
 			});
 		},
+		
 		/**
-		 * Detect page initialization by App Script, then init Folders
+		 * Detect page initialization by App Script, then init Folders,
+		 * Entry point
 		 */
 		waitInitialization: function () {
 			// Find App script Workspace node
@@ -560,12 +601,12 @@ height: 7px;`
 				.then(node => this.setObserver(node, this.selector.listFile))
 				
 				// Start adding folders
-				.then(node => { this.addFolders(node) });
+				.then(node => this.initFolders(node));
 		},
 		/**
 		 * Folders CSS sheet
 		 */
-		insertCSS: function(){
+		insertCSS: function () {
 			document.head.insertAdjacentHTML('beforeEnd',
 `<style>
 	.asc_FolderAdd_container {
@@ -639,19 +680,37 @@ height: 7px;`
 		 *
 		 * @param {HTMLElement} node
 		 */
-		addFolders: function(node){
+		initFolders: function (node) {
 			// Init folders
-			this.domContainerFolder = document.createElement('div');
-			this.domContainerFolder.classList.add('asc_folder_container');
+			this.dom.folderContainer = document.createElement('div');
+			this.dom.folderContainer.classList.add('asc_folder_container');
 			
-			this.domListFile = node;
-			this.domList = node.querySelector(this.selector.listItem);
+			this.dom.gasProjectFiles = node;
+			this.dom.gasFileList = node.querySelector(this.selector.listItem);
 			
 			// Drag & drop listeners
-			this.domListFile.addEventListener('drop', this.onItemDrop.bind(this));
-			this.domListFile.addEventListener('dragover', this.onItemDragOver.bind(this));
+			this.dom.gasProjectFiles.addEventListener('drop', this.onItemDrop.bind(this));
+			this.dom.gasProjectFiles.addEventListener('dragover', this.onItemDragOver.bind(this));
+			
+			this.rebuildFolderList = this.rebuildFolderList.bind(this);
+			this.onItemDrag = this.onItemDrag.bind(this);
 			
 			// Folder Create Button
+			this.inserNewFolderButton(this.dom.gasProjectFiles);
+			
+			// add observer to detect list rebuild
+			this.installListRebuildDetection(this.dom.gasFileList);
+			
+			// Load all folders
+			this.restoreFolder();
+		},
+		
+		/**
+		 * Add the new folder button
+		 * 
+		 * @param {Node} projectFilesNode
+		 */
+		inserNewFolderButton: function(projectFilesNode){
 			let domFolderCreateButton = document.createElement('div');
 			domFolderCreateButton.classList.add('asc_FolderAdd_container');
 			
@@ -662,16 +721,13 @@ height: 7px;`
 				});
 			
 			// insert Menu button
-			this.domListFile.insertBefore(domFolderCreateButton, this.domListFile.firstChild);
-			
-			
-			// add observer to detect list rebuild
-			
+			projectFilesNode.insertBefore(domFolderCreateButton, projectFilesNode.firstChild);
+		},
+		installListRebuildDetection: function(fileListNode){
 			/**
 			 * @param {MutationRecord[]} mutations
-			 * @param {MutationObserver} observer
 			 */
-			let mutationCB = (mutations, observer) => {
+			let mutationCB = mutations => {
 				mutations.forEach(mutation => {
 					for (let item in mutation.removedNodes) {
 						if (!mutation.removedNodes.hasOwnProperty(item)) continue;
@@ -682,7 +738,7 @@ height: 7px;`
 						let node = mutation.removedNodes[item];
 						
 						// Make sure to rebuild ONLY if there are no parentNode
-						if (node.classList.contains('asc_folder_container') && !node.parentNode){
+						if (node.classList.contains('asc_folder_container') && !node.parentNode) {
 							this.rebuildFolderList(true);
 							
 							break;
@@ -694,35 +750,156 @@ height: 7px;`
 			let observer = new MutationObserver(mutationCB);
 			
 			// pass in the target node, as well as the observer options
-			//noinspection JSCheckFunctionSignatures
-			observer.observe(this.domList, {
+			observer.observe(fileListNode, {
 				childList: true,
 				attributes: false,
-				characterData: false/*,
-				 subtree: false,
-				 attributeOldValue: false,
-				 characterDataOldValue: false,
-				 attributeFilter: []
-				 */
+				characterData: false
 			});
-			
-			this.restoreFolder();
 		},
 		
+		
+		rebuildFolderList: function(){
+			
+			// Get existing children properties
+			this.getGasItems()
+				.forEach(item => {
+					this.itemMap[item.label] && this.itemMap[item.label] !== item.node && this.itemMap[item.label].remove();
+					
+					this.itemMap[item.label] = item.node;
+					
+					// No drag&drop for the moment
+					//item.node.setAttribute('draggable', 'true');
+					//item.node.addEventListener('dragstart', this.onItemDrag);
+				});
+			
+			
+		},
+		restoreFolder: function(){
+			
+			// RESET item map
+			this.itemMap = {};
+			
+			// build map of children
+			let staticFolders = {};
+			
+			// Get existing children properties
+			this.getGasItems()
+				.forEach(item => {
+					this.itemMap[item.label] = item.node;
+					
+					let res = item.label.split('/');
+					
+					// build folders tree
+					let prevName,
+						prevFolder = staticFolders;
+					res.forEach((name, i) => {
+						if (!prevName) {
+							prevName = name;
+							
+							return;
+						}
+						
+						// Init folder
+						!prevFolder[prevName] && (prevFolder[prevName] = {});
+						
+						// Move down a folder
+						prevFolder = prevFolder[prevName];
+						
+						// Last name, it's the file name
+						i === res.length - 1 && (prevFolder[name] = true);
+						
+						prevName = name;
+					});
+				});
+			
+			
+			// Build folders
+			function buildFolders(){
+				
+				
+				
+			}
+			
+			
+			
+			/*
+			// build static folder list
+			for (let folder in staticFolders) {
+				
+				/!**
+				 * @type {HTMLElement}
+				 *!/
+				let domNewFolder = this.newFolder(folder);
+				
+				domNewFolder.classList.add('staticFolder');
+				
+				this.folderList.push({
+					name: folder,
+					dom: domNewFolder,
+					domChildList: domNewFolder.querySelector('.asc_folder_ChildList'),
+					childList: staticFolders[folder],
+					position: this.folderList.length,
+					staticFolder: true
+				});
+			}
+			*/
+			
+		},
+		
+		/**
+		 * Get all GAS files item with their name
+		 * 
+		 * @return {Array.<{label: string, node: Node}>}
+		 */
+		getGasItems: function () {
+			let children = [];
+			
+			for (let i = 0, numChildren = this.dom.gasFileList.childNodes.length; i < numChildren; i++) {
+				/**
+				 * @type {HTMLElement}
+				 */
+				let node = this.dom.gasFileList.childNodes[i];
+				
+				// Skip if it's our folder container node
+				if (node.classList.contains(this.CLASSNAME.folderContainer)) continue;
+				
+				// build a node map from item fileName
+				let label = node.getAttribute('aria-label');
+				
+				// save item
+				children.push({
+					label: label,
+					node: node,
+				})
+			}
+			
+			// Sort by label A-Z
+			children.sort((a, b) => a.label < b.label
+				? -1
+				: (a.label > b.label
+					? 1
+					: 0)
+			);
+			
+			return children;
+		},
+		
+		
+		//####
 		dragDropNode: undefined,
-		onItemDrag: function(event){
+		onItemDrag: function (event) {
 			this.dragDropNode = event.currentTarget;
 		},
-		onItemDrop: function(event){
+		onItemDrop: function (event) {
 			let node = event.currentTarget;
 			let label = this.dragDropNode.getAttribute('aria-label');
 			
 			// find the child in case it was in another folder
-			if (this.dragDropNode.parentFolder){
+			if (this.dragDropNode.parentFolder) {
 				let folder = this.dragDropNode.parentFolder.folder;
 				
-				for (let i = 0; i < folder.childList.length; i++){
-					if (folder.childList[i] === label){
+				for (let i = 0; i < folder.childList.length; i++) {
+					if (folder.childList[i] === label) {
 						folder.childList.splice(i, 1);
 						
 						break;
@@ -731,12 +908,12 @@ height: 7px;`
 			}
 			
 			// back in the main item list
-			if (node === this.domListFile){
-				this.domList.appendChild(this.dragDropNode);
+			if (node === this.dom.gasProjectFiles) {
+				this.dom.gasFileList.appendChild(this.dragDropNode);
 				
 				this.dragDropNode.parentFolder = undefined;
 			}
-			else{
+			else {
 				// add item to folder list
 				node.folder.childList.push(label);
 				
@@ -750,28 +927,28 @@ height: 7px;`
 			this.saveFolder();
 			event.cancelBubble = true;
 		},
-		onItemDragOver: function(event){
+		onItemDragOver: function (event) {
 			event.preventDefault();
 		},
 		
 		toggleFolder: function (event) {
 			// Don't toggle when popMenu || inside child list
-			for (let i = 0; i < event.path.length; i++){
-				if (event.path[i].isCreatingPopMenu || event.path[i].classList && event.path[i].classList.contains('asc_folder_ChildList')){
+			for (let i = 0; i < event.path.length; i++) {
+				if (event.path[i].isCreatingPopMenu || event.path[i].classList && event.path[i].classList.contains('asc_folder_ChildList')) {
 					return;
 				}
 			}
 			
 			let childList = event.currentTarget.querySelector('.asc_folder_ChildList');
 			
-			if (!event.currentTarget.classList.contains('asc_folder_closed')){
+			if (!event.currentTarget.classList.contains('asc_folder_closed')) {
 				childList.style.maxHeight = 'initial';
 				let rect = childList.getBoundingClientRect();
 				childList.style.maxHeight = `${rect.height}px`;
 				childList.getBoundingClientRect();
 				childList.style.maxHeight = '';
 			}
-			else{
+			else {
 				childList.style.maxHeight = 'initial';
 				let rect = childList.getBoundingClientRect();
 				childList.style.maxHeight = '';
@@ -783,20 +960,20 @@ height: 7px;`
 			this.saveFolder();
 		},
 		
-		newFolder: function(name){
+		newFolder: function (name) {
 			if (!name) return;
 			
 			let domNewFolder = document.createElement('div');
 			domNewFolder.classList.add('asc_Folder');
 			domNewFolder.innerHTML =
-`<div class="item">
+				`<div class="item">
 	<div class="gwt-Label piece name">${name}</div>
 	<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAECAYAAABCxiV9AAAAG0lEQVR42mOIjIz8jwszgABOCRjAKYGsAJkPAKT/IKHcRfUJAAAAAElFTkSuQmCC" width="7" height="4" class="gwt-Image dropdown" role="button" aria-label="More options" tabindex="0">
 </div>
 <div class="asc_folder_ChildList"></div>`;
 			
 			
-			domNewFolder.querySelector('img.dropdown').addEventListener('click', function(){
+			domNewFolder.querySelector('img.dropdown').addEventListener('click', function () {
 				let parent = domNewFolder.querySelector('.item');
 				
 				parent.isCreatingPopMenu = true;
@@ -812,7 +989,7 @@ height: 7px;`
 			 * @param {MutationRecord[]} mutations
 			 * @param {MutationObserver} observer
 			 */
-			function observerCB (mutations, observer) {
+			function observerCB(mutations, observer) {
 				mutations.forEach(function (mutation) {
 					let item,
 						reCalculateHeight = 0;
@@ -828,7 +1005,7 @@ height: 7px;`
 						reCalculateHeight -= mutation.removedNodes[item].getBoundingClientRect().height;
 					}
 					
-					if (reCalculateHeight){
+					if (reCalculateHeight) {
 						let max = parseInt(mutation.target.style.maxHeight) + reCalculateHeight;
 						mutation.target.style.maxHeight = `${max}px`;
 					}
@@ -853,7 +1030,7 @@ height: 7px;`
 			
 			return domNewFolder;
 		},
-		addNewFolder: function (name){
+		addNewFolder: function (name) {
 			let domNewFolder = Folders.newFolder(name);
 			
 			Folders.folderList.push({
@@ -866,20 +1043,21 @@ height: 7px;`
 			
 			Folders.rebuildFolderList();
 		},
-		rebuildFolderList: function(state){
+		
+		_rebuildFolderList: function (state) {
 			let self = Folders,
 				node;
 			
 			// set existing children properties
-			for (let i = 0; i < self.domList.childNodes.length; i++){
+			for (let i = 0; i < self.dom.gasFileList.childNodes.length; i++) {
 				/**
 				 * @type {HTMLElement}
 				 */
-				node = self.domList.childNodes[i];
+				node = self.dom.gasFileList.childNodes[i];
 				if (node.classList.contains('asc_folder_container')) continue;
 				
 				let label = node.getAttribute('aria-label');
-				if (self.itemMap[label] && self.itemMap[label] !== node){
+				if (self.itemMap[label] && self.itemMap[label] !== node) {
 					self.itemMap[label].remove();
 				}
 				self.itemMap[label] = node;
@@ -888,29 +1066,29 @@ height: 7px;`
 				node.addEventListener('dragstart', Folders.onItemDrag.bind(Folders));
 			}
 			
-			self.folderList.sort(function(a, b){
+			self.folderList.sort(function (a, b) {
 				return a.position - b.position;
 			});
 			
 			// Make sure the folders are first in the DOM
-			self.domList.insertBefore(self.domContainerFolder, self.domList.firstChild);
+			self.dom.gasFileList.insertBefore(self.dom.folderContainer, self.dom.gasFileList.firstChild);
 			
-			for (let i = self.folderList.length - 1; i >= 0; i--){
+			for (let i = self.folderList.length - 1; i >= 0; i--) {
 				let node = self.folderList[i].dom;
 				
-				if (self.domContainerFolder.firstChild){
-					self.domContainerFolder.insertBefore(node, self.domContainerFolder.firstChild);
+				if (self.dom.folderContainer.firstChild) {
+					self.dom.folderContainer.insertBefore(node, self.dom.folderContainer.firstChild);
 				}
-				else{
-					self.domContainerFolder.appendChild(node);
+				else {
+					self.dom.folderContainer.appendChild(node);
 				}
 				
 				node.folder = self.folderList[i];
 				
-				for (let j = 0; j < node.folder.childList.length; j++){
+				for (let j = 0; j < node.folder.childList.length; j++) {
 					let item = self.itemMap[node.folder.childList[j]];
 					
-					if (!item || (item.parentNode !== self.domList && state)){
+					if (!item || (item.parentNode !== self.dom.gasFileList && state)) {
 						node.folder.childList.splice(j, 1);
 						item.remove();
 						
@@ -921,7 +1099,7 @@ height: 7px;`
 					item.parentFolder = node;
 					node.folder.domChildList.appendChild(item);
 					
-					if (node.folder.staticFolder){
+					if (node.folder.staticFolder) {
 						let domLabel = item.querySelector('div.gwt-Label[title]');
 						
 						domLabel && (domLabel.innerHTML = node.folder.childList[j].replace(/^[^\/]+\//, ''));
@@ -935,13 +1113,13 @@ height: 7px;`
 		saveFolder: function () {
 			let save = [];
 			
-			for (let i = 0; i < Folders.folderList.length; i++){
+			for (let i = 0; i < Folders.folderList.length; i++) {
 				
 				if (Folders.folderList[i].dom.classList.contains('staticFolder')) continue;
 				
 				// establish child item list
 				let child = [];
-				for (let j = 0; j < Folders.folderList[i].childList.length; j++){
+				for (let j = 0; j < Folders.folderList[i].childList.length; j++) {
 					child.push(Folders.folderList[i].childList[j]);
 				}
 				
@@ -954,7 +1132,7 @@ height: 7px;`
 			
 			localStorage.setItem(`appScriptColor-Folders-${Folders.key}`, JSON.stringify(save));
 		},
-		restoreFolder: function(){
+		_restoreFolder: function () {
 			let foldersJSON = localStorage[`appScriptColor-Folders-${asc.folders.key}`] || '[]',
 				children = {};
 			
@@ -966,28 +1144,28 @@ height: 7px;`
 			 *   name: string,
 			 *   files: Array.<string>,
 			 *   state: Boolean
-			 * }>} 
+			 * }>}
 			 */
 			let folders = JSON.parse(foldersJSON);
 			
 			// build map of children
 			let staticFolders = {};
 			
-			for (let i = 0; i < this.domList.childNodes.length; i++){
-				if (this.domList.childNodes[i].classList.contains('asc_folder_container')) continue;
+			for (let i = 0; i < this.dom.gasFileList.childNodes.length; i++) {
+				if (this.dom.gasFileList.childNodes[i].classList.contains('asc_folder_container')) continue;
 				
-				let fileName = this.domList.childNodes[i].getAttribute('aria-label');
-				children[fileName] = this.domList.childNodes[i];
+				let fileName = this.dom.gasFileList.childNodes[i].getAttribute('aria-label');
+				children[fileName] = this.dom.gasFileList.childNodes[i];
 				
 				let res = fileName.split('/');
 				// There are static folders
-				if (res.length > 1){
+				if (res.length > 1) {
 					staticFolders[res[0]] && staticFolders[res[0]].push(fileName) || (staticFolders[res[0]] = [fileName]);
 				}
 			}
 			
 			// build static folder list
-			for (let folder in staticFolders){
+			for (let folder in staticFolders) {
 				
 				/**
 				 * @type {HTMLElement}
@@ -997,17 +1175,17 @@ height: 7px;`
 				domNewFolder.classList.add('staticFolder');
 				
 				this.folderList.push({
-					name:folder,
+					name: folder,
 					dom: domNewFolder,
 					domChildList: domNewFolder.querySelector('.asc_folder_ChildList'),
 					childList: staticFolders[folder],
 					position: this.folderList.length,
-					staticFolder: true,
+					staticFolder: true
 				});
 			}
 			
 			
-			for (let i = 0; i < folders.length; i++){
+			for (let i = 0; i < folders.length; i++) {
 				
 				/**
 				 * @typed {{
@@ -1038,8 +1216,8 @@ height: 7px;`
 				let childList = [];
 				
 				// rebuild whole child list
-				for (let j = 0; j < readFolder['files'].length; j++){
-					let child = children[ readFolder['files'][j] ];
+				for (let j = 0; j < readFolder['files'].length; j++) {
+					let child = children[readFolder['files'][j]];
 					if (!child) continue;
 					
 					childList.push(readFolder['files'][j]);
@@ -1058,6 +1236,7 @@ height: 7px;`
 			// rebuild all list !
 			this.rebuildFolderList(true);
 		},
+		//####
 		
 		createDialog: function (title, message, defaultValue, callBack_OK) {
 			let DOMdialog = document.createElement('div');
@@ -1066,7 +1245,7 @@ height: 7px;`
 			
 			DOMdialog.classList.add('glass_panel', 'asc_glass-panel');
 			DOMdialog.innerHTML =
-`<div class="asc_Dialog maestro-dialog">
+				`<div class="asc_Dialog maestro-dialog">
 	<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAA6UlEQVR42oWRywqCUBCGzwNFm8BF0AWCNj2I+4M3vG/EoGfoPaS1tTJtIRkUFK16hyD7J05iKnTgZ5yZby6ewxiOrusJJLOOYxiGj1zEamAJHZEY1EFN02aIX6EXcQTLCN6pAPZgWZZEoG3bc/gn0SivJuNjDJ1VVS0dx0nDMFzDFuQjvkeR9LMbEhN02wEq0b10XZfspgV+j+/7K4I55x/Y8zzeCWLcAp1SgkkEm6YZ46enLRDBm9g5DoJgiZUysXNeFYh7fIjb2GJ0n+IoGsHPxG1ciKOukQgkiqL0GhOHUAE9mw/z9wXfJTmqxGHESosAAAAASUVORK5CYII=" width="11" height="11" class="gwt-Image dialog-close-image" role="button" tabindex="0" aria-label="Close">
 	<div class="Caption">${title}</div>
 	<div class="rename-box">
@@ -1081,22 +1260,22 @@ height: 7px;`
 	</div>
 </div>`;
 			
-			function onClose(){
+			function onClose() {
 				DOMdialog.remove();
 			}
 			
 			let DOM_OK = DOMdialog.querySelector('.asc_ok'),
 				DOM_Cancel = DOMdialog.querySelector('.asc_cancel');
 			
-			DOMdialog.querySelector('.rename-input').addEventListener('keydown', function(event){
+			DOMdialog.querySelector('.rename-input').addEventListener('keydown', function (event) {
 				// Should do nothing if the key event was already consumed.
 				if (event.defaultPrevented) return;
 				
 				
-				if (event.code === 'Enter'){
+				if (event.code === 'Enter') {
 					DOM_OK.click();
 				}
-				else if (event.code === 'Escape'){
+				else if (event.code === 'Escape') {
 					DOM_Cancel.click();
 				}
 			});
@@ -1116,23 +1295,25 @@ height: 7px;`
 			domPopMenu.classList.add('resource-context-menu', 'asc_popMenu');
 			
 			domPopMenu.innerHTML =
-`<div class="gwt-MenuItem asc_menu_Rename">Rename</div>
+				`<div class="gwt-MenuItem asc_menu_Rename">Rename</div>
 <div class="gwt-MenuItem asc_menu_Delete">Delete</div>`;
 			
 			// Callbacks
-			function onClose(){
-				if (parent.isCreatingPopMenu){
+			function onClose() {
+				if (parent.isCreatingPopMenu) {
 					parent.isCreatingPopMenu = false;
 					return;
 				}
 				domPopMenu.remove();
 				document.removeEventListener('click', onClose);
 			}
-			function onClick(event){
+			
+			function onClick(event) {
 				event.cancelBubble = true;
 			}
+			
 			function menuRename() {
-				Folders.createDialog('Rename Folder', 'Enter new folder name', parent.parentNode.folder.name, function(name){
+				Folders.createDialog('Rename Folder', 'Enter new folder name', parent.parentNode.folder.name, function (name) {
 					if (!name) return;
 					
 					parent.parentNode.folder.name = name;
@@ -1143,17 +1324,18 @@ height: 7px;`
 				
 				onClose();
 			}
-			function menuDelete(){
-				for (let i = 0; i < Folders.folderList.length; i++){
+			
+			function menuDelete() {
+				for (let i = 0; i < Folders.folderList.length; i++) {
 					if (Folders.folderList[i] !== parent.parentNode.folder) continue;
 					
 					Folders.folderList.splice(i, 1);
 					
 					// move all child node back
 					let node = parent.parentNode.querySelector('.asc_folder_ChildList');
-					if (node){
-						for (let j = node.childNodes.length - 1; j > -1; j--){
-							Folders.domList.appendChild(node.childNodes[j]);
+					if (node) {
+						for (let j = node.childNodes.length - 1; j > -1; j--) {
+							Folders.dom.gasFileList.appendChild(node.childNodes[j]);
 						}
 					}
 					
@@ -1177,7 +1359,6 @@ height: 7px;`
 	};
 	
 	asc.folders = Folders;
-	
 	
 	
 	//<editor-fold desc="# Initialization">
