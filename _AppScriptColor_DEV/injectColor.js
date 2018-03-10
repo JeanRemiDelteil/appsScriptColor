@@ -517,6 +517,224 @@ height: 7px;`
 	};
 	
 	
+	class GasFile  {
+		
+		/**
+		 * Init a new file
+		 *
+		 * @param {string} path
+		 * @param {Node | Element} node
+		 */
+		constructor(path, node){
+			this.path = path;
+			this.dom = {
+				main: node
+			};
+			
+			this.name = (/([^\/]+)$/.exec(path) || [])[1] || 'error';
+		}
+		
+		
+		/**
+		 * Return file name
+		 */
+		toString(){
+			return this.name;
+		}
+		
+		// noinspection JSUnusedGlobalSymbols
+		/**
+		 * Return file name
+		 */
+		toJSON(){
+			return this.toString();
+		}
+	}
+	
+	class GasFolder {
+		
+		/**
+		 * Init a new folder
+		 * 
+		 * @param {string} name
+		 */
+		constructor(name){
+			this.name = name;
+			this.parentFolder = null;
+			this.root = null;
+			
+			/** @type {Object.<GasFile | GasFolder>} */
+			this.children = {};
+			
+			/** @type {Array.<GasFile | GasFolder>} */
+			this.orderedChildren = [];
+			
+			/** @type {Object.<HTMLElement>} */
+			this.dom = {
+				main: undefined,
+				title: undefined,
+				childList: undefined,
+			};
+			this._createDOM();
+		}
+		
+		
+		//<editor-fold desc="# Private methods">
+		
+		/**
+		 * Create internal dom structure of the Folder
+		 * 
+		 * @return {HTMLDivElement}
+		 * @private
+		 */
+		_createDOM() {
+			this.dom.main = document.createElement('div');
+			this.dom.main.classList.add('asc_Folder');
+			
+			this.dom.main.innerHTML =
+`<div class="asc_folder_title">${this.name}</div>
+<div class="asc_folder_ChildList"></div>`;
+			
+			this.dom.title = this.dom.main.querySelector('.asc_folder_title');
+			this.dom.childList = this.dom.main.querySelector('.asc_folder_ChildList');
+		}
+		
+		/**
+		 * Sort internal children list by name A-Z
+		 * 
+		 * @private
+		 */
+		_sortChildren() {
+			this.orderedChildren.sort((a, b) => a.name > b.name ? 1 : a.name < b.name ? -1 : 0);
+		}
+		
+		/**
+		 * Set parent folder of this folder
+		 *
+		 * @param {GasFolder} parentFolder
+		 *
+		 * @return {GasFolder}
+		 */
+		_setParent(parentFolder){
+			this.parentFolder = parentFolder;
+			
+			return this;
+		}
+		
+		// </editor-fold>
+		
+		
+		/**
+		 * Add a child, either a folder or a file
+		 *
+		 * @param {GasFolder | GasFile} child
+		 * @param {boolean} [noSort]
+		 */
+		addChild(child, noSort){
+			this.children[child.name] = child;
+			this.orderedChildren.push(child);
+			
+			!noSort && this._sortChildren();
+			
+			(child instanceof GasFolder) && child._setParent(this);
+			
+			return child;
+		}
+		
+		/**
+		 * Test if folder got a child with childName
+		 * and return it
+		 * 
+		 * @param {string} childName
+		 * 
+		 * @return {null | GasFile | GasFolder}
+		 */
+		getChild(childName){
+			return this.children[childName] || null;
+		}
+		
+		/**
+		 * Set root dom
+		 *
+		 * @param {Node | HTMLElement} node
+		 */
+		setRoot(node){
+			// can't set a root to a non-top level folder
+			if (this.parentFolder) return false;
+			
+			// Store rootNode
+			this.root = node;
+			
+			// Put folder in root dom
+			this.root.appendChild(this.dom.main);
+			
+			return this;
+		}
+		
+		
+		/**
+		 * Deep sort folder and all subFolders
+		 */
+		sortAllChildren() {
+			// Sort itself
+			this._sortChildren();
+			
+			// Sort subFolders
+			for (let i = 0; i < this.orderedChildren.length; i++){
+				this.orderedChildren[i] instanceof GasFolder && this.orderedChildren[i].sortAllChildren();
+			}
+		}
+		
+		/**
+		 * Move all children into current folder dom
+		 * 
+		 * If using deepAssign, all sub-folder will get their children in their dom
+		 * 
+		 * @param {boolean} deepAssign
+		 */
+		assignDomChildren(deepAssign) {
+			// clear dom children list
+			this.dom.childList.innerHTML = '';
+			
+			for (let i = 0; i < this.orderedChildren.length; i++){
+				// Append direct child
+				this.dom.childList.appendChild(this.orderedChildren[i].dom.main);
+				
+				// Go through all sub directories
+				deepAssign && this.orderedChildren[i] instanceof GasFolder && this.orderedChildren[i].assignDomChildren(true);
+			}
+		}
+		
+		
+		/**
+		 * Return folder structure as JSON
+		 */
+		toString(){
+			let sub = [];
+			
+			for (let name in this.children){
+				if (this.children[name] instanceof GasFile){
+					sub.push(name);
+				}
+				else{
+					sub.push(JSON.parse(this.children[name].toString()));
+				}
+			}
+			
+			return JSON.stringify({[this.name]: sub});
+		}
+		
+		// noinspection JSUnusedGlobalSymbols
+		/**
+		 * Return folder structure as JSON
+		 */
+		toJSON(){
+			return this.toString();
+		}
+		
+	}
+	
+	
 	let Folders = {
 		selector: {
 			workspace: 'div.workspace',
@@ -682,18 +900,18 @@ height: 7px;`
 		 */
 		initFolders: function (node) {
 			// Init folders
-			this.dom.folderContainer = document.createElement('div');
-			this.dom.folderContainer.classList.add('asc_folder_container');
+			// this.dom.folderContainer = document.createElement('div');
+			// this.dom.folderContainer.classList.add('asc_folder_container');
 			
 			this.dom.gasProjectFiles = node;
 			this.dom.gasFileList = node.querySelector(this.selector.listItem);
 			
 			// Drag & drop listeners
-			this.dom.gasProjectFiles.addEventListener('drop', this.onItemDrop.bind(this));
-			this.dom.gasProjectFiles.addEventListener('dragover', this.onItemDragOver.bind(this));
+			// this.dom.gasProjectFiles.addEventListener('drop', this.onItemDrop.bind(this));
+			// this.dom.gasProjectFiles.addEventListener('dragover', this.onItemDragOver.bind(this));
 			
 			this.rebuildFolderList = this.rebuildFolderList.bind(this);
-			this.onItemDrag = this.onItemDrag.bind(this);
+			// this.onItemDrag = this.onItemDrag.bind(this);
 			
 			// Folder Create Button
 			this.inserNewFolderButton(this.dom.gasProjectFiles);
@@ -728,6 +946,8 @@ height: 7px;`
 			 * @param {MutationRecord[]} mutations
 			 */
 			let mutationCB = mutations => {
+				console.log('re ??');
+				
 				mutations.forEach(mutation => {
 					for (let item in mutation.removedNodes) {
 						if (!mutation.removedNodes.hasOwnProperty(item)) continue;
@@ -739,6 +959,8 @@ height: 7px;`
 						
 						// Make sure to rebuild ONLY if there are no parentNode
 						if (node.classList.contains('asc_folder_container') && !node.parentNode) {
+							console.log('re ?');
+							
 							this.rebuildFolderList(true);
 							
 							break;
@@ -759,8 +981,12 @@ height: 7px;`
 		
 		
 		rebuildFolderList: function(){
+			console.log('REBUILD list');
 			
-			// Get existing children properties
+			this.restoreFolder();
+			
+			
+			/*// Get existing children properties
 			this.getGasItems()
 				.forEach(item => {
 					this.itemMap[item.label] && this.itemMap[item.label] !== item.node && this.itemMap[item.label].remove();
@@ -770,8 +996,7 @@ height: 7px;`
 					// No drag&drop for the moment
 					//item.node.setAttribute('draggable', 'true');
 					//item.node.addEventListener('dragstart', this.onItemDrag);
-				});
-			
+				});*/
 			
 		},
 		restoreFolder: function(){
@@ -780,47 +1005,56 @@ height: 7px;`
 			this.itemMap = {};
 			
 			// build map of children
-			let staticFolders = {};
+			let staticFolders = new GasFolder('');
 			
 			// Get existing children properties
 			this.getGasItems()
-				.forEach(item => {
-					this.itemMap[item.label] = item.node;
+				.forEach(/**@param {GasFile} item */item => {
+					this.itemMap[item.path] = item.node;
 					
-					let res = item.label.split('/');
+					let res = item.path.split('/');
 					
 					// build folders tree
 					let prevName,
 						prevFolder = staticFolders;
+					
 					res.forEach((name, i) => {
+						
+						// root level file
+						if (res.length === 1){
+							prevFolder.addChild(item);
+							
+							return;
+						}
+						
+						// First folder
 						if (!prevName) {
 							prevName = name;
 							
 							return;
 						}
 						
-						// Init folder
-						!prevFolder[prevName] && (prevFolder[prevName] = {});
-						
-						// Move down a folder
-						prevFolder = prevFolder[prevName];
+						// Init folder && Move down a folder
+						prevFolder = prevFolder.getChild(prevName) || prevFolder.addChild(new GasFolder(prevName));
 						
 						// Last name, it's the file name
-						i === res.length - 1 && (prevFolder[name] = true);
+						if (i === res.length - 1){
+							prevFolder.addChild(item);
+						}
 						
 						prevName = name;
 					});
 				});
 			
+			// Sort all folders at once
+			staticFolders.sortAllChildren();
+			staticFolders.assignDomChildren(true);
 			
-			// Build folders
-			function buildFolders(){
-				
-				
-				
-			}
+			staticFolders.setRoot(this.dom.gasFileList);
 			
+			this.dom.folderContainer = staticFolders;
 			
+			console.log(staticFolders);
 			
 			/*
 			// build static folder list
@@ -867,16 +1101,13 @@ height: 7px;`
 				let label = node.getAttribute('aria-label');
 				
 				// save item
-				children.push({
-					label: label,
-					node: node,
-				})
+				children.push(new GasFile(label, node))
 			}
 			
 			// Sort by label A-Z
-			children.sort((a, b) => a.label < b.label
+			children.sort((a, b) => a.name < b.name
 				? -1
-				: (a.label > b.label
+				: (a.name > b.name
 					? 1
 					: 0)
 			);
@@ -885,7 +1116,7 @@ height: 7px;`
 		},
 		
 		
-		//####
+		//#####################
 		dragDropNode: undefined,
 		onItemDrag: function (event) {
 			this.dragDropNode = event.currentTarget;
