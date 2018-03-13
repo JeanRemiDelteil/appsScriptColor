@@ -121,6 +121,7 @@
 					'.resource-context-menu': {color: '{{generalBackGround}}'},
 					
 					// CUSTOM Menu folder
+/*
 					'.asc_FolderAdd': {
 						'background-color': '{{codeBackGround}}',
 						'border': '1px solid {{border}}'
@@ -134,6 +135,7 @@
 					'.asc_Folder:not(.asc_folder_closed)': {
 						'border-bottom': '5px solid {{border}}'
 					}
+*/
 				}
 			},
 			'Darcula': {
@@ -243,6 +245,7 @@
 					'.resource-context-menu': {color: '{{generalBackGround}}'},
 					
 					// CUSTOM Menu folder
+/*
 					'.asc_FolderAdd': {
 						'background-color': '{{codeBackGround}}',
 						'border': '1px solid {{border}}'
@@ -256,6 +259,7 @@
 					'.asc_Folder:not(.asc_folder_closed)': {
 						'border-bottom': '5px solid {{border}}'
 					}
+*/
 				}
 			},
 			'Default': {
@@ -266,6 +270,7 @@
 				},
 				cssRules: {
 					// CUSTOM Menu folder
+/*
 					'.asc_FolderAdd': {
 						'background-color': '{{codeBackGround}}',
 						'border': '1px solid {{border}}'
@@ -279,6 +284,7 @@
 					'.asc_Folder:not(.asc_folder_closed)': {
 						'border-bottom': '5px solid {{border}}'
 					}
+*/
 				}
 			}
 		},
@@ -633,10 +639,16 @@ height: 7px;`
 		 */
 		_createDOM() {
 			this.dom.main = document.createElement('div');
-			this.dom.main.classList.add(GasFolder.CLASS_FOLDER);
+			this.dom.main.classList.add(GasFolder.CLASS_FOLDER, 'asc_opened');
 			
 			this.dom.main.innerHTML =
-`<div class="${GasFolder.CLASS_TITLE}">${this.name}</div>
+`<div class="asc_titleContainer">
+	<div class="asc_folderIcon">
+		<i class="asc_opened material-icons">folder_open</i>
+		<i class="asc_closed material-icons">folder</i>
+	</div>
+	<div class="${GasFolder.CLASS_TITLE}">${this.name}</div>
+</div>
 <div class="${GasFolder.CLASS_CHILDLIST}"></div>`;
 			
 			this.dom.title = this.dom.main.querySelector(`.${GasFolder.CLASS_TITLE}`);
@@ -807,6 +819,10 @@ height: 7px;`
 	
 	class GasRoot extends GasFolder {
 		
+		static get CLASS_ROOT() {
+			return 'asc_FolderRoot';
+		}
+		
 		/**
 		 * Init a new root folder
 		 * 
@@ -814,6 +830,10 @@ height: 7px;`
 		 */
 		constructor(insertNode) {
 			super('');
+			
+			// Update Root classes
+			this.dom.main.classList.remove(GasFolder.CLASS_FOLDER);
+			this.dom.main.classList.add(GasRoot.CLASS_ROOT);
 			
 			/**
 			 * Node that will contain this root Folder
@@ -913,7 +933,7 @@ height: 7px;`
 				let node = this.root.childNodes[i];
 				
 				// Skip if it's our folder container node
-				if (node.classList.contains(GasFolder.CLASS_FOLDER)) continue;
+				if (node === this.dom.main || node.classList.contains(GasFolder.CLASS_FOLDER)) continue;
 				
 				// Get file
 				let file = this._fileMap.get(node);
@@ -1108,8 +1128,101 @@ height: 7px;`
 		 * Folders CSS sheet
 		 */
 		insertCSS: function () {
-			document.head.insertAdjacentHTML('beforeEnd',
-`<style>
+			document.head.insertAdjacentHTML('beforeend',
+`
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+	/* Root */
+	.asc_FolderRoot>.asc_titleContainer{
+		display: none;
+	}
+	
+	/* Folder */
+	.asc_Folder>.asc_titleContainer{
+		display: flex;
+		align-items: center;
+	}
+	.asc_Folder>.asc_titleContainer .asc_folderIcon{
+		font-size: 0;
+		padding: 5px;
+	}
+	.asc_Folder>.asc_titleContainer .asc_folderIcon>.material-icons{
+		font-size: 20px;
+	}
+	
+	.asc_Folder>.asc_titleContainer .asc_closed{
+		display: none;
+	}
+	.asc_Folder:not(.asc_opened)>.asc_titleContainer .asc_closed{
+		display: unset;
+	}
+	.asc_Folder:not(.asc_opened)>.asc_titleContainer .asc_opened{
+		display: none;
+	}
+	
+	.asc_Folder>.asc_folder_ChildList {
+		margin-left: 20px;
+	}
+	
+	
+	/* Items */
+	.project-items-list .item {
+		display: flex;
+		align-items: center;
+		padding: 0!important;
+		border: none!important;
+	}
+	.project-items-list .item:before {
+		content: "insert_drive_file";
+		/*noinspection CssNoGenericFontName*/font-family: 'Material Icons';
+		font-weight: normal;
+		font-style: normal;
+		font-size: 20px;
+		line-height: 1;
+		letter-spacing: normal;
+		text-transform: none;
+		display: inline-block;
+		white-space: nowrap;
+		word-wrap: normal;
+		direction: ltr;
+		-webkit-font-feature-settings: 'liga';
+		-webkit-font-smoothing: antialiased;
+		padding: 5px;
+	}
+	.project-items-list .item img.piece {
+		display: none!important;
+	}
+	.project-items-list .item div.name {
+		flex: auto;
+		padding: 7px 0!important;
+		height: 15px;	}
+	.project-items-list .item .dropdown {
+		opacity: 0!important;
+		margin: 0!important;
+		padding: 0!important;
+		height: 20px;
+		width: 20px;
+	}
+	.project-items-list .item:after {
+		content: "arrow_drop_down";
+		/*noinspection CssNoGenericFontName*/font-family: 'Material Icons';
+		font-weight: normal;
+		font-style: normal;
+		font-size: 20px;
+		line-height: 1;
+		letter-spacing: normal;
+		text-transform: none;
+		display: inline-block;
+		white-space: nowrap;
+		word-wrap: normal;
+		direction: ltr;
+		-webkit-font-feature-settings: 'liga';
+		-webkit-font-smoothing: antialiased;
+		margin-right: 4px;
+	}
+
+/*
 	.asc_FolderAdd_container {
 		padding: 8px;
 		text-align: center;
@@ -1172,6 +1285,7 @@ height: 7px;`
 	.asc_popMenu .gwt-MenuItem:hover {
 		background-color: #efefef;
 	}
+	*/
 </style>`
 			);
 		},
