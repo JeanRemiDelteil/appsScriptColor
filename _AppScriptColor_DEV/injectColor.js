@@ -519,31 +519,44 @@ height: 7px;`
 	
 	class GasFile  {
 		
+		static get SELECTOR_NAME() {
+			return '.name';
+		}
+		
 		/**
 		 * Init a new file
 		 *
 		 * @param {string} path
 		 * @param {Node | Element} node
 		 */
-		constructor(path, node){
+		constructor(node){
 			this.dom = {
-				main: node
+				main: node,
+				name: node.querySelector(GasFile.SELECTOR_NAME)
 			};
 			
 			this.path = '';
 			this.name = '';
 			
-			this.setPath(path);
+			this.updatePath();
 		}
 		
 		/**
 		 * Set File path (and name)
 		 * 
-		 * @param {string} path
+		 * @return {boolean} true if the path changed since last update
 		 */
-		setPath(path) {
+		updatePath() {
+			let path = this.dom.name.getAttribute('title');
+			let pathChanged = this.path !== path;
+			
 			this.path = path;
 			this.name = (/([^\/]+)$/.exec(path) || [])[1] || 'error';
+			
+			// update DOM file name
+			this.dom.name.innerHTML = this.name;
+			
+			return pathChanged;
 		}
 		
 		/**
@@ -902,19 +915,14 @@ height: 7px;`
 				// Skip if it's our folder container node
 				if (node.classList.contains(GasFolder.CLASS_FOLDER)) continue;
 				
-				// The aria-title is not update if the file name changes, use title instead
-				let path = node.querySelector('.name').getAttribute('title');
-				
 				// Get file
 				let file = this._fileMap.get(node);
 				if (!file) {
-					file = new GasFile(path, node);
+					file = new GasFile(node);
 					
 					addedFilesMap.set(node, file);
 				}
-				else if (file.path !== path) {
-					file.setPath(path);
-					
+				else if (file.updatePath()) {
 					renamedFilesMap.set(node, file);
 				}
 				
