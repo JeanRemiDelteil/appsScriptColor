@@ -810,6 +810,26 @@ height: 7px;`
 			this.opened = !this.opened;
 			
 			this.dom.main.classList.toggle('asc_opened', this.opened);
+			
+			// TODO: Debounce calls
+			// TODO: Set calls to depend on folder root 
+			Folders.saveStaticsFolder();
+		}
+		
+		/**
+		 * Return the whole toggle state tree of all subFolders
+		 */
+		getDeepToggleState() {
+			let sub = {};
+			
+			this.children.forEach(item => item instanceof GasFolder && (sub[item.name] = item.getDeepToggleState()[item.name]));
+			
+			return {
+				[this.name]: {
+					open: this.opened,
+					sub: sub
+				}
+			};
 		}
 		
 		
@@ -1070,16 +1090,20 @@ height: 7px;`
 		 * @type {{
 		 *   gasProjectFiles: HTMLElement,
 		 *   gasFileList: HTMLElement,
-		 *   gasRoot: HTMLElement,
 		 * }}
 		 */
 		dom: {},
+		
+		/**
+		 * @type {GasRoot}
+		 */
+		gasStaticRoot: null,
 		
 		// CLASSNAME: {},
 		
 		// folderList: [],
 		// itemMap: {},
-		// key: document.location.pathname.match(/\/([^\/]+?)\/edit/)[1],
+		key: document.location.pathname.match(/\/([^\/]+?)\/edit/)[1],
 		
 		/**
 		 * Wait for a specific node to be added in the DOM by the page
@@ -1345,42 +1369,46 @@ height: 7px;`
 			// Folder Create Button
 			/*this.___inserNewFolderButton(this.dom.gasProjectFiles);*/
 			
-			// Load all folders
-			this.restoreFolder();
-		},
-		
-		/*
-		/!**
-		 * Add the new folder button
-		 * 
-		 * @param {Node} projectFilesNode
-		 *!/
-		___inserNewFolderButton: function(projectFilesNode){
-			let domFolderCreateButton = document.createElement('div');
-			domFolderCreateButton.classList.add('asc_FolderAdd_container');
 			
-			domFolderCreateButton.innerHTML = `<div class="asc_FolderAdd">New Folder</div>`;
-			domFolderCreateButton.querySelector('.asc_FolderAdd')
-				.addEventListener('click', () => {
-					this.createDialog('Create Folder', 'Enter new folder name', '', this.addNewFolder);
-				});
+			// Load all static folders
+			this.gasStaticRoot = new GasRoot(this.dom.gasFileList);
 			
-			// insert Menu button
-			projectFilesNode.insertBefore(domFolderCreateButton, projectFilesNode.firstChild);
 		},
-		*/
 		
 		/**
 		 * Load and init folders
 		 */
-		restoreFolder: function(){
-			
-			// build map of children
-			this.dom.gasRoot = new GasRoot(this.dom.gasFileList) || this.dom.gasRoot;
-			
-			console.log(this.dom.gasRoot);
+		restoreFolder: function(){},
+		
+		/**
+		 * Save statics folder state
+		 */
+		saveStaticsFolder: function () {
+			localStorage.setItem(`appScriptColor-static-Folders-${Folders.key}`, JSON.stringify(this.gasStaticRoot.getDeepToggleState()));
 		},
 		
+		
+		
+		/*
+		 /!**
+		 * Add the new folder button
+		 * 
+		 * @param {Node} projectFilesNode
+		 *!/
+		 ___inserNewFolderButton: function(projectFilesNode){
+		 let domFolderCreateButton = document.createElement('div');
+		 domFolderCreateButton.classList.add('asc_FolderAdd_container');
+		 
+		 domFolderCreateButton.innerHTML = `<div class="asc_FolderAdd">New Folder</div>`;
+		 domFolderCreateButton.querySelector('.asc_FolderAdd')
+		 .addEventListener('click', () => {
+		 this.createDialog('Create Folder', 'Enter new folder name', '', this.addNewFolder);
+		 });
+		 
+		 // insert Menu button
+		 projectFilesNode.insertBefore(domFolderCreateButton, projectFilesNode.firstChild);
+		 },
+		 */
 		
 		//<editor-fold desc="#####################">
 		
