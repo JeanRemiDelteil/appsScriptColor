@@ -594,6 +594,9 @@ height: 7px;`
 		static get CLASS_FOLDER() {
 			return 'asc_Folder';
 		}
+		static get CLASS_TITLE_CONTAINER() {
+			return 'asc_titleContainer';
+		}
 		static get CLASS_TITLE() {
 			return 'asc_folder_title';
 		}
@@ -608,6 +611,7 @@ height: 7px;`
 		 */
 		constructor(name){
 			this.name = name;
+			this.opened = true;
 			
 			/**
 			 * @type {GasFolder}
@@ -622,6 +626,7 @@ height: 7px;`
 			/** @type {{
 			*   main: HTMLElement,
 			*   title: HTMLElement,
+			*   titleContainer: HTMLElement,
 			*   childList: HTMLElement,
 			* }} */
 			this.dom = {};
@@ -642,17 +647,21 @@ height: 7px;`
 			this.dom.main.classList.add(GasFolder.CLASS_FOLDER, 'asc_opened');
 			
 			this.dom.main.innerHTML =
-`<div class="asc_titleContainer">
+`<div class="${GasFolder.CLASS_TITLE_CONTAINER}">
 	<div class="asc_folderIcon">
 		<i class="asc_opened material-icons">folder_open</i>
 		<i class="asc_closed material-icons">folder</i>
 	</div>
-	<div class="${GasFolder.CLASS_TITLE}">${this.name}</div>
+	<div class="${GasFolder.CLASS_TITLE}" title="${this.name}/">${this.name}</div>
 </div>
 <div class="${GasFolder.CLASS_CHILDLIST}"></div>`;
 			
+			this.dom.titleContainer = this.dom.main.querySelector(`.${GasFolder.CLASS_TITLE_CONTAINER}`);
 			this.dom.title = this.dom.main.querySelector(`.${GasFolder.CLASS_TITLE}`);
 			this.dom.childList = this.dom.main.querySelector(`.${GasFolder.CLASS_CHILDLIST}`);
+			
+			// Bind toggle listener
+			this.dom.titleContainer.addEventListener('click', this.toggle.bind(this));
 		}
 		
 		/**
@@ -792,6 +801,17 @@ height: 7px;`
 			// Clear this
 			this._destroy();
 		}
+		
+		
+		/**
+		 * Toggle folder state
+		 */
+		toggle() {
+			this.opened = !this.opened;
+			
+			this.dom.main.classList.toggle('asc_opened', this.opened);
+		}
+		
 		
 		/**
 		 * Return folder structure as JSON
@@ -1134,35 +1154,49 @@ height: 7px;`
 
 <style>
 	/* Root */
-	.asc_FolderRoot>.asc_titleContainer{
+	.asc_FolderRoot>.${GasFolder.CLASS_TITLE_CONTAINER}{
 		display: none;
 	}
 	
 	/* Folder */
-	.asc_Folder>.asc_titleContainer{
+	.asc_Folder>.${GasFolder.CLASS_TITLE_CONTAINER}{
 		display: flex;
 		align-items: center;
+		
+		user-select: none;
 	}
-	.asc_Folder>.asc_titleContainer .asc_folderIcon{
+	.asc_Folder>.${GasFolder.CLASS_TITLE_CONTAINER} .asc_folderIcon{
 		font-size: 0;
 		padding: 5px;
 	}
-	.asc_Folder>.asc_titleContainer .asc_folderIcon>.material-icons{
+	.asc_Folder>.${GasFolder.CLASS_TITLE_CONTAINER} .asc_folderIcon>.material-icons{
 		font-size: 20px;
 	}
 	
-	.asc_Folder>.asc_titleContainer .asc_closed{
+	.asc_Folder>.${GasFolder.CLASS_TITLE_CONTAINER} .asc_closed{
 		display: none;
 	}
-	.asc_Folder:not(.asc_opened)>.asc_titleContainer .asc_closed{
+	.asc_Folder:not(.asc_opened)>.${GasFolder.CLASS_TITLE_CONTAINER} .asc_closed{
 		display: unset;
 	}
-	.asc_Folder:not(.asc_opened)>.asc_titleContainer .asc_opened{
+	.asc_Folder:not(.asc_opened)>.${GasFolder.CLASS_TITLE_CONTAINER} .asc_opened{
 		display: none;
+	}
+	
+	.asc_Folder>.${GasFolder.CLASS_TITLE_CONTAINER} .asc_folder_title {
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+		flex: auto;
+		margin-right: 5px;
+		padding: 7px 0;
 	}
 	
 	.asc_Folder>.asc_folder_ChildList {
 		margin-left: 20px;
+	}
+	.asc_Folder:not(.asc_opened)>.asc_folder_ChildList{
+		display: none;
 	}
 	
 	
