@@ -547,6 +547,14 @@ height: 7px;`
 		}
 		
 		/**
+		 * Call before deleting all link to this file
+		 */
+		destroy() {
+			delete this.dom.main;
+		}
+		
+		
+		/**
 		 * Return file name
 		 */
 		toString(){
@@ -581,20 +589,23 @@ height: 7px;`
 		 */
 		constructor(name){
 			this.name = name;
+			
+			/**
+			 * @type {GasFolder}
+			 */
 			this.parentFolder = null;
 			
-			/** @type {Object.<GasFile | GasFolder>} */
-			this.children = {};
+			/** @type {Set<GasFile | GasFolder>} */
+			this.children = new Set();
+			/** @type {Map<string, GasFile | GasFolder>} */
+			this.itemNameMap = new Map();
 			
-			/** @type {Array.<GasFile | GasFolder>} */
-			this.orderedChildren = [];
-			
-			/** @type {Object.<HTMLElement>} */
-			this.dom = {
-				main: undefined,
-				title: undefined,
-				childList: undefined,
-			};
+			/** @type {{
+			*   main: HTMLElement,
+			*   title: HTMLElement,
+			*   childList: HTMLElement,
+			* }} */
+			this.dom = {};
 			this._createDOM();
 		}
 		
@@ -625,7 +636,14 @@ height: 7px;`
 		 * @private
 		 */
 		_sortChildren() {
-			this.orderedChildren.sort((a, b) => a.name > b.name ? 1 : a.name < b.name ? -1 : 0);
+			this.children = new Set(Array.from(this.children.values()).sort((a, b) =>
+				a.name < b.name
+					? -1
+					: (a.name > b.name
+						? 1
+						: 0
+				))
+			);
 		}
 		
 		/**
@@ -635,11 +653,28 @@ height: 7px;`
 		 *
 		 * @return {GasFolder}
 		 */
-		_setParent(parentFolder){
+		_setParent(parentFolder) {
 			this.parentFolder = parentFolder;
 			
 			return this;
 		}
+		
+		/**
+		 * Cleanly remove any ref this folder could keep
+		 * 
+		 * @private
+		 */
+		_destroy() {
+			delete this.parentFolder;
+			delete this.children;
+			delete this.itemNameMap;
+			
+			this.dom.main && this.dom.main.parentElement && this.dom.main.parentElement.removeChild(this.dom.main);
+			
+			delete this.dom.main;
+			delete this.dom.title;
+			delete this.dom.childList;
+		};
 		
 		// </editor-fold>
 		
@@ -648,13 +683,11 @@ height: 7px;`
 		 * Add a child, either a folder or a file
 		 *
 		 * @param {GasFolder | GasFile} child
-		 * @param {boolean} [noSort]
 		 */
-		addChild(child, noSort){
-			this.children[child.name] = child;
-			this.orderedChildren.push(child);
+		addChild(child) {
+			this.children.add(child);
 			
-			!noSort && this._sortChildren();
+			this.itemNameMap.set(child.name, child);
 			
 			(child instanceof GasFolder) && child._setParent(this);
 			
@@ -670,7 +703,20 @@ height: 7px;`
 		 * @return {null | GasFile | GasFolder}
 		 */
 		getChild(childName){
-			return this.children[childName] || null;
+			return this.itemNameMap.get(childName) || null;
+		}
+		
+		/**
+		 * Remove a given child from this folder
+		 * 
+		 * @param {GasFile | GasFolder} child
+		 */
+		removeChild(child) {
+			this.children.delete(child);
+			this.itemNameMap.delete(child.name);
+			
+			// If child node is valid and in this folder, remove it from current folder
+			child.dom.main && child.dom.main.parentElement === this.dom.main && this.dom.main.removeChild(child.dom.main);
 		}
 		
 		
@@ -682,9 +728,7 @@ height: 7px;`
 			this._sortChildren();
 			
 			// Sort subFolders
-			for (let i = 0; i < this.orderedChildren.length; i++){
-				this.orderedChildren[i] instanceof GasFolder && this.orderedChildren[i].sortAllChildren();
-			}
+			this.children.forEach(item => item instanceof GasFolder && item.sortAllChildren());
 		}
 		
 		/**
@@ -698,15 +742,31 @@ height: 7px;`
 			// clear dom children list
 			this.dom.childList.innerHTML = '';
 			
-			for (let i = 0; i < this.orderedChildren.length; i++){
+			this.children.forEach(item => {
 				// Append direct child
-				this.dom.childList.appendChild(this.orderedChildren[i].dom.main);
+				this.dom.childList.appendChild(item.dom.main);
 				
 				// Go through all sub directories
-				deepAssign && this.orderedChildren[i] instanceof GasFolder && this.orderedChildren[i].assignDomChildren(true);
-			}
+				deepAssign && item instanceof GasFolder && item.assignDomChildren(true);
+			});
 		}
 		
+		/**
+		 * Remove all empty child folders
+		 */
+		clearEmptyFolder() {
+			// Run in all sub-folders
+			this.children.forEach(item => item instanceof GasFolder && item.clearEmptyFolder());
+			
+			// Now check this folder, if it's not root
+			if (this instanceof GasRoot || this.children.size) return;
+			
+			// Delete this folder from parentFolder
+			this.parentFolder && this.parentFolder.removeChild(this);
+			
+			// Clear this
+			this._destroy();
+		}
 		
 		/**
 		 * Return folder structure as JSON
@@ -714,14 +774,10 @@ height: 7px;`
 		toString(){
 			let sub = [];
 			
-			for (let name in this.children){
-				if (this.children[name] instanceof GasFile){
-					sub.push(name);
-				}
-				else{
-					sub.push(JSON.parse(this.children[name].toString()));
-				}
-			}
+			this.children.forEach(item => sub.push(item instanceof GasFile
+				? item.name
+				: JSON.parse(item.toString())
+			));
 			
 			return JSON.stringify({[this.name]: sub});
 		}
@@ -747,9 +803,27 @@ height: 7px;`
 			super('');
 			
 			/**
+			 * Node that will contain this root Folder
+			 * 
 			 * @type {Node}
 			 */
 			this.root = null;
+			
+			/**
+			 * Link between files and folder
+			 * 
+			 * @type {Map<GasFile, GasFolder>}
+			 * @private
+			 */
+			this._fileFolderMap = new Map();
+			
+			/**
+			 * All node / GasFile link
+			 * 
+			 * @type {Map<Node, GasFile>}
+			 * @private
+			 */
+			this._fileMap = new Map();
 			
 			this._setRoot(insertNode);
 			this._monitorContainer();
@@ -763,11 +837,13 @@ height: 7px;`
 		/**
 		 * Set root dom
 		 *
-		 * @param {Node | HTMLElement} node
+		 * @param {Node | HTMLElement} [node]
 		 */
 		_setRoot(node) {
+			if (!node && !this.root) return;
+			
 			// Store rootNode
-			this.root = node;
+			node && (this.root = node);
 			
 			// Put folder in root dom
 			this.root.appendChild(this.dom.main);
@@ -806,16 +882,12 @@ height: 7px;`
 		 * Get all GAS files item with their name
 		 *
 		 * @return {{
-		 *   sorted: Array.<GasFile>,
-		 *   removed: Map.<GasFile>,
-		 *   added: Map.<GasFile>,
-		 *   renamed: Map.<GasFile>,
+		 *   removed: Map<Node, GasFile>,
+		 *   added: Map<Node, GasFile>,
+		 *   renamed: Map<Node, GasFile>,
 		 * }}
 		 */
 		_getGasItems() {
-			// Get existing map, or init it
-			this._fileMap = this._fileMap || new Map();
-			
 			// Duplicate map to detect possibly removed files
 			let removedFilesMap = new Map(this._fileMap);
 			let addedFilesMap = new Map();
@@ -830,7 +902,8 @@ height: 7px;`
 				// Skip if it's our folder container node
 				if (node.classList.contains(GasFolder.CLASS_FOLDER)) continue;
 				
-				let path = node.getAttribute('aria-label');
+				// The aria-title is not update if the file name changes, use title instead
+				let path = node.querySelector('.name').getAttribute('title');
 				
 				// Get file
 				let file = this._fileMap.get(node);
@@ -852,12 +925,11 @@ height: 7px;`
 				removedFilesMap.delete(node);
 			}
 			
-			// Sort by label A-Z
-			let sortedFileArray = Array.from(this._fileMap.values()).sort((a, b) => a.name < b.name ? -1 : (a.name > b.name ? 1 : 0));
+			// clean fileMap from removed nodes
+			removedFilesMap.forEach(file => this._fileMap.delete(file.dom.main));
 			
 			
 			return {
-				sorted: sortedFileArray,
 				removed: removedFilesMap,
 				added: addedFilesMap,
 				renamed: renamedFilesMap,
@@ -875,57 +947,66 @@ height: 7px;`
 			console.log('update child list');
 			
 			// Get existing children properties
-			let {sorted, removed, added, renamed} = this._getGasItems();
+			let {removed, added, renamed} = this._getGasItems();
 			
-			console.log({
-				sorted,
-				removed,
-				added,
-				renamed,
+			// Quick quit if no changes
+			if (!removed.size && !added.size && !renamed.size) {
+				this.assignDomChildren(true);
+				this._setRoot();
+				
+				return;
+			}
+			
+			// Renamed nodes
+			renamed.forEach(/**@param {GasFile} file */file => {
+				added.set(file.dom.main, file);
+				removed.set(file.dom.main, file);
 			});
 			
+			// Removed nodes
+			removed.forEach(/**@param {GasFile} file */file => {
+				// Get file folder
+				let folder = this._fileFolderMap.get(file);
+				
+				// Should never happens
+				if (!folder){
+					console.log('** WARNING: NO FOLDER **');
+					
+					return;
+				}
+				
+				folder.removeChild(file);
+				this._fileFolderMap.delete(file);
+			});
 			
-			sorted.forEach(/**@param {GasFile} item */item => {
+			// Added nodes
+			added.forEach(/**@param {GasFile} file */file => {
+				// build folders tree needed for this file path
+				let currentFolder = this;
+				let splitPath = file.path.split('/');
 				
-				// build folders tree
-				let prevName,
-					prevFolder = this;
-				
-				let res = item.path.split('/');
-				res.forEach((name, i) => {
-					
-					// root level file
-					if (res.length === 1){
-						prevFolder.addChild(item);
-						
-						return;
-					}
-					
-					// First folder
-					if (!prevName) {
-						prevName = name;
+				splitPath.forEach((name, i) => {
+					// Last name -> file name, add a file in current folder
+					if (i === splitPath.length - 1){
+						currentFolder.addChild(file);
+						this._fileFolderMap.set(file, currentFolder);
 						
 						return;
 					}
 					
 					// Init folder && Move down a folder
-					prevFolder = prevFolder.getChild(prevName) || prevFolder.addChild(new GasFolder(prevName));
-					
-					// Last name, it's the file name
-					if (i === res.length - 1){
-						prevFolder.addChild(item);
-					}
-					
-					prevName = name;
+					currentFolder = currentFolder.getChild(name) || currentFolder.addChild(new GasFolder(name));
 				});
 			});
 			
-			
+			// Clear empty node if we removed some
+			removed.size && this.clearEmptyFolder();
 			
 			// Sort all folders at once
 			this.sortAllChildren();
 			this.assignDomChildren(true);
 			
+			this._setRoot();
 		}
 		
 	}
@@ -938,21 +1019,19 @@ height: 7px;`
 			listItem: '.project-items-list'
 		},
 		/**
-		 * @type {Object.<HTMLElement>}
+		 * @type {{
+		 *   gasProjectFiles: HTMLElement,
+		 *   gasFileList: HTMLElement,
+		 *   gasRoot: HTMLElement,
+		 * }}
 		 */
-		dom: {
-			gasProjectFiles: undefined,
-			gasFileList: undefined,
-			gasRoot: undefined,
-		},
+		dom: {},
 		
-		CLASSNAME: {
-			folder: 'asc_Folder',
-		},
+		// CLASSNAME: {},
 		
-		folderList: [],
-		itemMap: {},
-		key: document.location.pathname.match(/\/([^\/]+?)\/edit/)[1],
+		// folderList: [],
+		// itemMap: {},
+		// key: document.location.pathname.match(/\/([^\/]+?)\/edit/)[1],
 		
 		/**
 		 * Wait for a specific node to be added in the DOM by the page
@@ -1103,25 +1182,24 @@ height: 7px;`
 			this.dom.gasFileList = node.querySelector(this.selector.listItem);
 			
 			// Drag & drop listeners
-			// this.dom.gasProjectFiles.addEventListener('drop', this.onItemDrop.bind(this));
-			// this.dom.gasProjectFiles.addEventListener('dragover', this.onItemDragOver.bind(this));
-			
-			this.rebuildFolderList = this.rebuildFolderList.bind(this);
-			// this.onItemDrag = this.onItemDrag.bind(this);
+			/*this.dom.gasProjectFiles.addEventListener('drop', this.onItemDrop.bind(this));
+			this.dom.gasProjectFiles.addEventListener('dragover', this.onItemDragOver.bind(this));
+			this.onItemDrag = this.onItemDrag.bind(this);*/
 			
 			// Folder Create Button
-			this.inserNewFolderButton(this.dom.gasProjectFiles);
+			/*this.___inserNewFolderButton(this.dom.gasProjectFiles);*/
 			
 			// Load all folders
 			this.restoreFolder();
 		},
 		
-		/**
+		/*
+		/!**
 		 * Add the new folder button
 		 * 
 		 * @param {Node} projectFilesNode
-		 */
-		inserNewFolderButton: function(projectFilesNode){
+		 *!/
+		___inserNewFolderButton: function(projectFilesNode){
 			let domFolderCreateButton = document.createElement('div');
 			domFolderCreateButton.classList.add('asc_FolderAdd_container');
 			
@@ -1134,6 +1212,7 @@ height: 7px;`
 			// insert Menu button
 			projectFilesNode.insertBefore(domFolderCreateButton, projectFilesNode.firstChild);
 		},
+		*/
 		
 		/**
 		 * Load and init folders
@@ -1144,90 +1223,6 @@ height: 7px;`
 			this.dom.gasRoot = new GasRoot(this.dom.gasFileList) || this.dom.gasRoot;
 			
 			console.log(this.dom.gasRoot);
-			
-			/*
-			// build static folder list
-			for (let folder in staticFolders) {
-				
-				/!**
-				 * @type {HTMLElement}
-				 *!/
-				let domNewFolder = this.newFolder(folder);
-				
-				domNewFolder.classList.add('staticFolder');
-				
-				this.folderList.push({
-					name: folder,
-					dom: domNewFolder,
-					domChildList: domNewFolder.querySelector('.asc_folder_ChildList'),
-					childList: staticFolders[folder],
-					position: this.folderList.length,
-					staticFolder: true
-				});
-			}
-			*/
-		},
-		
-		rebuildFolderList: function(){
-			console.log('REBUILD list');
-			
-			/*// Get existing children properties
-			 this.getGasItems()
-			 .forEach(item => {
-			 this.itemMap[item.label] && this.itemMap[item.label] !== item.node && this.itemMap[item.label].remove();
-			 
-			 this.itemMap[item.label] = item.node;
-			 
-			 // No drag&drop for the moment
-			 //item.node.setAttribute('draggable', 'true');
-			 //item.node.addEventListener('dragstart', this.onItemDrag);
-			 });*/
-			
-		},
-		
-		/**
-		 * Get all GAS files item with their name
-		 * 
-		 * @return {Array.<{label: string, node: Node}>}
-		 */
-		getGasItems: function () {
-			// Get existing map, or init it
-			this._fileMap = this._fileMap || new Map();
-			
-			// Duplicate map to detect possibly removed files
-			let removedFilesMap = new Map(this._fileMap);
-			
-			for (let i = 0, numChildren = this.dom.gasFileList.childNodes.length; i < numChildren; i++) {
-				/**
-				 * @type {HTMLElement}
-				 */
-				let node = this.dom.gasFileList.childNodes[i];
-				
-				// Skip if it's our folder container node
-				if (node.classList.contains(this.CLASSNAME.folder)) continue;
-				
-				// build a node map from item fileName
-				let label = node.getAttribute('aria-label');
-				
-				let file = this._fileMap.get(node) || new GasFile(label, node);
-				
-				// save item
-				this._fileMap.set(node, file);
-				
-				// Remove from deleted file map
-				removedFilesMap.delete(node);
-			}
-			
-			
-			
-			
-			// Sort by label A-Z
-			return Array.from(this._fileMap.values()).sort((a, b) => a.name < b.name
-				? -1
-				: (a.name > b.name
-					? 1
-					: 0)
-			);
 		},
 		
 		
