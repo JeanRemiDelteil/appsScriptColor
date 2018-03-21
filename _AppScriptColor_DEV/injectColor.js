@@ -660,8 +660,8 @@ height: 7px;`
 			this.dom.title = this.dom.main.querySelector(`.${GasFolder.CLASS_TITLE}`);
 			this.dom.childList = this.dom.main.querySelector(`.${GasFolder.CLASS_CHILDLIST}`);
 			
-			// Bind toggle listener
-			this.dom.titleContainer.addEventListener('click', this.toggle.bind(this));
+			// Bind toggle listener, avoid passing event argument to toggle() 
+			this.dom.titleContainer.addEventListener('click', () => this.toggle());
 		}
 		
 		/**
@@ -708,7 +708,7 @@ height: 7px;`
 			delete this.dom.main;
 			delete this.dom.title;
 			delete this.dom.childList;
-		};
+		}
 		
 		// </editor-fold>
 		
@@ -804,16 +804,18 @@ height: 7px;`
 		
 		
 		/**
-		 * Toggle folder state
+		 * Toggle folder open
+		 * 
+		 * @param {boolean} [open]
 		 */
-		toggle() {
-			this.opened = !this.opened;
+		toggle(open) {
+			this.opened = open !== undefined ? open : !this.opened;
 			
 			this.dom.main.classList.toggle('asc_opened', this.opened);
 			
-			// TODO: Debounce calls
-			// TODO: Set calls to depend on folder root 
-			Folders.saveStaticsFolder();
+			// TODO: Set calls to depend on folder root
+			// only save if open is not undefined
+			open === undefined && Folders.saveStaticsFolder();
 		}
 		
 		/**
@@ -830,6 +832,26 @@ height: 7px;`
 					sub: sub
 				}
 			};
+		}
+		
+		/**
+		 * Set state for all sub folder at once
+		 *
+		 * @param {Object} state
+		 */
+		setDeepToggleState(state) {
+			let folderState = state[this.name];
+			if (!folderState) return;
+			
+			this.toggle(folderState.open);
+			
+			this.children.forEach(item => {
+				let subFolderState = folderState.sub[item.name];
+				
+				subFolderState && item.setDeepToggleState({
+					[item.name]: subFolderState
+				})
+			});
 		}
 		
 		
@@ -1355,38 +1377,41 @@ height: 7px;`
 		 */
 		initFolders: function (node) {
 			// Init folders
-			// this.dom.folderContainer = document.createElement('div');
-			// this.dom.folderContainer.classList.add('asc_folder_container');
 			
 			this.dom.gasProjectFiles = node;
 			this.dom.gasFileList = node.querySelector(this.selector.listItem);
 			
-			// Drag & drop listeners
-			/*this.dom.gasProjectFiles.addEventListener('drop', this.onItemDrop.bind(this));
-			this.dom.gasProjectFiles.addEventListener('dragover', this.onItemDragOver.bind(this));
-			this.onItemDrag = this.onItemDrag.bind(this);*/
-			
-			// Folder Create Button
-			/*this.___inserNewFolderButton(this.dom.gasProjectFiles);*/
-			
-			
 			// Load all static folders
 			this.gasStaticRoot = new GasRoot(this.dom.gasFileList);
-			
+			this.gasStaticRoot.setDeepToggleState(this.loadStaticsFolder());
 		},
 		
-		/**
-		 * Load and init folders
-		 */
-		restoreFolder: function(){},
 		
 		/**
 		 * Save statics folder state
+		 * auto-debounce itself 
 		 */
 		saveStaticsFolder: function () {
-			localStorage.setItem(`appScriptColor-static-Folders-${Folders.key}`, JSON.stringify(this.gasStaticRoot.getDeepToggleState()));
+			clearTimeout(this._timePut_saveStaticFolders);
+			
+			this._timePut_saveStaticFolders = setTimeout(() => {
+				localStorage.setItem(`appScriptColor-static-Folders-${Folders.key}`, JSON.stringify(this.gasStaticRoot.getDeepToggleState()));
+			}, 500);
 		},
 		
+		/**
+		 * Load statics folder state
+		 */
+		loadStaticsFolder: function () {
+			let state;
+			
+			try{
+				state = JSON.parse(localStorage.getItem(`appScriptColor-static-Folders-${Folders.key}`));
+			}
+			catch(e) {}
+			
+			return state || {};
+		},
 		
 		
 		/*
