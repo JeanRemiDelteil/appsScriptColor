@@ -121,21 +121,21 @@
 					'.resource-context-menu': {color: '{{generalBackGround}}'},
 					
 					// CUSTOM Menu folder
-/*
-					'.asc_FolderAdd': {
-						'background-color': '{{codeBackGround}}',
-						'border': '1px solid {{border}}'
-					},
-					'.asc_FolderAdd:hover': {
-						'background-color': '{{listItemBackgroundSelected}}'
-					},
-					'.asc_folder_container': {
-						'border-bottom': '5px solid {{border}}'
-					},
-					'.asc_Folder:not(.asc_folder_closed)': {
-						'border-bottom': '5px solid {{border}}'
-					}
-*/
+					/*
+					 '.asc_FolderAdd': {
+					 'background-color': '{{codeBackGround}}',
+					 'border': '1px solid {{border}}'
+					 },
+					 '.asc_FolderAdd:hover': {
+					 'background-color': '{{listItemBackgroundSelected}}'
+					 },
+					 '.asc_folder_container': {
+					 'border-bottom': '5px solid {{border}}'
+					 },
+					 '.asc_Folder:not(.asc_folder_closed)': {
+					 'border-bottom': '5px solid {{border}}'
+					 }
+					 */
 				}
 			},
 			'Darcula': {
@@ -245,21 +245,21 @@
 					'.resource-context-menu': {color: '{{generalBackGround}}'},
 					
 					// CUSTOM Menu folder
-/*
-					'.asc_FolderAdd': {
-						'background-color': '{{codeBackGround}}',
-						'border': '1px solid {{border}}'
-					},
-					'.asc_FolderAdd:hover': {
-						'background-color': '{{listItemBackgroundSelected}}'
-					},
-					'.asc_folder_container': {
-						'border-bottom': '5px solid {{border}}'
-					},
-					'.asc_Folder:not(.asc_folder_closed)': {
-						'border-bottom': '5px solid {{border}}'
-					}
-*/
+					/*
+					 '.asc_FolderAdd': {
+					 'background-color': '{{codeBackGround}}',
+					 'border': '1px solid {{border}}'
+					 },
+					 '.asc_FolderAdd:hover': {
+					 'background-color': '{{listItemBackgroundSelected}}'
+					 },
+					 '.asc_folder_container': {
+					 'border-bottom': '5px solid {{border}}'
+					 },
+					 '.asc_Folder:not(.asc_folder_closed)': {
+					 'border-bottom': '5px solid {{border}}'
+					 }
+					 */
 				}
 			},
 			'Default': {
@@ -270,21 +270,21 @@
 				},
 				cssRules: {
 					// CUSTOM Menu folder
-/*
-					'.asc_FolderAdd': {
-						'background-color': '{{codeBackGround}}',
-						'border': '1px solid {{border}}'
-					},
-					'.asc_FolderAdd:hover': {
-						'background-color': '{{listItemBackgroundSelected}}'
-					},
-					'.asc_folder_container': {
-						'border-bottom': '5px solid {{border}}'
-					},
-					'.asc_Folder:not(.asc_folder_closed)': {
-						'border-bottom': '5px solid {{border}}'
-					}
-*/
+					/*
+					 '.asc_FolderAdd': {
+					 'background-color': '{{codeBackGround}}',
+					 'border': '1px solid {{border}}'
+					 },
+					 '.asc_FolderAdd:hover': {
+					 'background-color': '{{listItemBackgroundSelected}}'
+					 },
+					 '.asc_folder_container': {
+					 'border-bottom': '5px solid {{border}}'
+					 },
+					 '.asc_Folder:not(.asc_folder_closed)': {
+					 'border-bottom': '5px solid {{border}}'
+					 }
+					 */
 				}
 			}
 		},
@@ -548,8 +548,8 @@ height: 7px;`
 		}
 		
 		/**
-		 * Set File path (and name)
-		 * 
+		 * Set File path (and name) and return if it changed since last update
+		 *
 		 * @return {boolean} true if the path changed since last update
 		 */
 		updatePath() {
@@ -606,7 +606,7 @@ height: 7px;`
 		
 		/**
 		 * Init a new folder
-		 * 
+		 *
 		 * @param {string} name
 		 */
 		constructor(name){
@@ -638,7 +638,7 @@ height: 7px;`
 		
 		/**
 		 * Create internal dom structure of the Folder
-		 * 
+		 *
 		 * @return {HTMLDivElement}
 		 * @private
 		 */
@@ -647,7 +647,7 @@ height: 7px;`
 			this.dom.main.classList.add(GasFolder.CLASS_FOLDER, 'asc_opened');
 			
 			this.dom.main.innerHTML =
-`<div class="${GasFolder.CLASS_TITLE_CONTAINER}">
+				`<div class="${GasFolder.CLASS_TITLE_CONTAINER}">
 	<div class="asc_folderIcon">
 		<i class="asc_opened material-icons">folder_open</i>
 		<i class="asc_closed material-icons">folder</i>
@@ -666,7 +666,7 @@ height: 7px;`
 		
 		/**
 		 * Sort internal children list by name A-Z
-		 * 
+		 *
 		 * @private
 		 */
 		_sortChildren() {
@@ -695,7 +695,7 @@ height: 7px;`
 		
 		/**
 		 * Cleanly remove any ref this folder could keep
-		 * 
+		 *
 		 * @private
 		 */
 		_destroy() {
@@ -731,9 +731,9 @@ height: 7px;`
 		/**
 		 * Test if folder got a child with childName
 		 * and return it
-		 * 
+		 *
 		 * @param {string} childName
-		 * 
+		 *
 		 * @return {null | GasFile | GasFolder}
 		 */
 		getChild(childName){
@@ -742,7 +742,7 @@ height: 7px;`
 		
 		/**
 		 * Remove a given child from this folder
-		 * 
+		 *
 		 * @param {GasFile | GasFolder} child
 		 */
 		removeChild(child) {
@@ -767,9 +767,9 @@ height: 7px;`
 		
 		/**
 		 * Move all children into current folder dom
-		 * 
+		 *
 		 * If using deepAssign, all sub-folder will get their children in their dom
-		 * 
+		 *
 		 * @param {boolean} deepAssign
 		 */
 		assignDomChildren(deepAssign) {
@@ -805,7 +805,7 @@ height: 7px;`
 		
 		/**
 		 * Toggle folder open
-		 * 
+		 *
 		 * @param {boolean} [open]
 		 */
 		toggle(open) {
@@ -879,6 +879,86 @@ height: 7px;`
 		
 	}
 	
+	class GasVirtualFolder extends GasFolder {
+		
+		static get NAME() {
+			return '## Virtual_Folders';
+		}
+		
+		/**
+		 * Init the virtual folder
+		 * (there should only be one per root folder instance)
+		 *
+		 * @param {Array<{
+		 *   name: string,
+		 *   state: boolean,
+		 *   files: Array<string>
+		 * }>} virtualList
+		 */
+		constructor(virtualList) {
+			super(GasVirtualFolder.NAME);
+			
+			this._processVirtualList(virtualList);
+		}
+		
+		
+		//<editor-fold desc="# Private methods">
+		
+		/**
+		 * Process virtual folder list to ease file discovery
+		 *
+		 * @param {Array<{
+		 *   name: string,
+		 *   state: boolean,
+		 *   files: Array<string>
+		 * }>} virtualList
+		 *
+		 * @return
+		 *
+		 * @private
+		 */
+		_processVirtualList(virtualList) {
+			this._vList= new Map();
+			
+			virtualList.forEach(folder => {
+				let currentFolder = this.getChild(folder.name) || this.addChild(new GasFolder(folder.name));
+				
+				// assign folder to fileName
+				folder.files.forEach(file => this._vList.set(file, currentFolder));
+			});
+		}
+		
+		//</editor-fold>
+		
+		
+		/**
+		 * Check if given file is in a vFolder
+		 *
+		 * @param {GasFile} file
+		 *
+		 * @return {boolean}
+		 */
+		is_vFile(file) {
+			return this._vList.has(file.name);
+		}
+		
+		/**
+		 * Check if given file is in a vFolder
+		 *
+		 * @param {GasFile} file
+		 *
+		 * @return {GasFolder}
+		 */
+		addFile(file) {
+			let folder = this._vList.get(file.name) || null;
+			
+			folder && folder.addChild(file);
+			
+			return folder;
+		}
+		
+	}
+	
 	class GasRoot extends GasFolder {
 		
 		static get CLASS_ROOT() {
@@ -887,7 +967,7 @@ height: 7px;`
 		
 		/**
 		 * Init a new root folder
-		 * 
+		 *
 		 * @param {Node | HTMLElement} insertNode
 		 */
 		constructor(insertNode) {
@@ -899,14 +979,14 @@ height: 7px;`
 			
 			/**
 			 * Node that will contain this root Folder
-			 * 
+			 *
 			 * @type {Node}
 			 */
 			this.root = null;
 			
 			/**
 			 * Link between files and folder
-			 * 
+			 *
 			 * @type {Map<GasFile, GasFolder>}
 			 * @private
 			 */
@@ -914,7 +994,7 @@ height: 7px;`
 			
 			/**
 			 * All node / GasFile link
-			 * 
+			 *
 			 * @type {Map<Node, GasFile>}
 			 * @private
 			 */
@@ -923,7 +1003,7 @@ height: 7px;`
 			this._setRoot(insertNode);
 			this._monitorContainer();
 			
-			this.updateChildList();
+			this._updateChildList();
 		}
 		
 		
@@ -948,7 +1028,7 @@ height: 7px;`
 		
 		/**
 		 * Set up a mutation Observer on the root node to detect GAS UI changes
-		 * 
+		 *
 		 * @private
 		 */
 		_monitorContainer() {
@@ -957,10 +1037,8 @@ height: 7px;`
 			 * @param {MutationRecord[]} mutations
 			 */
 			let mutationCB = mutations => {
-				console.log('Root node Mutations detected');
-				
 				// Just check on mutation if our root has no parent --> means GAS UI rebuilt file list
-				!this.dom.main.parentNode && this.updateChildList();
+				!this.dom.main.parentNode && this._updateChildList();
 			};
 			
 			let observer = new MutationObserver(mutationCB);
@@ -1026,18 +1104,21 @@ height: 7px;`
 			};
 		}
 		
-		//</editor-fold>
 		
 		/**
 		 * Update root children list
 		 *
+		 * @param {boolean} [forceUpdate]
+		 *
 		 * @private
 		 */
-		updateChildList() {
-			console.log('update child list');
-			
+		_updateChildList(forceUpdate) {
 			// Get existing children properties
-			let {removed, added, renamed} = this._getGasItems();
+			let {removed, added, renamed} = !forceUpdate && this._getGasItems() || {
+				renamed: new Map(),
+				removed: new Map(this._fileMap),
+				added: new Map(this._fileMap),
+			};
 			
 			// Quick quit if no changes
 			if (!removed.size && !added.size && !renamed.size) {
@@ -1078,6 +1159,15 @@ height: 7px;`
 				splitPath.forEach((name, i) => {
 					// Last name -> file name, add a file in current folder
 					if (i === splitPath.length - 1){
+						
+						// Check for virtual folder for First level files
+						if (this.virtualFolder && currentFolder === this && this.virtualFolder.is_vFile(file)){
+							let folderTarget = this.virtualFolder.addFile(file);
+							this._fileFolderMap.set(file, folderTarget);
+							
+							return;
+						}
+						
 						currentFolder.addChild(file);
 						this._fileFolderMap.set(file, currentFolder);
 						
@@ -1097,6 +1187,29 @@ height: 7px;`
 			this.assignDomChildren(true);
 			
 			this._setRoot();
+		}
+		
+		
+		//</editor-fold>
+		
+		
+		/**
+		 * Add a virtual special folder, for compatibility with the old layer
+		 * This new virtual folder will not allow adding new folder, nor moving files between folder
+		 *
+		 * If a file is in a static folder, it can't be in a virtual folder.
+		 * Only first level files can be in virtual folder
+		 *
+		 * @param {Array<{
+		 *   name: string,
+		 *   state: boolean,
+		 *   files: Array<string>
+		 * }>} virtualFolders
+		 */
+		setUpVirtualFolder(virtualFolders) {
+			this.virtualFolder = this.getChild(GasVirtualFolder.NAME) || this.addChild(new GasVirtualFolder(virtualFolders));
+			
+			this._updateChildList(true);
 		}
 		
 	}
@@ -1121,10 +1234,6 @@ height: 7px;`
 		 */
 		gasStaticRoot: null,
 		
-		// CLASSNAME: {},
-		
-		// folderList: [],
-		// itemMap: {},
 		key: document.location.pathname.match(/\/([^\/]+?)\/edit/)[1],
 		
 		/**
@@ -1195,7 +1304,7 @@ height: 7px;`
 		 */
 		insertCSS: function () {
 			document.head.insertAdjacentHTML('beforeend',
-`
+				`
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <style>
@@ -1383,13 +1492,15 @@ height: 7px;`
 			
 			// Load all static folders
 			this.gasStaticRoot = new GasRoot(this.dom.gasFileList);
+			
+			this.gasStaticRoot.setUpVirtualFolder(this.loadVirtualFolder());
 			this.gasStaticRoot.setDeepToggleState(this.loadStaticsFolder());
 		},
 		
 		
 		/**
 		 * Save statics folder state
-		 * auto-debounce itself 
+		 * auto-debounce itself
 		 */
 		saveStaticsFolder: function () {
 			clearTimeout(this._timePut_saveStaticFolders);
@@ -1413,504 +1524,19 @@ height: 7px;`
 			return state || {};
 		},
 		
-		
-		/*
-		 /!**
-		 * Add the new folder button
-		 * 
-		 * @param {Node} projectFilesNode
-		 *!/
-		 ___inserNewFolderButton: function(projectFilesNode){
-		 let domFolderCreateButton = document.createElement('div');
-		 domFolderCreateButton.classList.add('asc_FolderAdd_container');
-		 
-		 domFolderCreateButton.innerHTML = `<div class="asc_FolderAdd">New Folder</div>`;
-		 domFolderCreateButton.querySelector('.asc_FolderAdd')
-		 .addEventListener('click', () => {
-		 this.createDialog('Create Folder', 'Enter new folder name', '', this.addNewFolder);
-		 });
-		 
-		 // insert Menu button
-		 projectFilesNode.insertBefore(domFolderCreateButton, projectFilesNode.firstChild);
-		 },
+		/**
+		 * Load virtual folder state
 		 */
-		
-		//<editor-fold desc="#####################">
-		
-/*
-		dragDropNode: undefined,
-		onItemDrag: function (event) {
-			this.dragDropNode = event.currentTarget;
+		loadVirtualFolder: function () {
+			let state;
+			
+			try{
+				state = JSON.parse(localStorage.getItem(`appScriptColor-Folders-${Folders.key}`));
+			}
+			catch(e) {}
+			
+			return state || {};
 		},
-		onItemDrop: function (event) {
-			let node = event.currentTarget;
-			let label = this.dragDropNode.getAttribute('aria-label');
-			
-			// find the child in case it was in another folder
-			if (this.dragDropNode.parentFolder) {
-				let folder = this.dragDropNode.parentFolder.folder;
-				
-				for (let i = 0; i < folder.childList.length; i++) {
-					if (folder.childList[i] === label) {
-						folder.childList.splice(i, 1);
-						
-						break;
-					}
-				}
-			}
-			
-			// back in the main item list
-			if (node === this.dom.gasProjectFiles) {
-				this.dom.gasFileList.appendChild(this.dragDropNode);
-				
-				this.dragDropNode.parentFolder = undefined;
-			}
-			else {
-				// add item to folder list
-				node.folder.childList.push(label);
-				
-				// add folder to item parentFolder
-				this.dragDropNode.parentFolder = node;
-				
-				// move item node to folder
-				node.folder.domChildList.appendChild(this.dragDropNode);
-			}
-			
-			this.saveFolder();
-			event.cancelBubble = true;
-		},
-		onItemDragOver: function (event) {
-			event.preventDefault();
-		},
-		
-		toggleFolder: function (event) {
-			// Don't toggle when popMenu || inside child list
-			for (let i = 0; i < event.path.length; i++) {
-				if (event.path[i].isCreatingPopMenu || event.path[i].classList && event.path[i].classList.contains('asc_folder_ChildList')) {
-					return;
-				}
-			}
-			
-			let childList = event.currentTarget.querySelector('.asc_folder_ChildList');
-			
-			if (!event.currentTarget.classList.contains('asc_folder_closed')) {
-				childList.style.maxHeight = 'initial';
-				let rect = childList.getBoundingClientRect();
-				childList.style.maxHeight = `${rect.height}px`;
-				childList.getBoundingClientRect();
-				childList.style.maxHeight = '';
-			}
-			else {
-				childList.style.maxHeight = 'initial';
-				let rect = childList.getBoundingClientRect();
-				childList.style.maxHeight = '';
-				childList.getBoundingClientRect();
-				childList.style.maxHeight = `${rect.height}px`;
-			}
-			event.currentTarget.classList.toggle('asc_folder_closed');
-			
-			this.saveFolder();
-		},
-		
-		newFolder: function (name) {
-			if (!name) return;
-			
-			let domNewFolder = document.createElement('div');
-			domNewFolder.classList.add('asc_Folder');
-			domNewFolder.innerHTML =
-				`<div class="item">
-	<div class="gwt-Label piece name">${name}</div>
-	<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAECAYAAABCxiV9AAAAG0lEQVR42mOIjIz8jwszgABOCRjAKYGsAJkPAKT/IKHcRfUJAAAAAElFTkSuQmCC" width="7" height="4" class="gwt-Image dropdown" role="button" aria-label="More options" tabindex="0">
-</div>
-<div class="asc_folder_ChildList"></div>`;
-			
-			
-			domNewFolder.querySelector('img.dropdown').addEventListener('click', function () {
-				let parent = domNewFolder.querySelector('.item');
-				
-				parent.isCreatingPopMenu = true;
-				Folders.popMenu(parent);
-			});
-			
-			domNewFolder.addEventListener('drop', Folders.onItemDrop.bind(Folders));
-			domNewFolder.addEventListener('dragover', Folders.onItemDragOver.bind(Folders));
-			domNewFolder.addEventListener('click', Folders.toggleFolder.bind(Folders));
-			
-			
-			/!**
-			 * @param {MutationRecord[]} mutations
-			 * @param {MutationObserver} observer
-			 *!/
-			function observerCB(mutations, observer) {
-				mutations.forEach(function (mutation) {
-					let item,
-						reCalculateHeight = 0;
-					
-					for (item in mutation.addedNodes) {
-						if (!mutation.addedNodes.hasOwnProperty(item)) continue;
-						
-						reCalculateHeight += mutation.addedNodes[item].getBoundingClientRect().height;
-					}
-					for (item in mutation.removedNodes) {
-						if (!mutation.removedNodes.hasOwnProperty(item)) continue;
-						
-						reCalculateHeight -= mutation.removedNodes[item].getBoundingClientRect().height;
-					}
-					
-					if (reCalculateHeight) {
-						let max = parseInt(mutation.target.style.maxHeight) + reCalculateHeight;
-						mutation.target.style.maxHeight = `${max}px`;
-					}
-				});
-			}
-			
-			let observer = new MutationObserver(observerCB);
-			
-			// pass in the target node, as well as the observer options
-			//noinspection JSCheckFunctionSignatures
-			observer.observe(domNewFolder.querySelector('.asc_folder_ChildList'), {
-				childList: true,
-				attributes: false,
-				characterData: false/!*,
-				 subtree: false,
-				 attributeOldValue: false,
-				 characterDataOldValue: false,
-				 attributeFilter: []
-				 *!/
-			});
-			
-			
-			return domNewFolder;
-		},
-		addNewFolder: function (name) {
-			let domNewFolder = Folders.newFolder(name);
-			
-			Folders.folderList.push({
-				name: name,
-				dom: domNewFolder,
-				domChildList: domNewFolder.querySelector('.asc_folder_ChildList'),
-				childList: [],
-				position: Folders.folderList.length
-			});
-			
-			Folders.rebuildFolderList();
-		},
-		
-		_rebuildFolderList: function (state) {
-			let self = Folders,
-				node;
-			
-			// set existing children properties
-			for (let i = 0; i < self.dom.gasFileList.childNodes.length; i++) {
-				/!**
-				 * @type {HTMLElement}
-				 *!/
-				node = self.dom.gasFileList.childNodes[i];
-				if (node.classList.contains('asc_folder_container')) continue;
-				
-				let label = node.getAttribute('aria-label');
-				if (self.itemMap[label] && self.itemMap[label] !== node) {
-					self.itemMap[label].remove();
-				}
-				self.itemMap[label] = node;
-				
-				node.setAttribute('draggable', 'true');
-				node.addEventListener('dragstart', Folders.onItemDrag.bind(Folders));
-			}
-			
-			self.folderList.sort(function (a, b) {
-				return a.position - b.position;
-			});
-			
-			// Make sure the folders are first in the DOM
-			self.dom.gasFileList.insertBefore(self.dom.folderContainer, self.dom.gasFileList.firstChild);
-			
-			for (let i = self.folderList.length - 1; i >= 0; i--) {
-				let node = self.folderList[i].dom;
-				
-				if (self.dom.folderContainer.firstChild) {
-					self.dom.folderContainer.insertBefore(node, self.dom.folderContainer.firstChild);
-				}
-				else {
-					self.dom.folderContainer.appendChild(node);
-				}
-				
-				node.folder = self.folderList[i];
-				
-				for (let j = 0; j < node.folder.childList.length; j++) {
-					let item = self.itemMap[node.folder.childList[j]];
-					
-					if (!item || (item.parentNode !== self.dom.gasFileList && state)) {
-						node.folder.childList.splice(j, 1);
-						item.remove();
-						
-						j--;
-						continue;
-					}
-					
-					item.parentFolder = node;
-					node.folder.domChildList.appendChild(item);
-					
-					if (node.folder.staticFolder) {
-						let domLabel = item.querySelector('div.gwt-Label[title]');
-						
-						domLabel && (domLabel.innerHTML = node.folder.childList[j].replace(/^[^\/]+\//, ''));
-					}
-				}
-			}
-			
-			self.saveFolder();
-		},
-		
-		saveFolder: function () {
-			let save = [];
-			
-			for (let i = 0; i < Folders.folderList.length; i++) {
-				
-				if (Folders.folderList[i].dom.classList.contains('staticFolder')) continue;
-				
-				// establish child item list
-				let child = [];
-				for (let j = 0; j < Folders.folderList[i].childList.length; j++) {
-					child.push(Folders.folderList[i].childList[j]);
-				}
-				
-				save.push({
-					"name": Folders.folderList[i].name,
-					"files": child,
-					"state": Folders.folderList[i].dom.classList.contains('asc_folder_closed')
-				});
-			}
-			
-			localStorage.setItem(`appScriptColor-Folders-${Folders.key}`, JSON.stringify(save));
-		},
-		_restoreFolder: function () {
-			let foldersJSON = localStorage[`appScriptColor-Folders-${asc.folders.key}`] || '[]',
-				children = {};
-			
-			// Nothing to restore
-			if (!foldersJSON) return;
-			
-			/!**
-			 * @typed {Array.<{
-			 *   name: string,
-			 *   files: Array.<string>,
-			 *   state: Boolean
-			 * }>}
-			 *!/
-			let folders = JSON.parse(foldersJSON);
-			
-			// build map of children
-			let staticFolders = {};
-			
-			for (let i = 0; i < this.dom.gasFileList.childNodes.length; i++) {
-				if (this.dom.gasFileList.childNodes[i].classList.contains('asc_folder_container')) continue;
-				
-				let fileName = this.dom.gasFileList.childNodes[i].getAttribute('aria-label');
-				children[fileName] = this.dom.gasFileList.childNodes[i];
-				
-				let res = fileName.split('/');
-				// There are static folders
-				if (res.length > 1) {
-					staticFolders[res[0]] && staticFolders[res[0]].push(fileName) || (staticFolders[res[0]] = [fileName]);
-				}
-			}
-			
-			// build static folder list
-			for (let folder in staticFolders) {
-				
-				/!**
-				 * @type {HTMLElement}
-				 *!/
-				let domNewFolder = this.newFolder(folder);
-				
-				domNewFolder.classList.add('staticFolder');
-				
-				this.folderList.push({
-					name: folder,
-					dom: domNewFolder,
-					domChildList: domNewFolder.querySelector('.asc_folder_ChildList'),
-					childList: staticFolders[folder],
-					position: this.folderList.length,
-					staticFolder: true
-				});
-			}
-			
-			
-			for (let i = 0; i < folders.length; i++) {
-				
-				/!**
-				 * @typed {{
-				 *   name: string,
-				 *   files: Array.<string>,
-				 *   state: Boolean
-				 * }}
-				 *!/
-				let readFolder = folders[i];
-				// Load old names TODO: remove in January 2018
-				if (readFolder['n']) readFolder['name'] = readFolder['n'];
-				if (readFolder['w']) readFolder['files'] = readFolder['w'];
-				if (readFolder['c']) readFolder['files'] = readFolder['c'];
-				if (readFolder['L']) readFolder['state'] = readFolder['L'];
-				if (readFolder['s']) readFolder['state'] = readFolder['s'];
-				
-				
-				/!**
-				 * @type {HTMLElement}
-				 *!/
-				let domNewFolder = this.newFolder(readFolder['name']);
-				
-				// Set folder open state
-				let domFolderChildList = domNewFolder.querySelector('.asc_folder_ChildList');
-				domNewFolder.classList.toggle('asc_folder_closed', readFolder['state']);
-				if (!readFolder['state']) domFolderChildList.style.maxHeight = '0px';
-				
-				let childList = [];
-				
-				// rebuild whole child list
-				for (let j = 0; j < readFolder['files'].length; j++) {
-					let child = children[readFolder['files'][j]];
-					if (!child) continue;
-					
-					childList.push(readFolder['files'][j]);
-				}
-				
-				this.folderList.push({
-					name: readFolder['name'],
-					dom: domNewFolder,
-					domChildList: domFolderChildList,
-					childList: childList,
-					position: this.folderList.length
-				});
-				
-			}
-			
-			// rebuild all list !
-			this.rebuildFolderList(true);
-		},
-*/
-		
-		//</editor-fold>
-		
-		
-		createDialog: function (title, message, defaultValue, callBack_OK) {
-			let DOMdialog = document.createElement('div');
-			
-			defaultValue = defaultValue || '';
-			
-			DOMdialog.classList.add('glass_panel', 'asc_glass-panel');
-			DOMdialog.innerHTML =
-				`<div class="asc_Dialog maestro-dialog">
-	<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAA6UlEQVR42oWRywqCUBCGzwNFm8BF0AWCNj2I+4M3vG/EoGfoPaS1tTJtIRkUFK16hyD7J05iKnTgZ5yZby6ewxiOrusJJLOOYxiGj1zEamAJHZEY1EFN02aIX6EXcQTLCN6pAPZgWZZEoG3bc/gn0SivJuNjDJ1VVS0dx0nDMFzDFuQjvkeR9LMbEhN02wEq0b10XZfspgV+j+/7K4I55x/Y8zzeCWLcAp1SgkkEm6YZ46enLRDBm9g5DoJgiZUysXNeFYh7fIjb2GJ0n+IoGsHPxG1ciKOukQgkiqL0GhOHUAE9mw/z9wXfJTmqxGHESosAAAAASUVORK5CYII=" width="11" height="11" class="gwt-Image dialog-close-image" role="button" tabindex="0" aria-label="Close">
-	<div class="Caption">${title}</div>
-	<div class="rename-box">
-		<div class="asc_Dialog_input panel">
-			<div class="gwt-Label rename-label">${message}</div>
-			<input class="gwt-TextBox rename-input" value="${defaultValue}"/>
-		</div>
-	</div>
-	<div class="buttons">
-		<button class="gwt-Button asc_ok">OK</button>
-		<button class="gwt-Button asc_cancel">Cancel</button>
-	</div>
-</div>`;
-			
-			function onClose() {
-				DOMdialog.remove();
-			}
-			
-			let DOM_OK = DOMdialog.querySelector('.asc_ok'),
-				DOM_Cancel = DOMdialog.querySelector('.asc_cancel');
-			
-			DOMdialog.querySelector('.rename-input').addEventListener('keydown', function (event) {
-				// Should do nothing if the key event was already consumed.
-				if (event.defaultPrevented) return;
-				
-				
-				if (event.code === 'Enter') {
-					DOM_OK.click();
-				}
-				else if (event.code === 'Escape') {
-					DOM_Cancel.click();
-				}
-			});
-			
-			DOM_OK.addEventListener('click', function () {
-				callBack_OK(DOMdialog.querySelector('.rename-input').value);
-				onClose();
-			});
-			DOM_Cancel.addEventListener('click', onClose);
-			DOMdialog.querySelector('.dialog-close-image').addEventListener('click', onClose);
-			
-			document.body.appendChild(DOMdialog);
-			DOMdialog.querySelector('.rename-input').focus();
-		},
-		popMenu: function (parent) {
-			let domPopMenu = document.createElement('div');
-			domPopMenu.classList.add('resource-context-menu', 'asc_popMenu');
-			
-			domPopMenu.innerHTML =
-				`<div class="gwt-MenuItem asc_menu_Rename">Rename</div>
-<div class="gwt-MenuItem asc_menu_Delete">Delete</div>`;
-			
-			// Callbacks
-			function onClose() {
-				if (parent.isCreatingPopMenu) {
-					parent.isCreatingPopMenu = false;
-					return;
-				}
-				domPopMenu.remove();
-				document.removeEventListener('click', onClose);
-			}
-			
-			function onClick(event) {
-				event.cancelBubble = true;
-			}
-			
-			function menuRename() {
-				Folders.createDialog('Rename Folder', 'Enter new folder name', parent.parentNode.folder.name, function (name) {
-					if (!name) return;
-					
-					parent.parentNode.folder.name = name;
-					parent.querySelector('.gwt-Label').innerHTML = name;
-					
-					Folders.saveFolder();
-				});
-				
-				onClose();
-			}
-			
-			function menuDelete() {
-				for (let i = 0; i < Folders.folderList.length; i++) {
-					if (Folders.folderList[i] !== parent.parentNode.folder) continue;
-					
-					Folders.folderList.splice(i, 1);
-					
-					// move all child node back
-					let node = parent.parentNode.querySelector('.asc_folder_ChildList');
-					if (node) {
-						for (let j = node.childNodes.length - 1; j > -1; j--) {
-							Folders.dom.gasFileList.appendChild(node.childNodes[j]);
-						}
-					}
-					
-					parent.parentNode.remove();
-					Folders.rebuildFolderList();
-					
-					break;
-				}
-				
-				onClose();
-			}
-			
-			// Add listeners
-			document.addEventListener('click', onClose);
-			domPopMenu.addEventListener('click', onClick);
-			domPopMenu.querySelector('.asc_menu_Rename').addEventListener('click', menuRename);
-			domPopMenu.querySelector('.asc_menu_Delete').addEventListener('click', menuDelete);
-			
-			parent.appendChild(domPopMenu);
-		}
 	};
 	
 	asc.folders = Folders;
