@@ -120,22 +120,12 @@
 					// Correction to context Menu
 					'.resource-context-menu': {color: '{{generalBackGround}}'},
 					
-					// CUSTOM Menu folder
-					/*
-					 '.asc_FolderAdd': {
-					 'background-color': '{{codeBackGround}}',
-					 'border': '1px solid {{border}}'
-					 },
-					 '.asc_FolderAdd:hover': {
-					 'background-color': '{{listItemBackgroundSelected}}'
-					 },
-					 '.asc_folder_container': {
-					 'border-bottom': '5px solid {{border}}'
-					 },
-					 '.asc_Folder:not(.asc_folder_closed)': {
-					 'border-bottom': '5px solid {{border}}'
-					 }
-					 */
+					
+					// Folders
+					'.asc_Folder>.asc_titleContainer': {
+						'color': '#8a93ab;'
+					}
+					
 				}
 			},
 			'Darcula': {
@@ -244,22 +234,12 @@
 					// Correction to context Menu
 					'.resource-context-menu': {color: '{{generalBackGround}}'},
 					
-					// CUSTOM Menu folder
-					/*
-					 '.asc_FolderAdd': {
-					 'background-color': '{{codeBackGround}}',
-					 'border': '1px solid {{border}}'
-					 },
-					 '.asc_FolderAdd:hover': {
-					 'background-color': '{{listItemBackgroundSelected}}'
-					 },
-					 '.asc_folder_container': {
-					 'border-bottom': '5px solid {{border}}'
-					 },
-					 '.asc_Folder:not(.asc_folder_closed)': {
-					 'border-bottom': '5px solid {{border}}'
-					 }
-					 */
+					
+					// Folders
+					'.asc_Folder>.asc_titleContainer': {
+						'color': '#8a93ab;'
+					}
+					
 				}
 			},
 			'Default': {
@@ -269,22 +249,11 @@
 					'listItemBackgroundSelected': '#f5f5f5'
 				},
 				cssRules: {
-					// CUSTOM Menu folder
-					/*
-					 '.asc_FolderAdd': {
-					 'background-color': '{{codeBackGround}}',
-					 'border': '1px solid {{border}}'
-					 },
-					 '.asc_FolderAdd:hover': {
-					 'background-color': '{{listItemBackgroundSelected}}'
-					 },
-					 '.asc_folder_container': {
-					 'border-bottom': '5px solid {{border}}'
-					 },
-					 '.asc_Folder:not(.asc_folder_closed)': {
-					 'border-bottom': '5px solid {{border}}'
-					 }
-					 */
+					
+					// Folders
+					'.asc_Folder>.asc_titleContainer': {
+						'color': '#8a93ab;'
+					}
 				}
 			}
 		},
@@ -529,16 +498,20 @@ height: 7px;`
 			return '.name';
 		}
 		
+		static get SELECTOR_ITEM() {
+			return '.item';
+		}
+		
 		/**
 		 * Init a new file
 		 *
-		 * @param {string} path
 		 * @param {Node | Element} node
 		 */
 		constructor(node){
 			this.dom = {
 				main: node,
-				name: node.querySelector(GasFile.SELECTOR_NAME)
+				name: node.querySelector(GasFile.SELECTOR_NAME),
+				item: node.querySelector(GasFile.SELECTOR_ITEM)
 			};
 			
 			this.path = '';
@@ -549,6 +522,7 @@ height: 7px;`
 		
 		/**
 		 * Set File path (and name) and return if it changed since last update
+		 * Update DOM file name and add class with file type
 		 *
 		 * @return {boolean} true if the path changed since last update
 		 */
@@ -561,6 +535,12 @@ height: 7px;`
 			
 			// update DOM file name
 			this.dom.name.innerHTML = this.name;
+			
+			// get file type
+			this.type = (/\.([^.]+)$/.exec(this.name) || [])[1].replace('gs', 'js') || 'js';
+			
+			// Set DOM file type
+			this.dom.item.classList.add(`file-type-${this.type}`);
 			
 			return pathChanged;
 		}
@@ -1379,6 +1359,16 @@ height: 7px;`
 		-webkit-font-smoothing: antialiased;
 		padding: 5px;
 	}
+	.project-items-list .item.file-type-js:before {
+		content: "description";
+	}
+	.project-items-list .item.file-type-html:before {
+		content: "web";
+	}
+	.project-items-list .item.file-type-json:before {
+		content: "build";
+	}
+	
 	.project-items-list .item img.piece {
 		display: none!important;
 	}
@@ -1410,71 +1400,6 @@ height: 7px;`
 		-webkit-font-smoothing: antialiased;
 		margin-right: 4px;
 	}
-
-/*
-	.asc_FolderAdd_container {
-		padding: 8px;
-		text-align: center;
-	}
-	.asc_FolderAdd {
-		padding: 5px;
-		text-overflow: ellipsis;
-		overflow: hidden;
-		white-space: nowrap;
-	}
-	.asc_folder_container{
-		padding-bottom: 10px;
-	}
-	.asc_Folder>div.item {
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		padding-left: 10px!important;
-	}
-	.asc_folder_ChildList{
-		transition: max-height 500ms;
-		overflow: hidden;
-		position: relative;
-	}
-	.asc_Folder.asc_folder_closed>.asc_folder_ChildList{
-		max-height: 0;
-	}
-	.asc_Folder:not(.asc_folder_closed)>.asc_folder_ChildList{
-		max-height: 1000px;
-	}
-	.asc_Folder.asc_folder_closed>.item::before {
-		content: "+	";
-		font-family: monospace;
-	}
-	.asc_Folder:not(.asc_folder_closed)>.item::before {
-		content: "-	";
-		font-family: monospace;
-	}
-	.asc_Folder:not(.asc_folder_closed){
-		padding-bottom: 5px;
-	}
-	.asc_glass-panel{
-		opacity: 1!important;
-		background-color: rgba(153, 153, 153, 0.4);
-		position: fixed;
-		top: 0;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		z-index: 1050;
-		display: flex;
-		}
-	.asc_Dialog{
-		margin: auto;
-	}
-	.asc_popMenu{
-		position: absolute;
-		right: 0;
-	}
-	.asc_popMenu .gwt-MenuItem:hover {
-		background-color: #efefef;
-	}
-	*/
 </style>`
 			);
 		},
