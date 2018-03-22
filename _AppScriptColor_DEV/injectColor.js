@@ -1557,7 +1557,7 @@ height: 7px;`
 			}
 			catch(e) {}
 			
-			return state || {};
+			return state || [];
 		},
 		
 		

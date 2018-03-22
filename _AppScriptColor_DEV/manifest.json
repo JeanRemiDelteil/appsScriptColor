@@ -3,7 +3,7 @@
 
   "name": "AppsScript Color",
   "description": "This extension change the color style of the google apps script editor. It also allow to use folders with folder/subFolder/file",
-  "version": "1.0.0",
+  "version": "1.0.1",
 
   "icons": {
     "16": "AppScriptColor-16.png",
