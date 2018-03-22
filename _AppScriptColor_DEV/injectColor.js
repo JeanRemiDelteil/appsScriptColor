@@ -124,7 +124,12 @@
 					// Folders
 					'.asc_Folder>.asc_titleContainer': {
 						'color': '#8a93ab;'
-					}
+					},
+					'.asc_info_popup': {
+						'color': '{{generalText}}',
+						'background': '{{codeBackGround}}',
+						'border-color': '{{generalText}}',
+					},
 					
 				}
 			},
@@ -238,7 +243,12 @@
 					// Folders
 					'.asc_Folder>.asc_titleContainer': {
 						'color': '#8a93ab;'
-					}
+					},
+					'.asc_info_popup': {
+						'color': '{{generalText}}',
+						'background': '{{codeBackGround}}',
+						'border-color': '{{generalText}}',
+					},
 					
 				}
 			},
@@ -246,14 +256,21 @@
 				generalVariables: {
 					'codeBackGround': 'white',
 					'border': '#D9D9D9',
-					'listItemBackgroundSelected': '#f5f5f5'
+					'listItemBackgroundSelected': '#f5f5f5',
+					'generalText': '#333',
 				},
 				cssRules: {
 					
 					// Folders
 					'.asc_Folder>.asc_titleContainer': {
 						'color': '#8a93ab;'
-					}
+					},
+					'.asc_info_popup': {
+						'color': '{{generalText}}',
+						'background': '{{codeBackGround}}',
+						'border-color': '{{generalText}}',
+					},
+					
 				}
 			}
 		},
@@ -618,16 +635,13 @@ height: 7px;`
 		
 		/**
 		 * Create internal dom structure of the Folder
-		 *
-		 * @return {HTMLDivElement}
-		 * @private
 		 */
 		_createDOM() {
 			this.dom.main = document.createElement('div');
 			this.dom.main.classList.add(GasFolder.CLASS_FOLDER, 'asc_opened');
 			
 			this.dom.main.innerHTML =
-				`<div class="${GasFolder.CLASS_TITLE_CONTAINER}">
+`<div class="${GasFolder.CLASS_TITLE_CONTAINER}">
 	<div class="asc_folderIcon">
 		<i class="asc_opened material-icons">folder_open</i>
 		<i class="asc_closed material-icons">folder</i>
@@ -885,6 +899,36 @@ height: 7px;`
 		//<editor-fold desc="# Private methods">
 		
 		/**
+		 * Create normal folder DOM and add info icon
+		 */
+		_createDOM() {
+			super._createDOM();
+			
+			this.dom.titleContainer.insertAdjacentHTML('beforeend',
+`<div class="asc_folder_info">
+	<i class="material-icons">info</i>
+	
+	<div class="asc_info_popup ${!Folders.infoShown.vFolder ? 'asc_info_popup-hide' : ''}">
+	    Virtual folders are deprecated. They can't be edited.<br><br>
+	    To still use folders, rename your files to include the whole path:<br><br>
+	    folderName/sub folder/my_fileName
+	</div>
+</div>`);
+			
+			this.dom.infoPopup = this.dom.titleContainer.querySelector(`.asc_info_popup`);
+			this.dom.infoIcon = this.dom.titleContainer.querySelector(`.asc_folder_info`);
+			
+			this.dom.infoIcon.addEventListener('click', /**@param {Event} event*/event =>{
+				this.toggleInfo();
+				
+				event.preventDefault();
+				event.stopPropagation();
+			});
+			
+			this.toggleInfo(!Folders.infoShown.vFolder);
+		}
+		
+		/**
 		 * Process virtual folder list to ease file discovery
 		 *
 		 * @param {Array<{
@@ -935,6 +979,17 @@ height: 7px;`
 			folder && folder.addChild(file);
 			
 			return folder;
+		}
+		
+		/**
+		 * Toggle popup info state
+		 * 
+		 * @param {boolean} [state]
+		 */
+		toggleInfo(state) {
+			this._showInfo = state !== undefined ? state : !this._showInfo;
+			
+			this.dom.infoPopup.classList.toggle('asc_info_popup-hide', !this._showInfo);
 		}
 		
 	}
@@ -1214,6 +1269,10 @@ height: 7px;`
 		 */
 		gasStaticRoot: null,
 		
+		infoShown: {
+			vFolder: false,
+		},
+		
 		key: document.location.pathname.match(/\/([^\/]+?)\/edit/)[1],
 		
 		/**
@@ -1299,6 +1358,7 @@ height: 7px;`
 		align-items: center;
 		
 		user-select: none;
+		cursor: pointer;
 	}
 	.asc_Folder>.${GasFolder.CLASS_TITLE_CONTAINER} .asc_folderIcon{
 		font-size: 0;
@@ -1331,6 +1391,30 @@ height: 7px;`
 		margin-left: 20px;
 	}
 	.asc_Folder:not(.asc_opened)>.asc_folder_ChildList{
+		display: none;
+	}
+	
+	.asc_folder_info {
+		display: flex;
+		padding: 6px;
+	}
+	.asc_folder_info>i.material-icons {
+		font-size: 18px;
+	}
+	
+	/* Popup */
+	.asc_info_popup {
+		position: fixed;
+		margin-left: 24px;
+		width: 280px;
+		height: 110px;
+		padding: 10px;
+		z-index: 1000000;
+		border: 2px solid;
+		border-radius: 3px;
+		overflow: auto;
+	}
+	.asc_info_popup-hide{
 		display: none;
 	}
 	
@@ -1410,6 +1494,8 @@ height: 7px;`
 		 * @param {HTMLElement} node
 		 */
 		initFolders: function (node) {
+			this.loadInfoShown();
+			
 			// Init folders
 			
 			this.dom.gasProjectFiles = node;
@@ -1420,6 +1506,11 @@ height: 7px;`
 			
 			this.gasStaticRoot.setUpVirtualFolder(this.loadVirtualFolder());
 			this.gasStaticRoot.setDeepToggleState(this.loadStaticsFolder());
+			
+			// Shown by default, but hidden after first display
+			this.infoShown.vFolder = true;
+			
+			this.saveInfoShown();
 		},
 		
 		
@@ -1428,9 +1519,9 @@ height: 7px;`
 		 * auto-debounce itself
 		 */
 		saveStaticsFolder: function () {
-			clearTimeout(this._timePut_saveStaticFolders);
+			clearTimeout(this._timeOut_saveStaticFolders);
 			
-			this._timePut_saveStaticFolders = setTimeout(() => {
+			this._timeOut_saveStaticFolders = setTimeout(() => {
 				localStorage.setItem(`appScriptColor-static-Folders-${Folders.key}`, JSON.stringify(this.gasStaticRoot.getDeepToggleState()));
 			}, 500);
 		},
@@ -1451,6 +1542,12 @@ height: 7px;`
 		
 		/**
 		 * Load virtual folder state
+		 * 
+		 * return {Array<{
+		 *   name: string,
+		 *   state: boolean,
+		 *   files: Array<string>
+		 * }>}
 		 */
 		loadVirtualFolder: function () {
 			let state;
@@ -1462,8 +1559,35 @@ height: 7px;`
 			
 			return state || {};
 		},
+		
+		
+		/**
+		 * Save all infoPopup shown
+		 * auto-debounce itself
+		 */
+		saveInfoShown: function () {
+			clearTimeout(this._timeOut_infoShown);
+			
+			this._timeOut_infoShown = setTimeout(() => {
+				localStorage.setItem(`appScriptColor-infoShown`, JSON.stringify(this.infoShown));
+			}, 500);
+		},
+		
+		/**
+		 * Load all infoPopup shown
+		 */
+		loadInfoShown: function () {
+			let infoShown;
+			
+			try{
+				infoShown = JSON.parse(localStorage.getItem(`appScriptColor-infoShown`));
+			}
+			catch(e) {}
+			
+			infoShown && (this.infoShown = infoShown);
+		},
+		
 	};
-	
 	asc.folders = Folders;
 	
 	
