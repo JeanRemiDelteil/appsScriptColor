@@ -23,7 +23,7 @@
 					'listItemBackground': '#1d4f73',
 					'listItemBackgroundSelected': '#174262',
 					'tabBackGround': '#2a3037',
-					'listItemSelected': '#F5F7FA'
+					'listItemSelected': '#F5F7FA',
 				},
 				cssRules: {
 					'.editor .code-area .CodeMirror': {'background-color': '{{codeBackGround}}', 'line-height': '17px'},
@@ -42,11 +42,11 @@
 						'background-color': '{{codeBackGround}}',
 						'border-left': '1px solid',
 						'border-right': '1px solid',
-						'border-color': '{{border}}'
+						'border-color': '{{border}}',
 					},
 					'.editor .code-area .CodeMirror-gutter-text': {
 						'background-color': '{{codeBackGround}}',
-						'box-shadow': '-1px 0px 0px 0px {{border}}, 1px 0px 0px 0px {{border}}'
+						'box-shadow': '-1px 0px 0px 0px {{border}}, 1px 0px 0px 0px {{border}}',
 					}, // background des numéros de ligne
 					'.editor .code-area .CodeMirror-gutter-text pre': {'color': '{{border}}'}, // line number
 					
@@ -87,11 +87,11 @@
 					'.resource-list .project-items-list .item': {'border-bottom': '1px solid {{border}}'},
 					'.resource-list .project-items-list .selected, .resource-list .project-items-list .selected:hover': {
 						'background-color': '{{listItemBackground}}',
-						'color': '{{listItemSelected}}'
+						'color': '{{listItemSelected}}',
 					},
 					'.resource-list .project-items-list .focused, .resource-list .project-items-list .item:hover': {
 						'background-color': '{{listItemBackgroundSelected}}',
-						'color': '{{generalText}}'
+						'color': '{{generalText}}',
 					},
 					
 					// drag bar
@@ -123,15 +123,18 @@
 					
 					// Folders
 					'.asc_Folder>.asc_titleContainer': {
-						'color': '#8a93ab;'
+						'color': '#8a93ab;',
 					},
 					'.asc_info_popup': {
 						'color': '{{generalText}}',
 						'background': '{{codeBackGround}}',
 						'border-color': '{{generalText}}',
 					},
+					'.asc_Folder': {
+						'background-color': '#17171729',
+					},
 					
-				}
+				},
 			},
 			'Darcula': {
 				generalVariables: {
@@ -142,7 +145,7 @@
 					'listItemBackground': '#4b6eaf',
 					'listItemBackgroundSelected': '#0d293e',
 					'tabBackGround': '#515658',
-					'listItemSelected': '#bbbbbb'
+					'listItemSelected': '#bbbbbb',
 				},
 				cssRules: {
 					'.editor .code-area .CodeMirror': {'background-color': '{{codeBackGround}}', 'line-height': '17px'},
@@ -161,11 +164,11 @@
 						'background-color': '{{codeBackGround}}',
 						'border-left': '1px solid',
 						'border-right': '1px solid',
-						'border-color': '{{border}}'
+						'border-color': '{{border}}',
 					},
 					'.editor .code-area .CodeMirror-gutter-text': {
 						'background-color': '{{codeBackGround}}',
-						'box-shadow': '-1px 0px 0px 0px {{border}}, 1px 0px 0px 0px {{border}}'
+						'box-shadow': '-1px 0px 0px 0px {{border}}, 1px 0px 0px 0px {{border}}',
 					}, // background des numéros de ligne
 					'.editor .code-area .CodeMirror-gutter-text pre': {'color': '888888'}, // line number
 					
@@ -206,11 +209,11 @@
 					'.resource-list .project-items-list .item': {'border-bottom': '1px solid {{border}}'},
 					'.resource-list .project-items-list .selected, .resource-list .project-items-list .selected:hover': {
 						'background-color': '{{listItemBackground}}',
-						'color': '{{listItemSelected}}'
+						'color': '{{listItemSelected}}',
 					},
 					'.resource-list .project-items-list .focused, .resource-list .project-items-list .item:hover': {
 						'background-color': '{{listItemBackgroundSelected}}',
-						'color': '{{generalText}}'
+						'color': '{{generalText}}',
 					},
 					
 					// drag bar
@@ -242,15 +245,17 @@
 					
 					// Folders
 					'.asc_Folder>.asc_titleContainer': {
-						'color': '#8a93ab;'
+						'color': '#8a93ab;',
 					},
 					'.asc_info_popup': {
 						'color': '{{generalText}}',
 						'background': '{{codeBackGround}}',
 						'border-color': '{{generalText}}',
 					},
-					
-				}
+					'.asc_Folder': {
+						'background-color': '#15151529',
+					},
+				},
 			},
 			'Default': {
 				generalVariables: {
@@ -263,16 +268,19 @@
 					
 					// Folders
 					'.asc_Folder>.asc_titleContainer': {
-						'color': '#8a93ab;'
+						'color': '#8a93ab;',
 					},
 					'.asc_info_popup': {
 						'color': '{{generalText}}',
 						'background': '{{codeBackGround}}',
 						'border-color': '{{generalText}}',
 					},
+					'.asc_Folder': {
+						'background-color': '#bfbfbf29',
+					},
 					
-				}
-			}
+				},
+			},
 		},
 		userTheme: '',
 		
@@ -305,7 +313,7 @@
 			let config = {
 				childList: true,
 				attributes: false,
-				characterData: false/*,
+				characterData: false, /*,
 				 subtree: false,
 				 attributeOldValue: false,
 				 characterDataOldValue: false,
@@ -414,7 +422,7 @@
 						
 						domMenuColor.classList.toggle('goog-control-open', false);
 						domMenuColorSub.setAttribute('style', 'display: None;');
-					}.bind(null, theme)
+					}.bind(null, theme),
 				);
 			}
 			
@@ -451,14 +459,14 @@
 					`user-select: none;
 visibility: visible;
 left: ${menuRect.left}px;
-top: ${menuRect.bottom}px;`
+top: ${menuRect.bottom}px;`,
 				);
 				
 				domMenuShield.setAttribute('style',
 					`left: ${menuRect.left + 1}px;
 top: ${menuRect.bottom - 1}px;
 width: ${menuRect.width - 2}px;
-height: 7px;`
+height: 7px;`,
 				);
 				
 				asc.menuColorState = true;
@@ -505,11 +513,11 @@ height: 7px;`
 			 //noinspection JSCheckFunctionSignatures
 			 observer.observe(domMenuShield, config);
 			 */
-		}
+		},
 	};
 	
 	
-	class GasFile  {
+	class GasFile {
 		
 		static get SELECTOR_NAME() {
 			return '.name';
@@ -524,11 +532,11 @@ height: 7px;`
 		 *
 		 * @param {Node | Element} node
 		 */
-		constructor(node){
+		constructor(node) {
 			this.dom = {
 				main: node,
 				name: node.querySelector(GasFile.SELECTOR_NAME),
-				item: node.querySelector(GasFile.SELECTOR_ITEM)
+				item: node.querySelector(GasFile.SELECTOR_ITEM),
 			};
 			
 			this.path = '';
@@ -573,7 +581,7 @@ height: 7px;`
 		/**
 		 * Return file name
 		 */
-		toString(){
+		toString() {
 			return this.name;
 		}
 		
@@ -581,7 +589,7 @@ height: 7px;`
 		/**
 		 * Return file name
 		 */
-		toJSON(){
+		toJSON() {
 			return this.toString();
 		}
 	}
@@ -591,12 +599,15 @@ height: 7px;`
 		static get CLASS_FOLDER() {
 			return 'asc_Folder';
 		}
+		
 		static get CLASS_TITLE_CONTAINER() {
 			return 'asc_titleContainer';
 		}
+		
 		static get CLASS_TITLE() {
 			return 'asc_folder_title';
 		}
+		
 		static get CLASS_CHILDLIST() {
 			return 'asc_folder_ChildList';
 		}
@@ -606,7 +617,7 @@ height: 7px;`
 		 *
 		 * @param {string} name
 		 */
-		constructor(name){
+		constructor(name) {
 			this.name = name;
 			this.opened = true;
 			
@@ -641,7 +652,7 @@ height: 7px;`
 			this.dom.main.classList.add(GasFolder.CLASS_FOLDER, 'asc_opened');
 			
 			this.dom.main.innerHTML =
-`<div class="${GasFolder.CLASS_TITLE_CONTAINER}">
+				`<div class="${GasFolder.CLASS_TITLE_CONTAINER}">
 	<div class="asc_folderIcon">
 		<i class="asc_opened material-icons">folder_open</i>
 		<i class="asc_closed material-icons">folder</i>
@@ -660,17 +671,26 @@ height: 7px;`
 		
 		/**
 		 * Sort internal children list by name A-Z
+		 * Sort Folder above File
 		 *
 		 * @private
 		 */
 		_sortChildren() {
-			this.children = new Set(Array.from(this.children.values()).sort((a, b) =>
-				a.name < b.name
-					? -1
-					: (a.name > b.name
-						? 1
-						: 0
-				))
+			this.children = new Set(Array.from(this.children.values()).sort((a, b) => {
+					let aIsFile = a instanceof GasFile;
+					let bIsFile = b instanceof GasFile;
+					
+					return aIsFile !== bIsFile
+						? aIsFile
+							? 1
+							: -1
+						: a.name < b.name
+							? -1
+							: (a.name > b.name
+									? 1
+									: 0
+							);
+				}),
 			);
 		}
 		
@@ -730,7 +750,7 @@ height: 7px;`
 		 *
 		 * @return {null | GasFile | GasFolder}
 		 */
-		getChild(childName){
+		getChild(childName) {
 			return this.itemNameMap.get(childName) || null;
 		}
 		
@@ -823,8 +843,8 @@ height: 7px;`
 			return {
 				[this.name]: {
 					open: this.opened,
-					sub: sub
-				}
+					sub: sub,
+				},
 			};
 		}
 		
@@ -843,8 +863,8 @@ height: 7px;`
 				let subFolderState = folderState.sub[item.name];
 				
 				subFolderState && item.setDeepToggleState({
-					[item.name]: subFolderState
-				})
+					[item.name]: subFolderState,
+				});
 			});
 		}
 		
@@ -852,12 +872,12 @@ height: 7px;`
 		/**
 		 * Return folder structure as JSON
 		 */
-		toString(){
+		toString() {
 			let sub = [];
 			
 			this.children.forEach(item => sub.push(item instanceof GasFile
 				? item.name
-				: JSON.parse(item.toString())
+				: JSON.parse(item.toString()),
 			));
 			
 			return JSON.stringify({[this.name]: sub});
@@ -867,7 +887,7 @@ height: 7px;`
 		/**
 		 * Return folder structure as JSON
 		 */
-		toJSON(){
+		toJSON() {
 			return this.toString();
 		}
 		
@@ -905,7 +925,7 @@ height: 7px;`
 			super._createDOM();
 			
 			this.dom.titleContainer.insertAdjacentHTML('beforeend',
-`<div class="asc_folder_info">
+				`<div class="asc_folder_info">
 	<i class="material-icons">info</i>
 	
 	<div class="asc_info_popup ${!Folders.infoShown.vFolder ? 'asc_info_popup-hide' : ''}">
@@ -918,7 +938,7 @@ height: 7px;`
 			this.dom.infoPopup = this.dom.titleContainer.querySelector(`.asc_info_popup`);
 			this.dom.infoIcon = this.dom.titleContainer.querySelector(`.asc_folder_info`);
 			
-			this.dom.infoIcon.addEventListener('click', /**@param {Event} event*/event =>{
+			this.dom.infoIcon.addEventListener('click', /**@param {Event} event*/event => {
 				this.toggleInfo();
 				
 				event.preventDefault();
@@ -942,7 +962,7 @@ height: 7px;`
 		 * @private
 		 */
 		_processVirtualList(virtualList) {
-			this._vList= new Map();
+			this._vList = new Map();
 			
 			virtualList.forEach(folder => {
 				let currentFolder = this.getChild(folder.name) || this.addChild(new GasFolder(folder.name));
@@ -983,7 +1003,7 @@ height: 7px;`
 		
 		/**
 		 * Toggle popup info state
-		 * 
+		 *
 		 * @param {boolean} [state]
 		 */
 		toggleInfo(state) {
@@ -1082,7 +1102,7 @@ height: 7px;`
 			observer.observe(this.root, {
 				childList: true,
 				attributes: false,
-				characterData: false
+				characterData: false,
 			});
 		}
 		
@@ -1175,7 +1195,7 @@ height: 7px;`
 				let folder = this._fileFolderMap.get(file);
 				
 				// Should never happens
-				if (!folder){
+				if (!folder) {
 					console.log('** WARNING: NO FOLDER **');
 					
 					return;
@@ -1193,10 +1213,10 @@ height: 7px;`
 				
 				splitPath.forEach((name, i) => {
 					// Last name -> file name, add a file in current folder
-					if (i === splitPath.length - 1){
+					if (i === splitPath.length - 1) {
 						
 						// Check for virtual folder for First level files
-						if (this.virtualFolder && currentFolder === this && this.virtualFolder.is_vFile(file)){
+						if (this.virtualFolder && currentFolder === this && this.virtualFolder.is_vFile(file)) {
 							let folderTarget = this.virtualFolder.addFile(file);
 							this._fileFolderMap.set(file, folderTarget);
 							
@@ -1254,7 +1274,7 @@ height: 7px;`
 		selector: {
 			workspace: 'div.workspace',
 			listFile: '.resource-list>.project-items-list-wrapper',
-			listItem: '.project-items-list'
+			listItem: '.project-items-list',
 		},
 		/**
 		 * @type {{
@@ -1315,7 +1335,7 @@ height: 7px;`
 				observer.observe(target, {
 					childList: true,
 					attributes: false,
-					characterData: false/*,
+					characterData: false, /*,
 					 subtree: false,
 					 attributeOldValue: false,
 					 characterDataOldValue: false,
@@ -1484,7 +1504,7 @@ height: 7px;`
 		-webkit-font-smoothing: antialiased;
 		margin-right: 4px;
 	}
-</style>`
+</style>`,
 			);
 		},
 		
@@ -1532,17 +1552,18 @@ height: 7px;`
 		loadStaticsFolder: function () {
 			let state;
 			
-			try{
+			try {
 				state = JSON.parse(localStorage.getItem(`appScriptColor-static-Folders-${Folders.key}`));
 			}
-			catch(e) {}
+			catch (e) {
+			}
 			
 			return state || {};
 		},
 		
 		/**
 		 * Load virtual folder state
-		 * 
+		 *
 		 * return {Array<{
 		 *   name: string,
 		 *   state: boolean,
@@ -1552,10 +1573,11 @@ height: 7px;`
 		loadVirtualFolder: function () {
 			let state;
 			
-			try{
+			try {
 				state = JSON.parse(localStorage.getItem(`appScriptColor-Folders-${Folders.key}`));
 			}
-			catch(e) {}
+			catch (e) {
+			}
 			
 			return state || [];
 		},
@@ -1579,10 +1601,11 @@ height: 7px;`
 		loadInfoShown: function () {
 			let infoShown;
 			
-			try{
+			try {
 				infoShown = JSON.parse(localStorage.getItem(`appScriptColor-infoShown`));
 			}
-			catch(e) {}
+			catch (e) {
+			}
 			
 			infoShown && (this.infoShown = infoShown);
 		},
