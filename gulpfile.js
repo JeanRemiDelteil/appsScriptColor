@@ -1,8 +1,8 @@
-let gulp = require('gulp');
-let rename = require('gulp-rename');
-let uglify = require('gulp-uglify-es').default;
-let editFile = require('gulp-modify-file');
-let clean = require('gulp-clean');
+const gulp = require('gulp');
+const rollup = require('rollup');
+const {terser} = require('rollup-plugin-terser');
+const editFile = require('gulp-modify-file');
+const clean = require('gulp-clean');
 
 
 console.log('Build start');
@@ -13,13 +13,18 @@ new Promise(resolve => {
 		
 		.on('finish', resolve);
 })
-	.then(() => new Promise(resolve => {
-		gulp.src('_AppScriptColor_DEV/injectColor.js')
-			.pipe(uglify(/* options */))
-			.pipe(rename('injectColor.min.js'))
-			.pipe(gulp.dest('build/AppScriptColor/'))
-			
-			.on('finish', resolve);
+	.then(() => rollup.rollup({
+		input: './_AppScriptColor_DEV/injectColor.js',
+		plugins: [
+			terser({
+				sourcemap: false,
+			})
+		],
+	}))
+	.then(bundle => bundle.write({
+		file: './build/AppScriptColor/injectColor.min.js',
+		format: 'iife',
+		sourcemap: false,
 	}))
 	.then(() => console.log('JS minified'))
 	
@@ -42,4 +47,4 @@ new Promise(resolve => {
 	}))
 	.then(() => console.log('Images copied'))
 	
-	.then(() => { console.log('Build finished') });
+	.then(() => { console.log('Build finished'); });

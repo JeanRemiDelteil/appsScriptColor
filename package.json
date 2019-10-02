@@ -11,7 +11,9 @@
     "gulp-clean": "^0.4.0",
     "gulp-modify-file": "^1.0.1",
     "gulp-rename": "^1.4.0",
-    "gulp-uglify-es": "^1.0.4"
+    "gulp-uglify-es": "^1.0.4",
+    "rollup": "^1.22.0",
+    "rollup-plugin-terser": "^5.1.2"
   },
   "scripts": {
     "build": "node .\\gulpfile.js"
