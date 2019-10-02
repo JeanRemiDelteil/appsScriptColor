@@ -1,12 +1,3 @@
-// ==ClosureCompiler==
-// @compilation_level ADVANCED_OPTIMIZATIONS
-// @output_file_name default.js
-// ==/ClosureCompiler==
-
-// TODO: keyboard shortcut to navigate between coding tab
-// TODO: custom auto-complete functions list
-
-
 (function () {
 	// quit if the current page is not editing the script
 	if (!/\/edit$/.test(document.location.pathname)) return;
@@ -47,7 +38,7 @@
 					'.editor .code-area .CodeMirror-gutter-text': {
 						'background-color': '{{codeBackGround}}',
 						'box-shadow': '-1px 0px 0px 0px {{border}}, 1px 0px 0px 0px {{border}}',
-					}, // background des numéros de ligne
+					}, // line number's background
 					'.editor .code-area .CodeMirror-gutter-text pre': {'color': '{{border}}'}, // line number
 					
 					// color of code
@@ -169,7 +160,7 @@
 					'.editor .code-area .CodeMirror-gutter-text': {
 						'background-color': '{{codeBackGround}}',
 						'box-shadow': '-1px 0px 0px 0px {{border}}, 1px 0px 0px 0px {{border}}',
-					}, // background des numéros de ligne
+					}, // line number's background
 					'.editor .code-area .CodeMirror-gutter-text pre': {'color': '888888'}, // line number
 					
 					// color of code
@@ -355,7 +346,7 @@
 				
 				for (let property in cssSettings) {
 					// replace declared variables
-					propertyStr += `${ property }:${ cssSettings[property].replace(/{{(\w+)}}/g, (m, p1) => p1 in variables ? variables[p1] : m) };`;
+					propertyStr += `${property}:${cssSettings[property].replace(/{{(\w+)}}/g, (m, p1) => p1 in variables ? variables[p1] : m)};`;
 				}
 				
 				cssSheet += `${selector}{${propertyStr}}`;
@@ -395,8 +386,7 @@
 			domItem.addEventListener('click', callBack);
 		},
 		insertMenuButton: function () {
-			//noinspection CssUnusedSymbol
-			document.head.insertAdjacentHTML('beforeEnd', `<style>.asc-menu-item-icon{display: none;}.asc-menu-item-icon-display{display: inherit;}</style>`);
+			document.head.insertAdjacentHTML('beforeend', `<style>.asc-menu-item-icon{display: none;}.asc-menu-item-icon-display{display: inherit;}</style>`);
 			
 			let googleScriptMenu = document.getElementById('docs-menubar');
 			// no menu, we quit now
@@ -427,7 +417,7 @@
 			}
 			
 			// insert Menu
-			googleScriptMenu.insertAdjacentHTML('beforeEnd', menuColor);
+			googleScriptMenu.insertAdjacentHTML('beforeend', menuColor);
 			// insert SubMenu
 			document.body.appendChild(domMenuColorSub);
 			
@@ -483,36 +473,6 @@ height: 7px;`,
 				domMenuColor.classList.toggle('goog-control-open', false);
 				domMenuColorSub.setAttribute('style', 'display: None;');
 			});
-			
-			
-			/*
-			 // we will use the menu shield to monitor menu state
-			 // create an observer instance
-			 var observer = new MutationObserver(function (mutations) {
-			 mutations.forEach(function (mutation) {
-			 if ((mutation.target.style.display == 'none' && domMenuColor.classList.contains('goog-control-open') && asc.onItem == false)) || mutation.target.style.left !=
-			 (domMenuColor.getBoundingClientRect().left+1).toString() + 'px'){
-			 domMenuColor.classList.toggle('goog-control-open', false);
-			 domMenuColorSub.setAttribute('style', 'display: None;');
-			 }
-			 });
-			 });
-			 
-			 // configuration of the observer:
-			 var config = {
-			 childList: true,
-			 attributes: true,
-			 characterData: false,
-			 //subtree: false,
-			 //attributeOldValue: false,
-			 //characterDataOldValue: false,
-			 attributeFilter: ['style']
-			 };
-			 
-			 // pass in the target node, as well as the observer options
-			 //noinspection JSCheckFunctionSignatures
-			 observer.observe(domMenuShield, config);
-			 */
 		},
 	};
 	
@@ -570,6 +530,7 @@ height: 7px;`,
 			return pathChanged;
 		}
 		
+		// noinspection JSUnusedGlobalSymbols
 		/**
 		 * Call before deleting all link to this file
 		 */
@@ -632,11 +593,11 @@ height: 7px;`,
 			this.itemNameMap = new Map();
 			
 			/** @type {{
-			*   main: HTMLElement,
-			*   title: HTMLElement,
-			*   titleContainer: HTMLElement,
-			*   childList: HTMLElement,
-			* }} */
+			 *   main: HTMLElement,
+			 *   title: HTMLElement,
+			 *   titleContainer: HTMLElement,
+			 *   childList: HTMLElement,
+			 * }} */
 			this.dom = {};
 			this._createDOM();
 		}
@@ -1128,7 +1089,7 @@ height: 7px;`,
 				let node = this.root.childNodes[i];
 				
 				// Skip if it's our folder container node
-				if (node === this.dom.main || node.classList.contains(GasFolder.CLASS_FOLDER)) continue;
+				if (node === this.dom.main || node['classList'].contains(GasFolder.CLASS_FOLDER)) continue;
 				
 				// Get file
 				let file = this._fileMap.get(node);
@@ -1352,7 +1313,7 @@ height: 7px;`,
 		waitInitialization: function () {
 			// Find App script Workspace node
 			this.setObserver(document.body, this.selector.workspace)
-				// Find App script Resource list node
+			// Find App script Resource list node
 				.then(node => this.setObserver(node, this.selector.listFile))
 				
 				// Start adding folders
