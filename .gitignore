@@ -25,6 +25,5 @@ $RECYCLE.BIN/
 /_DEV
 *.zip
 *-min.js
-/AppScriptColor
 /node_modules/
-/build/
+/build/output/
