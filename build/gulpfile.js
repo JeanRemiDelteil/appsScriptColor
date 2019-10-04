@@ -2,6 +2,7 @@
 
 const {src, dest, series} = require('gulp');
 const rollup = require('rollup');
+const resolve = require('rollup-plugin-node-resolve');
 const {terser} = require('rollup-plugin-terser');
 const clean = require('gulp-clean');
 const {argv} = require('yargs');
@@ -41,6 +42,7 @@ async function buildBundle() {
 	const bundle = await rollup.rollup({
 		input: `../${settings.inputDir}/${settings.inputFile}`,
 		plugins: [
+			resolve(),
 			...(settings.env === 'PRODUCTION' ? [terser({
 				sourcemap: false,
 			})] : []),

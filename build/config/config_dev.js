@@ -1,5 +1,5 @@
 module.exports = {
-	inputFile: 'injectColor.js',
+	inputFile: 'index.js',
 	inputDir: './src',
 	outputDir: 'AppScriptColorDEV',
 	
