@@ -119,7 +119,7 @@ ${css}
 		this.dom.gasFileList = node.querySelector(uiCssSelector.listItem);
 		
 		// Load all static folders
-		this.gasStaticRoot = new GasRoot(this.dom.gasFileList, this._saveStaticsFolder);
+		this.gasStaticRoot = new GasRoot(this.dom.gasFileList, this._saveStaticsFolder.bind(this));
 		
 		this.gasStaticRoot.setUpVirtualFolder(this._loadVirtualFolder());
 		this.gasStaticRoot.setDeepToggleState(this._loadStaticsFolder());
