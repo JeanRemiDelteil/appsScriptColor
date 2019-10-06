@@ -1,3 +1,5 @@
+import '../ui-dialog';
+
 export class ColorTheme {
 	
 	constructor(themes) {
@@ -12,6 +14,7 @@ export class ColorTheme {
 		this._divCmCustomStyle = null;
 		
 		this.applyTheme = this.applyTheme.bind(this);
+		this.customizeTheme = this.customizeTheme.bind(this);
 		this.getCurrentThemeName = this.getCurrentThemeName.bind(this);
 	}
 	
@@ -84,6 +87,19 @@ export class ColorTheme {
 	
 	getCurrentThemeName() {
 		return this.userTheme;
+	}
+	
+	customizeTheme() {
+		document.head.insertAdjacentHTML('beforeend', `
+<style>
+	asc-ui-dialog {
+		position: fixed;
+		z-index: 1100;
+	}
+</style>
+`);
+		console.log(customElements);
+		document.body.insertAdjacentHTML('beforeend', `<asc-ui-dialog title="Customize color Themes">YOO</asc-ui-dialog>`);
 	}
 }
 

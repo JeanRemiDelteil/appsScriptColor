@@ -1,3 +1,6 @@
+// Hack to allow using Custom Element in Chrome Extensions
+import '@webcomponents/custom-elements/custom-elements.min';
+
 import {Folders} from './virtual-folder';
 import {UiMenu} from './ui-menu';
 import {colorTheme, themeNames} from './color-theme';
@@ -12,7 +15,7 @@ function initAppsScriptColor() {
 		[
 			...themeNames.map(themeName => new ItemSubMenu(themeName, colorTheme.applyTheme)),
 			new ItemHorizontalSeparator(),
-			new ItemSubMenu('Custom themes', () => {console.log('PLOP');}),
+			new ItemSubMenu('Custom themes', colorTheme.customizeTheme),
 		],
 		colorTheme.getCurrentThemeName,
 	);
