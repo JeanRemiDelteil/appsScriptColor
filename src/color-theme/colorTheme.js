@@ -12,15 +12,41 @@ export class ColorTheme {
 		this._divCmCustomStyle = null;
 		
 		this.applyTheme = this.applyTheme.bind(this);
-		this.getCurrent = this.getCurrent.bind(this);
+		this.getCurrentThemeName = this.getCurrentThemeName.bind(this);
 	}
 	
-	initColors() {
+	
+	/**
+	 * Apply chosen theme
+	 *
+	 * @param {string} themeName
+	 */
+	_useCustomStyle(themeName) {
+		// Init the custom style element
+		if (!this._divCmCustomStyle) {
+			this._divCmCustomStyle = document.createElement('style');
+			this._divCmCustomStyle.setAttribute('id', 'cmCustomStyle');
+		}
+		
+		// noinspection JSUnresolvedVariable
+		this._divCmCustomStyle.innerHTML = this._themes[themeName].themeCss;
+		
+		// add style element last in the HEAD
+		document.head.appendChild(this._divCmCustomStyle);
+	}
+	
+	_storeThemeChosen(themeName) {
+		localStorage.setItem('appScriptColor-theme', themeName);
+		this.userTheme = themeName;
+	}
+	
+	
+	init() {
 		// Fetch user pref
 		this.userTheme = localStorage.getItem('appScriptColor-theme') || this.defaultTheme;
 		
 		// inject custom CSS
-		this.useCustomStyle(this.userTheme || this.defaultTheme);
+		this._useCustomStyle(this.userTheme || this.defaultTheme);
 		
 		
 		// create an observer instance to detect <style> insertion
@@ -51,36 +77,12 @@ export class ColorTheme {
 		observer.observe(document.head, config);
 	}
 	
-	/**
-	 * Apply chosen theme
-	 *
-	 * @param {string} themeName
-	 */
-	useCustomStyle(themeName) {
-		// Init the custom style element
-		if (!this._divCmCustomStyle) {
-			this._divCmCustomStyle = document.createElement('style');
-			this._divCmCustomStyle.setAttribute('id', 'cmCustomStyle');
-		}
-		
-		// noinspection JSUnresolvedVariable
-		this._divCmCustomStyle.innerHTML = this._themes[themeName].themeCss;
-		
-		// add style element last in the HEAD
-		document.head.appendChild(this._divCmCustomStyle);
-	}
-	
-	storeThemeChosen(themeName) {
-		localStorage.setItem('appScriptColor-theme', themeName);
-		this.userTheme = themeName;
-	}
-	
 	applyTheme(themeName) {
-		this.useCustomStyle(themeName);
-		this.storeThemeChosen(themeName);
+		this._useCustomStyle(themeName);
+		this._storeThemeChosen(themeName);
 	}
 	
-	getCurrent() {
+	getCurrentThemeName() {
 		return this.userTheme;
 	}
 }

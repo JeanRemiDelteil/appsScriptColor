@@ -1,23 +1,8 @@
 import {GasFile} from './gasFile';
+import {CLASS_CHILDLIST, CLASS_FOLDER, CLASS_TITLE, CLASS_TITLE_CONTAINER} from '../constant/className';
 
 
 export class GasFolder {
-	
-	static get CLASS_FOLDER() {
-		return 'asc_Folder';
-	}
-	
-	static get CLASS_TITLE_CONTAINER() {
-		return 'asc_titleContainer';
-	}
-	
-	static get CLASS_TITLE() {
-		return 'asc_folder_title';
-	}
-	
-	static get CLASS_CHILDLIST() {
-		return 'asc_folder_ChildList';
-	}
 	
 	get isRoot() {
 		return false;
@@ -63,21 +48,21 @@ export class GasFolder {
 	 */
 	_createDOM() {
 		this.dom.main = document.createElement('div');
-		this.dom.main.classList.add(GasFolder.CLASS_FOLDER, 'asc_opened');
+		this.dom.main.classList.add(CLASS_FOLDER, 'asc_opened');
 		
-		this.dom.main.innerHTML =
-			`<div class="${GasFolder.CLASS_TITLE_CONTAINER}">
+		this.dom.main.innerHTML = `
+<div class="${CLASS_TITLE_CONTAINER}">
 	<div class="asc_folderIcon">
 		<i class="asc_opened material-icons">folder_open</i>
 		<i class="asc_closed material-icons">folder</i>
 	</div>
-	<div class="${GasFolder.CLASS_TITLE}" title="${this.name}/">${this.name}</div>
+	<div class="${CLASS_TITLE}" title="${this.name}/">${this.name}</div>
 </div>
-<div class="${GasFolder.CLASS_CHILDLIST}"></div>`;
+<div class="${CLASS_CHILDLIST}"></div>`;
 		
-		this.dom.titleContainer = this.dom.main.querySelector(`.${GasFolder.CLASS_TITLE_CONTAINER}`);
-		this.dom.title = this.dom.main.querySelector(`.${GasFolder.CLASS_TITLE}`);
-		this.dom.childList = this.dom.main.querySelector(`.${GasFolder.CLASS_CHILDLIST}`);
+		this.dom.titleContainer = this.dom.main.querySelector(`.${CLASS_TITLE_CONTAINER}`);
+		this.dom.title = this.dom.main.querySelector(`.${CLASS_TITLE}`);
+		this.dom.childList = this.dom.main.querySelector(`.${CLASS_CHILDLIST}`);
 		
 		// Bind toggle listener, avoid passing event argument to toggle() 
 		this.dom.titleContainer.addEventListener('click', () => this.toggle());
