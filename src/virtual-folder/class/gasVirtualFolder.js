@@ -1,5 +1,5 @@
 import {GasFolder} from './gasFolder';
-import {getInfoShown} from '../settings';
+import {getInfoShown} from '../data/settings';
 
 
 export class GasVirtualFolder extends GasFolder {

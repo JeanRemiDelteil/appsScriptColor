@@ -130,7 +130,7 @@ height: 7px;`,
 	}
 	
 	
-	insert(){
+	init(){
 		this._insertMenuButton();
 	}
 	

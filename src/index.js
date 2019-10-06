@@ -2,13 +2,14 @@ import {Folders} from './virtual-folder';
 import {UiMenu} from './ui-menu';
 import {colorTheme, themeNames} from './color-theme';
 
-
 // Only execute if the current page is in editing mode
 if (/\/edit$/.test(document.location.pathname)) {
-	const colorMenu = new UiMenu(themeNames, colorTheme.applyTheme, colorTheme.getCurrent);
+	const scriptKey = document.location.pathname.match(/\/([^\/]+?)\/edit/)[1];
 	
-	colorTheme.initColors();
-	Folders.init();
+	const colorMenu = new UiMenu(themeNames, colorTheme.applyTheme, colorTheme.getCurrentThemeName);
+	const folders = new Folders(scriptKey);
 	
-	colorMenu.insert();
+	colorTheme.init();
+	folders.init();
+	colorMenu.init();
 }

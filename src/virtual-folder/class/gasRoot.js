@@ -1,13 +1,10 @@
 import {GasFolder} from './gasFolder';
 import {GasFile} from './gasFile';
 import {GasVirtualFolder} from './gasVirtualFolder';
+import {CLASS_FOLDER, CLASS_ROOT} from '../constant/className';
 
 
 export class GasRoot extends GasFolder {
-	
-	static get CLASS_ROOT() {
-		return 'asc_FolderRoot';
-	}
 	
 	get isRoot() {
 		return true;
@@ -23,8 +20,8 @@ export class GasRoot extends GasFolder {
 		super('', saveCallBack);
 		
 		// Update Root classes
-		this.dom.main.classList.remove(GasFolder.CLASS_FOLDER);
-		this.dom.main.classList.add(GasRoot.CLASS_ROOT);
+		this.dom.main.classList.remove(CLASS_FOLDER);
+		this.dom.main.classList.add(CLASS_ROOT);
 		
 		/**
 		 * Node that will contain this root Folder
@@ -122,7 +119,7 @@ export class GasRoot extends GasFolder {
 			let node = this.root.childNodes[i];
 			
 			// Skip if it's our folder container node
-			if (node === this.dom.main || node['classList'].contains(GasFolder.CLASS_FOLDER)) continue;
+			if (node === this.dom.main || node['classList'].contains(CLASS_FOLDER)) continue;
 			
 			// Get file
 			let file = this._fileMap.get(node);
