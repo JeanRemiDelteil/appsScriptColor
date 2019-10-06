@@ -342,4 +342,9 @@ export const Folders = {
 		infoShown && setInfoShown(infoShown);
 	},
 	
+	
+	init: function () {
+		this.insertCSS();
+		this.waitInitialization();
+	}
 };
