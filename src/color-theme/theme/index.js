@@ -13,5 +13,3 @@ export const themeNames = [
 	DarculaTheme.themeName,
 	DefaultTheme.themeName,
 ];
-
-export const defaultTheme = DefaultTheme;

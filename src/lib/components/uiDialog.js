@@ -57,6 +57,7 @@ export class UiDialog extends LitElement {
 		background-color: white;
 	}
 	header {
+		margin-bottom: 1em;
 		font-size: 1.25em;
 	}
 	footer {
