@@ -1,5 +1,7 @@
 import '../webComponents';
 import {html, LitElement} from 'lit-element';
+import '@material/mwc-icon-button';
+import {ICON_CLOSE} from '../icons';
 
 export const Events = {
 	UI_DIALOG_CLOSE: 'UI_DIALOG_CLOSE',
@@ -63,16 +65,8 @@ export class UiDialog extends LitElement {
 	
 	.close {
 		position: absolute;
-		
-		right: 8px;
-		top: 8px;
-		width: 12px;
-		height: 12px;
-		
-		padding: 8px;
-		
-		cursor: pointer;
-		user-select: none;
+		right: 0;
+		top: 0;
 	}
 	
 	.content {
@@ -82,7 +76,7 @@ export class UiDialog extends LitElement {
 
 <main>
 	<header>${this.header}</header>
-	<div class="close" @click="${this.close}">x</div>
+	<mwc-icon-button class="close" @click="${this.close}">${ICON_CLOSE}</mwc-icon-button>
 	
 	<div class="content">
 		<slot></slot>
