@@ -1,1 +1,0 @@
-export {UiDialog} from './uiDialog';

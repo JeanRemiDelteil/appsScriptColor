@@ -1,4 +1,4 @@
-import '../ui-dialog';
+import {CustomizeTheme} from './customizeTheme';
 
 export class ColorTheme {
 	
@@ -68,16 +68,12 @@ export class ColorTheme {
 			});
 		});
 		
-		// configuration of the observer:
-		const config = {
+		// pass in the target node, as well as the observer options
+		observer.observe(document.head, {
 			childList: true,
 			attributes: false,
 			characterData: false,
-		};
-		
-		// pass in the target node, as well as the observer options
-		//noinspection JSCheckFunctionSignatures
-		observer.observe(document.head, config);
+		});
 	}
 	
 	applyTheme(themeName) {
@@ -90,16 +86,12 @@ export class ColorTheme {
 	}
 	
 	customizeTheme() {
-		document.head.insertAdjacentHTML('beforeend', `
-<style>
-	asc-ui-dialog {
-		position: fixed;
-		z-index: 1100;
-	}
-</style>
-`);
-		console.log(customElements);
-		document.body.insertAdjacentHTML('beforeend', `<asc-ui-dialog title="Customize color Themes">YOO</asc-ui-dialog>`);
+		// Insert the Custom theme edit Dialog
+		// All the logic is this component
+		const domCustomizeTheme = document.createElement(CustomizeTheme.is);
+		domCustomizeTheme.colorTheme = this;
+		
+		document.body.appendChild(domCustomizeTheme);
 	}
 }
 
