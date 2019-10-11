@@ -1,4 +1,4 @@
-import {defaultThemes} from '../theme';
+import {defaultTheme, defaultThemes} from '../theme';
 
 class ThemeService {
 	
@@ -52,7 +52,7 @@ class ThemeService {
 	 * @return {CssTheme}
 	 */
 	getThemeByName(name) {
-		return this._themesMap[name];
+		return this._themesMap[name] || defaultTheme;
 	}
 	
 	/**
@@ -78,6 +78,36 @@ class ThemeService {
 		this._customThemeNames.sort((a, b) => b > a ? 1 : a === b ? 0 : -1);
 		
 		this._notifySubscribers();
+	}
+	
+	
+	saveCustomThemes() {
+		const customThemes = {};
+		
+		this._customThemeNames
+			.map(themeName => customThemes[themeName] = JSON.parse(this._themesMap[themeName].toJSON()));
+		
+		localStorage.setItem('appScriptColor-theme-custom', JSON.stringify(customThemes));
+	}
+	
+	loadCustomThemes() {
+		// Load custom themes
+		let customThemes;
+		try {
+			customThemes = JSON.parse(localStorage.getItem('appScriptColor-theme-custom') || {});
+		}
+		catch (e) {
+			customThemes = {};
+		}
+		
+		Object.keys(customThemes).forEach(name => {
+			const {rootTheme, themeName, variables, rules} = customThemes[name];
+			
+			this.addTheme(this.createThemeFrom(
+				this.getThemeByName(rootTheme),
+				{themeName, variables, rules},
+			));
+		});
 	}
 	
 	

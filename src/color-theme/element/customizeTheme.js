@@ -197,6 +197,7 @@ export class CustomizeTheme extends LitElement {
 		const newTheme = themeService.createThemeFrom(themeClass, {themeName, variables: themeColors});
 		
 		themeService.addTheme(newTheme);
+		themeService.saveCustomThemes();
 	}
 	
 	_onSaveTheme(themeClass) {

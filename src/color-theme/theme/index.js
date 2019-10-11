@@ -7,3 +7,7 @@ export const defaultThemes = [
 	darculaTheme,
 	defaultTheme,
 ];
+
+export {
+	defaultTheme,
+};

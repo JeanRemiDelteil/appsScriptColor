@@ -50,25 +50,7 @@ export class ColorTheme {
 	init() {
 		// Fetch user pref
 		this.userTheme = localStorage.getItem('appScriptColor-theme') || this.defaultTheme;
-		
-		// Load custom themes
-		let customThemes;
-		try {
-			customThemes = JSON.parse(localStorage.getItem('appScriptColor-theme-custom') || {});
-		}
-		catch (e) {
-			customThemes = {};
-		}
-		
-		Object.keys(customThemes).forEach(name => {
-			const {rootTheme, themeName, variables, rules} = customThemes[name];
-			
-			this._themeService.addTheme(this._themeService.createThemeFrom(
-				this._themeService.getThemeByName(rootTheme),
-				{themeName, variables, rules},
-			));
-		});
-		
+		this._themeService.loadCustomThemes();
 		
 		// inject custom CSS
 		this._useCustomStyle(this.userTheme || this.defaultTheme);
