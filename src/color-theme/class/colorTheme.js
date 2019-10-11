@@ -1,9 +1,12 @@
-import {CustomizeTheme} from './customizeTheme';
-
 export class ColorTheme {
 	
-	constructor(themes) {
-		this._themes = themes;
+	/**
+	 * @param {ThemeService} themeService
+	 * @param CustomizeTheme
+	 */
+	constructor(themeService, CustomizeTheme) {
+		this._themeService = themeService;
+		this._CustomizeTheme = CustomizeTheme;
 		
 		this.defaultTheme = 'Darcula';
 		this.userTheme = '';
@@ -31,8 +34,8 @@ export class ColorTheme {
 			this._divCmCustomStyle.setAttribute('id', 'cmCustomStyle');
 		}
 		
-		// noinspection JSUnresolvedVariable
-		this._divCmCustomStyle.innerHTML = this._themes[themeName].themeCss;
+		const theme = this._themeService.getThemeByName(themeName);
+		this._divCmCustomStyle.innerHTML = theme.css;
 		
 		// add style element last in the HEAD
 		document.head.appendChild(this._divCmCustomStyle);
@@ -47,6 +50,25 @@ export class ColorTheme {
 	init() {
 		// Fetch user pref
 		this.userTheme = localStorage.getItem('appScriptColor-theme') || this.defaultTheme;
+		
+		// Load custom themes
+		let customThemes;
+		try {
+			customThemes = JSON.parse(localStorage.getItem('appScriptColor-theme-custom') || {});
+		}
+		catch (e) {
+			customThemes = {};
+		}
+		
+		Object.keys(customThemes).forEach(name => {
+			const {rootTheme, themeName, variables, rules} = customThemes[name];
+			
+			this._themeService.addTheme(this._themeService.createThemeFrom(
+				this._themeService.getThemeByName(rootTheme),
+				{themeName, variables, rules},
+			));
+		});
+		
 		
 		// inject custom CSS
 		this._useCustomStyle(this.userTheme || this.defaultTheme);
@@ -88,7 +110,7 @@ export class ColorTheme {
 	customizeTheme() {
 		// Insert the Custom theme edit Dialog
 		// All the logic is this component
-		const domCustomizeTheme = document.createElement(CustomizeTheme.is);
+		const domCustomizeTheme = document.createElement(this._CustomizeTheme.is);
 		domCustomizeTheme.colorTheme = this;
 		
 		document.body.appendChild(domCustomizeTheme);

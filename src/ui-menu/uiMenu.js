@@ -2,15 +2,17 @@ export class UiMenu {
 	
 	/**
 	 * @param {string} menuTitle
-	 * @param {Item[]} items
+	 * @param {function()<Item[]>} getItems
 	 * @param {function} getSelectedItem
 	 */
-	constructor(menuTitle, items, getSelectedItem) {
+	constructor(menuTitle, getItems, getSelectedItem) {
 		this._menuTitle = menuTitle;
-		this._items = items;
+		this._getItems = getItems;
 		this._getSelectedItem = getSelectedItem;
 		
 		this.menuColorState = false;
+		
+		this.updateItems = this.updateItems.bind(this);
 	}
 	
 	
@@ -28,12 +30,7 @@ export class UiMenu {
 		this._domMenuColorSub.setAttribute('style', 'display: None;');
 		
 		// add menu item for each theme
-		this._items.forEach(item => {
-			this._domMenuColorSub.appendChild(item.getItem(() => {
-				this._domMenuColor.classList.toggle('goog-control-open', false);
-				this._domMenuColorSub.setAttribute('style', 'display: None;');
-			}));
-		});
+		this._buildMenuItems(this._domMenuColorSub);
 		
 		// insert Menu
 		googleScriptMenu.insertAdjacentHTML('beforeend', menuColor);
@@ -43,15 +40,33 @@ export class UiMenu {
 		this._domMenuColor = document.getElementById('macros-color-menu');
 		this._domMenuShield = document.getElementById('docs-menu-shield');
 		
-		// add similar behaviour then other menu buttons
+		// Close and hide menu
+		this._domMenuColorSub.addEventListener('menu-item-used', () => this._onMenuItemUsed());
+		
+		// Add similar behaviour then other menu buttons
 		this._domMenuColor.addEventListener('mouseenter', () => this._onMenuTitleEnter());
 		this._domMenuColor.addEventListener('mouseleave', () => this._onMenuTitleLeave());
 		
-		// display the menu
+		// Display the menu
 		this._domMenuColor.addEventListener('click', () => this._onMenuTitleClick());
 		
 		// Close menu when click event on document
 		document.body.addEventListener('click', (event) => this._onBodyClick(event));
+	}
+	
+	/**
+	 * @param {HTMLDivElement} domParent
+	 * @private
+	 */
+	_buildMenuItems(domParent) {
+		domParent.innerHTML = '';
+		
+		this._getItems()
+			.forEach(item => domParent.appendChild(item.getItem()));
+	}
+	
+	_onMenuItemUsed() {
+		this.close();
 	}
 	
 	_onMenuTitleEnter() {
@@ -106,4 +121,12 @@ height: 7px;`,
 		this._insertMenuButton();
 	}
 	
+	close() {
+		this._domMenuColor.classList.toggle('goog-control-open', false);
+		this._domMenuColorSub.setAttribute('style', 'display: None;');
+	}
+	
+	updateItems() {
+		this._buildMenuItems(this._domMenuColorSub);
+	}
 }

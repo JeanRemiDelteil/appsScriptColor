@@ -1,10 +1,17 @@
 export class Item {
 	
 	/**
-	 * @param {function} callback
-	 *
 	 * @return {HTMLElement}
 	 */
-	getItem(callback) {}
+	getItem() {}
+	
+	/**
+	 * @param {HTMLDivElement} item
+	 */
+	itemUsed(item) {
+		item.dispatchEvent(new CustomEvent('menu-item-used', {
+			bubbles: true,
+		}));
+	}
 	
 }

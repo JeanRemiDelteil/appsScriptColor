@@ -2,7 +2,7 @@ import {Item} from './item';
 
 export class ItemHorizontalSeparator extends Item {
 	
-	getItem(callback) {
+	getItem() {
 		const domItem = document.createElement('div');
 		domItem.classList.add('goog-menuseparator');
 		domItem.setAttribute('aria-disabled', 'true');

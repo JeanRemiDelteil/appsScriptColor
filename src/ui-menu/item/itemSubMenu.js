@@ -10,7 +10,7 @@ export class ItemSubMenu extends Item {
 	}
 	
 	
-	getItem(callback) {
+	getItem() {
 		const domItem = document.createElement('div');
 		domItem.classList.add('goog-menuitem', 'apps-menuitem');
 		
@@ -31,7 +31,8 @@ export class ItemSubMenu extends Item {
 		});
 		domItem.addEventListener('click', () => {
 			this.callback(this.label);
-			callback();
+			
+			this.itemUsed(domItem);
 		});
 		
 		return domItem;
