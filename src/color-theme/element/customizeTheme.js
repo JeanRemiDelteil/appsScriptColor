@@ -205,7 +205,6 @@ export class CustomizeTheme extends LitElement {
 		}
 		
 		const newTheme = themeService.createThemeFrom(themeClass, {themeName, variables: themeColors});
-		themeService.saveCustomThemes();
 		
 		this._selectTheme(newTheme.themeName);
 	}
@@ -217,14 +216,12 @@ export class CustomizeTheme extends LitElement {
 			themeClass,
 			{themeName, variables: themeColors},
 		);
-		themeService.saveCustomThemes();
 		
 		this._selectTheme(theme.themeName);
 	}
 	
 	_onDeleteTheme(themeClass) {
 		themeService.deleteTheme(themeClass);
-		themeService.saveCustomThemes();
 		
 		this._onThemeSelection();
 	}
