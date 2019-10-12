@@ -267,6 +267,7 @@ class ThemeService {
 		this._customThemeNames = this._customThemeNames
 			.filter(name => name !== theme.themeName);
 		
+		this._saveCustomThemes();
 		this._notifySubscribers();
 	}
 	
