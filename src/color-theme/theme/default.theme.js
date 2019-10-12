@@ -3,16 +3,17 @@ import {CssTheme} from '../class/cssTheme';
 export const defaultTheme = new CssTheme({
 	themeName: 'Default',
 	variables: {
-		'codeBackGround': 'white',
-		'border': '#D9D9D9',
-		'listItemBackgroundSelected': '#f5f5f5',
+		'codeBackGround': '#fff',
 		'generalText': '#333',
+		
+		'Folder text': '#8a93ab',
+		'Folder background': '#bfbfbf29',
 	},
 	rules: {
 		
 		// Folders
 		'.asc_Folder>.asc_titleContainer': {
-			'color': '#8a93ab;',
+			'color': '{{Folder text}}',
 		},
 		'.asc_info_popup': {
 			'color': '{{generalText}}',
@@ -20,7 +21,7 @@ export const defaultTheme = new CssTheme({
 			'border-color': '{{generalText}}',
 		},
 		'.asc_Folder': {
-			'background-color': '#bfbfbf29',
+			'background-color': '{{Folder background}}',
 		},
 		
 	},

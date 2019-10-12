@@ -50,7 +50,7 @@ export class CssTheme {
 			for (let property in cssSettings) {
 				// replace declared variables
 				propertyStr += `${property}:${cssSettings[property]
-					.replace(/{{(\w+)}}/g, (m, p1) => p1 in variables ? variables[p1] : m)};`;
+					.replace(/{{([^}{]+?)}}/g, (m, p1) => p1 in variables ? variables[p1] : m)};`;
 			}
 			
 			cssSheet += `${selector}{${propertyStr}}`;
