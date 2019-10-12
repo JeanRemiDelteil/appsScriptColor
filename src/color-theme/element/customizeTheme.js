@@ -89,7 +89,11 @@ export class CustomizeTheme extends LitElement {
 		return html`
 <style>
 	:host {
+		display: block;
 		color: black;
+	}
+	:host, input, select, button {
+		font-family: Roboto, Arial, sans-serif;
 	}
 
 	.theme-selector {
@@ -97,8 +101,7 @@ export class CustomizeTheme extends LitElement {
 		align-items: baseline;
 	}
 	.theme-selector,
-	.theme-name,
-	.theme-variables {
+	.theme-name {
 		margin-bottom: 1em;
 	}
 	
@@ -146,7 +149,7 @@ export class CustomizeTheme extends LitElement {
 	
 	<div class="theme-variables">${this._render_ThemeVariables(this.themeClass)}</div>
 	
-	<div class="actions">${this._render_actions(this.themeClass, this.newThemeName, this.newColors)}</div>
+	<div class="actions" slot="action">${this._render_actions(this.themeClass, this.newThemeName, this.newColors)}</div>
 </asc-ui-dialog>
 `;
 	}

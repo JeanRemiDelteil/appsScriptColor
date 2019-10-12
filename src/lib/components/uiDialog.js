@@ -42,19 +42,26 @@ export class UiDialog extends LitElement {
 		
 		display: flex;
 		justify-content: center;
-		align-items: center;
+		
+		max-height: 100%;
 		
 		background-color: #9999994d;
 	}
 	:host([fullscreen]) {
 		position: fixed;
 		z-index: 2100;
+		align-items: center;
 	}
 
 	main{
 		position: relative;
 		
-		padding: 32px;
+		display: flex;
+		flex-direction: column;
+		
+		overflow: auto;
+		
+		padding: 32px 0;
 		min-height: 200px;
 		
 		background-color: white;
@@ -64,21 +71,21 @@ export class UiDialog extends LitElement {
 	}
 	
 	header {
-		margin-bottom: 1em;
 		font-size: 1.25em;
+		margin: 0 32px 1em;
+	}
+	.content {
+		overflow: auto;
+		padding: 0 32px;
 	}
 	footer {
-		
+		margin: 1em 32px 0;
 	}
 	
 	.close {
 		position: absolute;
 		right: 0;
 		top: 0;
-	}
-	
-	.content {
-		
 	}
 </style>
 
