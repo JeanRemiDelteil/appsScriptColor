@@ -59,8 +59,9 @@ async function buildBundle() {
 async function watchdBundle() {
 	// noinspection JSCheckFunctionSignatures
 	return rollup.watch({
-		input: './_AppScriptColor_DEV/injectColor.js',
+		input: `../${settings.inputDir}/${settings.inputFile}`,
 		plugins: [
+			resolve(),
 			terser({
 				sourcemap: false,
 			}),
@@ -68,7 +69,7 @@ async function watchdBundle() {
 		
 		output: [
 			{
-				file: './build/AppScriptColor/injectColor.js',
+				file: `./output/${settings.outputDir}/injectColor.js`,
 				format: 'iife',
 				sourcemap: false,
 			},

@@ -6,6 +6,11 @@
   "repository": {
     "type": "git"
   },
+  "scripts": {
+    "build": "gulp build --target=prod --cwd=./build",
+    "build_dev": "gulp build --cwd=./build",
+    "watch": "gulp watch --cwd=./build"
+  },
   "devDependencies": {
     "gulp": "^4.0.2",
     "gulp-clean": "^0.4.0",
@@ -14,9 +19,9 @@
     "rollup-plugin-terser": "^5.1.2",
     "yargs": "^14.0.0"
   },
-  "scripts": {
-    "build": "gulp build --target=prod --cwd=./build",
-    "build_dev": "gulp build --cwd=./build",
-    "watch": "gulp watch --cwd=./build"
+  "dependencies": {
+	  "@material/mwc-icon-button": "^0.9.1",
+    "@webcomponents/custom-elements": "^1.3.0",
+    "lit-element": "^2.2.1"
   }
 }

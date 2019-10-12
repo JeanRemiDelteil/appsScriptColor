@@ -1,6 +1,2 @@
-import {ColorTheme} from './colorTheme';
-import {themes} from './theme';
-
-export {themeNames} from './theme';
-
-export const colorTheme = new ColorTheme(themes);
+export {themeService} from './service/theme.service';
+export {CustomizeTheme} from './element/customizeTheme';

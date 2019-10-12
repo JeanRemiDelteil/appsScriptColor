@@ -1,17 +1,13 @@
-import {BlackFoxConsoleTheme} from './blackFoxConsole.theme';
-import {DarculaTheme} from './darcula.theme';
-import {DefaultTheme} from './default.theme';
+import {blackFoxConsoleTheme} from './blackFoxConsole.theme';
+import {darculaTheme} from './darcula.theme';
+import {defaultTheme} from './default.theme';
 
-export const themes = {
-	[BlackFoxConsoleTheme.themeName]: BlackFoxConsoleTheme,
-	[DarculaTheme.themeName]: DarculaTheme,
-	[DefaultTheme.themeName]: DefaultTheme,
-};
-
-export const themeNames = [
-	BlackFoxConsoleTheme.themeName,
-	DarculaTheme.themeName,
-	DefaultTheme.themeName,
+export const defaultThemes = [
+	blackFoxConsoleTheme,
+	darculaTheme,
+	defaultTheme,
 ];
 
-export const defaultTheme = DefaultTheme;
+export {
+	defaultTheme,
+};
