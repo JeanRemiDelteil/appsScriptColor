@@ -59,7 +59,7 @@ export class CustomizeTheme extends LitElement {
 		 */
 		this._domThemeSelector = this.shadowRoot.querySelector('#theme-selector');
 		
-		this._loadTheme(this._getSelectedTheme());
+		this._selectTheme(themeService.currentTheme.themeName);
 	}
 	
 	//</editor-fold>
@@ -148,8 +148,9 @@ export class CustomizeTheme extends LitElement {
 	_render_actions(themeClass, newName, newColors) {
 		return html`
 <button class="action-button" @click="${() => this._onDeleteTheme(themeClass)}" ?disabled="${this._isDeleteButtonDisabled(themeClass)}">Delete</button>
-<button class="action-button" @click="${() => this._onSaveTheme(themeClass, newName, newColors)}" ?disabled="${this._isSaveButtonDisabled(themeClass)}">Save</button>
 <button class="action-button" @click="${() => this._onCopyTheme(themeClass, newName, newColors)}">Copy</button>
+<button class="action-button" @click="${() => this._onSaveTheme(themeClass, newName, newColors)}" ?disabled="${this._isSaveButtonDisabled(themeClass)}">Save</button>
+<button class="action-button" @click="${() => this._onUseTheme(themeClass)}">Use</button>
 `;
 	}
 	
@@ -226,6 +227,14 @@ export class CustomizeTheme extends LitElement {
 		this._onThemeSelection();
 	}
 	
+	/**
+	 * @param {CssTheme} themeClass
+	 * @private
+	 */
+	_onUseTheme(themeClass) {
+		themeService.setCurrentTheme(themeClass.themeName);
+	}
+	
 	//</editor-fold>
 	
 	
@@ -278,6 +287,9 @@ export class CustomizeTheme extends LitElement {
 	
 	close() {
 		this.remove();
+		
+		// Reload applied theme
+		themeService.setCurrentTheme(themeService.currentTheme.themeName);
 	}
 	
 	static appendToBody() {
