@@ -3,6 +3,18 @@ import {html, LitElement} from 'lit-element';
 import '../../lib/components/uiDialog';
 import {themeService} from '../service/theme.service';
 
+// Style needed to adapt layout
+document.head.insertAdjacentHTML('beforeend', `<style>
+.asc-main-sidebar {
+	display: flex;
+}
+.asc-main-sidebar > div:nth-child(2) {
+    position: relative!important;
+    flex: auto;
+}
+</style>`);
+
+
 export class CustomizeTheme extends LitElement {
 	
 	static get is() {
@@ -15,11 +27,18 @@ export class CustomizeTheme extends LitElement {
 			themeClass: {type: Function},
 			newColors: {type: Object},
 			newThemeName: {type: String},
+			fullScreen: {
+				type: Boolean,
+				reflect: true,
+				attribute: 'fullscreen',
+			},
 		};
 	}
 	
 	constructor() {
 		super();
+		
+		this.fullScreen = false;
 		
 		this.themes = themeService.themeNames;
 		
@@ -69,6 +88,10 @@ export class CustomizeTheme extends LitElement {
 	render() {
 		return html`
 <style>
+	:host {
+		color: black;
+	}
+
 	.theme-selector {
 		display: flex;
 		align-items: baseline;
@@ -109,7 +132,7 @@ export class CustomizeTheme extends LitElement {
 	}
 </style>
 
-<asc-ui-dialog header="Customize color Theme" @UI_DIALOG_CLOSE="${this.close}">
+<asc-ui-dialog ?fullscreen="${this.fullScreen}" header="Customize color Theme" @UI_DIALOG_CLOSE="${this.close}">
 	
 	<div class="theme-selector">
 		<label for="theme-selector">Select theme:</label>
@@ -288,12 +311,33 @@ export class CustomizeTheme extends LitElement {
 	close() {
 		this.remove();
 		
+		if (CustomizeTheme._domSidebarParent) {
+			CustomizeTheme._domSidebarParent.classList.remove('asc-main-sidebar');
+			delete CustomizeTheme._domSidebarParent;
+		}
+		CustomizeTheme._opened = false;
+		
 		// Reload applied theme
 		themeService.setCurrentTheme(themeService.currentTheme.themeName);
 	}
 	
 	static appendToBody() {
-		document.body.insertAdjacentHTML('beforeend', `<${this.is}></${this.is}>`);
+		if (this._opened) return;
+		this._opened = true;
+		
+		const domWorkspace = document.querySelector('.workspace');
+		
+		if (!domWorkspace) {
+			// Insert as a global dialog box
+			document.body.insertAdjacentHTML('beforeend', `<${this.is} fullscreen></${this.is}>`);
+		}
+		else {
+			this._domSidebarParent = domWorkspace.parentElement.parentElement.parentElement.parentElement;
+			
+			this._domSidebarParent.classList.add('asc-main-sidebar');
+			this._domSidebarParent.insertAdjacentHTML('beforeend', `<${this.is}></${this.is}>`);
+		}
+		
 	}
 }
 

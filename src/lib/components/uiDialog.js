@@ -32,8 +32,8 @@ export class UiDialog extends LitElement {
 <style>
 	/* Overlay */
 	:host {
-		position: fixed;
-		z-index: 2100;
+		position: relative;
+		z-index: auto;
 		
 		top: 0;
 		bottom: 0;
@@ -46,16 +46,23 @@ export class UiDialog extends LitElement {
 		
 		background-color: #9999994d;
 	}
+	:host([fullscreen]) {
+		position: fixed;
+		z-index: 2100;
+	}
 
 	main{
 		position: relative;
 		
-	    margin: 32px;
 		padding: 32px;
 		min-height: 200px;
 		
 		background-color: white;
 	}
+	:host([fullscreen]) main {
+	    margin: 32px;
+	}
+	
 	header {
 		margin-bottom: 1em;
 		font-size: 1.25em;
