@@ -28,6 +28,10 @@ export class CssTheme {
 		return this._themeName;
 	}
 	
+	get rootTheme() {
+		return this._rootTheme;
+	}
+	
 	
 	/**
 	 * Compose rules string with variables
@@ -55,15 +59,24 @@ export class CssTheme {
 		return cssSheet;
 	}
 	
-	
-	toJSON() {
-		return JSON.stringify({
+	/**
+	 * Overridden when using createFrom()
+	 *
+	 * @return {{themeName: *, variables: *, rootTheme: string, rules: *}}
+	 */
+	toObject() {
+		return {
 			rootTheme: this._rootTheme,
 			themeName: this._themeName,
 			variables: this._variables,
 			rules: this._rules,
-		});
+		};
 	}
+	
+	toJSON() {
+		return JSON.stringify(this.toObject());
+	}
+	
 	
 	/**
 	 * @param themeName
@@ -87,13 +100,13 @@ export class CssTheme {
 		});
 		
 		// Only export variation when stringify a copied theme
-		createdTheme.toJSON = function () {
-			return JSON.stringify({
+		createdTheme.toObject = function () {
+			return {
 				rootTheme: this._rootTheme,
 				themeName: this._themeName,
 				variables: variables,
 				rules: rules,
-			});
+			};
 		};
 		
 		return createdTheme;

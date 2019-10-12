@@ -2,14 +2,9 @@ export class ColorTheme {
 	
 	/**
 	 * @param {ThemeService} themeService
-	 * @param CustomizeTheme
 	 */
-	constructor(themeService, CustomizeTheme) {
+	constructor(themeService) {
 		this._themeService = themeService;
-		this._CustomizeTheme = CustomizeTheme;
-		
-		this.defaultTheme = 'Darcula';
-		this.userTheme = '';
 		
 		/**
 		 * @type {HTMLElement}
@@ -17,43 +12,29 @@ export class ColorTheme {
 		this._divCmCustomStyle = null;
 		
 		this.applyTheme = this.applyTheme.bind(this);
-		this.customizeTheme = this.customizeTheme.bind(this);
-		this.getCurrentThemeName = this.getCurrentThemeName.bind(this);
 	}
 	
 	
 	/**
 	 * Apply chosen theme
-	 *
-	 * @param {string} themeName
 	 */
-	_useCustomStyle(themeName) {
+	_useCustomStyle() {
 		// Init the custom style element
 		if (!this._divCmCustomStyle) {
 			this._divCmCustomStyle = document.createElement('style');
 			this._divCmCustomStyle.setAttribute('id', 'cmCustomStyle');
 		}
 		
-		const theme = this._themeService.getThemeByName(themeName);
-		this._divCmCustomStyle.innerHTML = theme.css;
+		this._divCmCustomStyle.innerHTML = this._themeService.currentTheme.css;
 		
 		// add style element last in the HEAD
 		document.head.appendChild(this._divCmCustomStyle);
 	}
 	
-	_storeThemeChosen(themeName) {
-		localStorage.setItem('appScriptColor-theme', themeName);
-		this.userTheme = themeName;
-	}
-	
 	
 	init() {
-		// Fetch user pref
-		this.userTheme = localStorage.getItem('appScriptColor-theme') || this.defaultTheme;
-		this._themeService.loadCustomThemes();
-		
 		// inject custom CSS
-		this._useCustomStyle(this.userTheme || this.defaultTheme);
+		this._useCustomStyle();
 		
 		
 		// create an observer instance to detect <style> insertion
@@ -81,21 +62,9 @@ export class ColorTheme {
 	}
 	
 	applyTheme(themeName) {
-		this._useCustomStyle(themeName);
-		this._storeThemeChosen(themeName);
+		this._themeService.setCurrentTheme(themeName);
+		this._useCustomStyle();
 	}
 	
-	getCurrentThemeName() {
-		return this.userTheme;
-	}
-	
-	customizeTheme() {
-		// Insert the Custom theme edit Dialog
-		// All the logic is this component
-		const domCustomizeTheme = document.createElement(this._CustomizeTheme.is);
-		domCustomizeTheme.colorTheme = this;
-		
-		document.body.appendChild(domCustomizeTheme);
-	}
 }
 

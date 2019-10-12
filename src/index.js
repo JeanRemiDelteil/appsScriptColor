@@ -1,6 +1,6 @@
 import {Folders} from './virtual-folder';
 import {UiMenu} from './ui-menu';
-import {colorTheme, themeService} from './color-theme';
+import {colorTheme, CustomizeTheme, themeService} from './color-theme';
 import {ItemHorizontalSeparator, ItemSubMenu} from './ui-menu/item';
 
 
@@ -12,9 +12,9 @@ function initAppsScriptColor() {
 		() => [
 			...themeService.themeNames.map(themeName => new ItemSubMenu(themeName, colorTheme.applyTheme)),
 			new ItemHorizontalSeparator(),
-			new ItemSubMenu('Custom themes', colorTheme.customizeTheme),
+			new ItemSubMenu('Custom themes', () => CustomizeTheme.appendToBody()),
 		],
-		colorTheme.getCurrentThemeName,
+		() => themeService.currentTheme.themeName,
 	);
 	const folders = new Folders(scriptKey);
 	

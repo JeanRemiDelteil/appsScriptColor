@@ -38,6 +38,9 @@ export class CustomizeTheme extends LitElement {
 		this._updateThemeList = this._updateThemeList.bind(this);
 	}
 	
+	
+	//<editor-fold desc="# Lifecycle">
+	
 	connectedCallback() {
 		super.connectedCallback();
 		
@@ -49,6 +52,19 @@ export class CustomizeTheme extends LitElement {
 		
 		themeService.unsubscribe(this._updateThemeList);
 	}
+	
+	firstUpdated(_changedProperties) {
+		/**
+		 * @type {HTMLSelectElement}
+		 */
+		this._domThemeSelector = this.shadowRoot.querySelector('#theme-selector');
+		
+		this._loadTheme(this._getSelectedTheme());
+	}
+	
+	//</editor-fold>
+	
+	//<editor-fold desc="# Render">
 	
 	render() {
 		return html`
@@ -88,13 +104,16 @@ export class CustomizeTheme extends LitElement {
 		display: flex;
 		justify-content: flex-end;
 	}
+	.action-button {
+		margin-left: 1em;
+	}
 </style>
 
 <asc-ui-dialog header="Customize color Theme" @UI_DIALOG_CLOSE="${this.close}">
 	
 	<div class="theme-selector">
 		<label for="theme-selector">Select theme:</label>
-		<select id="theme-selector" @input="${this._onThemeSelection}">${this._render_ThemeSelector(this.themes)}</select>
+		<select id="theme-selector" .value="${this.themeClass && this.themeClass.themeName || ''}" @input="${this._onThemeSelection}">${this._render_ThemeSelector(this.themes)}</select>
 	</div>
 	
 	<div class="theme-name">
@@ -127,36 +146,21 @@ export class CustomizeTheme extends LitElement {
 	}
 	
 	_render_actions(themeClass, newName, newColors) {
-		if (!themeClass || !newName || Object.keys(newColors).length === 0) return html``;
-		
-		if (themeService.defaultThemeNames.includes(themeClass._themeName)) {
-			return html`
-<button @click="${() => this._onCreateFromTheme(themeClass, newName, newColors)}">Create from</button>
-`;
-		}
-		
 		return html`
-<button @click="${() => this._onSaveTheme(themeClass)}>Save theme</button>
+<button class="action-button" @click="${() => this._onDeleteTheme(themeClass)}" ?disabled="${this._isDeleteButtonDisabled(themeClass)}">Delete</button>
+<button class="action-button" @click="${() => this._onSaveTheme(themeClass, newName, newColors)}" ?disabled="${this._isSaveButtonDisabled(themeClass)}">Save</button>
+<button class="action-button" @click="${() => this._onCopyTheme(themeClass, newName, newColors)}">Copy</button>
 `;
 	}
 	
+	//</editor-fold>
 	
-	firstUpdated(_changedProperties) {
-		/**
-		 * @type {HTMLSelectElement}
-		 */
-		const domThemeSelector = this.shadowRoot.querySelector('#theme-selector');
-		this._getSelectedTheme = () => domThemeSelector.value;
-		
-		this._loadTheme(this._getSelectedTheme());
-	}
-	
+	//<editor-fold desc="# onEvent">
 	
 	/**
-	 * @param {Event} event
 	 * @private
 	 */
-	_onThemeSelection(event) {
+	_onThemeSelection() {
 		this.newThemeName = '';
 		this.newColors = {};
 		
@@ -193,26 +197,56 @@ export class CustomizeTheme extends LitElement {
 		this.newThemeName = domInput.value;
 	}
 	
-	_onCreateFromTheme(themeClass, themeName, themeColors) {
-		const newTheme = themeService.createThemeFrom(themeClass, {themeName, variables: themeColors});
+	_onCopyTheme(themeClass, themeName, themeColors) {
+		if (!themeName) themeName = themeClass.themeName;
 		
-		themeService.addTheme(newTheme);
+		if (themeService.themeNames.includes(themeName)) {
+			themeName += ' ' + new Date().toISOString();
+		}
+		
+		const newTheme = themeService.createThemeFrom(themeClass, {themeName, variables: themeColors});
 		themeService.saveCustomThemes();
+		
+		this._selectTheme(newTheme.themeName);
 	}
 	
-	_onSaveTheme(themeClass) {
-		console.log('Save theme ', themeClass._themeName);
+	_onSaveTheme(themeClass, themeName, themeColors) {
+		if (!themeName) themeName = themeClass.themeName;
+		
+		const theme = themeService.updateTheme(
+			themeClass,
+			{themeName, variables: themeColors},
+		);
+		themeService.saveCustomThemes();
+		
+		this._selectTheme(theme.themeName);
 	}
+	
+	_onDeleteTheme(themeClass) {
+		themeService.deleteTheme(themeClass);
+		themeService.saveCustomThemes();
+		
+		this._onThemeSelection();
+	}
+	
+	//</editor-fold>
+	
+	
+	//<editor-fold desc="# Private methods">
 	
 	/**
-	 * Definition reset at firstUpdated() lifecycle callback
 	 * @return {string}
 	 * @private
 	 */
 	_getSelectedTheme() {
-		return '';
+		return this._domThemeSelector && this._domThemeSelector.value || '';
 	}
 	
+	_selectTheme(themeName) {
+		window.requestAnimationFrame(
+			() => this.themeClass = themeService.getThemeByName(themeName),
+		);
+	}
 	
 	_loadTheme(themeName) {
 		if (!themeName) return;
@@ -224,10 +258,34 @@ export class CustomizeTheme extends LitElement {
 		this.themes = themeService.themeNames;
 	}
 	
+	_isSaveButtonDisabled(themeClass) {
+		return themeClass
+		       && themeService
+			       .defaultThemeNames
+			       .includes(themeClass._themeName)
+		       || (
+			       !Object.keys(this.newColors).length
+			       && !this.newThemeName
+		       );
+	}
+	
+	_isDeleteButtonDisabled(themeClass) {
+		return themeClass
+		       && themeService
+			       .defaultThemeNames
+			       .includes(themeClass._themeName);
+	}
+	
+	//</editor-fold>
+	
+	
 	close() {
 		this.remove();
 	}
 	
+	static appendToBody() {
+		document.body.insertAdjacentHTML('beforeend', `<${this.is}></${this.is}>`);
+	}
 }
 
 customElements.define(CustomizeTheme.is, CustomizeTheme);

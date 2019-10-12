@@ -26,6 +26,16 @@ class ThemeService {
 		 * @private
 		 */
 		this._callbacks = new Set();
+		
+		// Init
+		this.loadCustomThemes();
+		const currentThemeName = localStorage.getItem('appScriptColor-theme') || 'Darcula';
+		
+		/**
+		 * @type {CssTheme}
+		 * @private
+		 */
+		this._appliedTheme = this.getThemeByName(currentThemeName);
 	}
 	
 	/**
@@ -45,6 +55,20 @@ class ThemeService {
 		];
 	}
 	
+	/**
+	 * @return {CssTheme}
+	 */
+	get currentTheme() {
+		return this._appliedTheme;
+	}
+	
+	/**
+	 * @param {string} themeName
+	 */
+	setCurrentTheme(themeName) {
+		this._appliedTheme = this.getThemeByName(themeName);
+		localStorage.setItem('appScriptColor-theme', this._appliedTheme.themeName);
+	}
 	
 	/**
 	 * @param {string} name\
@@ -55,6 +79,7 @@ class ThemeService {
 		return this._themesMap[name] || defaultTheme;
 	}
 	
+	
 	/**
 	 * @param {CssTheme} rootTheme
 	 * @param {string} themeName
@@ -64,7 +89,44 @@ class ThemeService {
 	 * @return {CssTheme}
 	 */
 	createThemeFrom(rootTheme, {themeName, variables = {}, rules = {}}) {
-		return rootTheme.createFrom({themeName, variables, rules});
+		
+		while (rootTheme.rootTheme) {
+			const themeObject = rootTheme.toObject();
+			
+			variables = {
+				...themeObject.variables,
+				...variables,
+			};
+			rules = {
+				...themeObject.rules,
+				...rules,
+			};
+			
+			rootTheme = this.getThemeByName(rootTheme.rootTheme);
+		}
+		
+		
+		const newTheme = rootTheme.createFrom({themeName, variables, rules});
+		this.addTheme(newTheme);
+		
+		return newTheme;
+	}
+	
+	/**
+	 * @param {CssTheme} theme
+	 * @param {string} themeName
+	 * @param {Object<string, string>} variables
+	 * @param {Object<string, Object<string, string>>} rules
+	 */
+	updateTheme(theme, {themeName, variables = {}, rules = {}}) {
+		if (defaultThemes.includes(theme)) return;
+		
+		// Remove theme from custom theme
+		delete this._themesMap[theme.themeName];
+		this._customThemeNames = this._customThemeNames
+			.filter(name => name !== theme.themeName);
+		
+		return this.createThemeFrom(theme, {themeName, variables, rules});
 	}
 	
 	/**
@@ -76,6 +138,20 @@ class ThemeService {
 		this._themesMap[theme.themeName] = theme;
 		this._customThemeNames.push(theme.themeName);
 		this._customThemeNames.sort((a, b) => b > a ? 1 : a === b ? 0 : -1);
+		
+		this._notifySubscribers();
+	}
+	
+	/**
+	 * @param {CssTheme} theme
+	 */
+	deleteTheme(theme) {
+		if (defaultThemes.includes(theme)) return;
+		
+		// Remove theme from custom theme
+		delete this._themesMap[theme.themeName];
+		this._customThemeNames = this._customThemeNames
+			.filter(name => name !== theme.themeName);
 		
 		this._notifySubscribers();
 	}
@@ -103,10 +179,10 @@ class ThemeService {
 		Object.keys(customThemes).forEach(name => {
 			const {rootTheme, themeName, variables, rules} = customThemes[name];
 			
-			this.addTheme(this.createThemeFrom(
+			this.createThemeFrom(
 				this.getThemeByName(rootTheme),
 				{themeName, variables, rules},
-			));
+			);
 		});
 	}
 	
