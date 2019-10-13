@@ -1,5 +1,5 @@
 import '../webComponents';
-import {html, LitElement} from 'lit-element';
+import {customElement, html, LitElement, property} from 'lit-element';
 import '@material/mwc-icon-button';
 import {ICON_CLOSE} from '../icons';
 
@@ -7,25 +7,14 @@ export const Events = {
 	UI_DIALOG_CLOSE: 'UI_DIALOG_CLOSE',
 };
 
-
+@customElement('asc-ui-dialog')
 export class UiDialog extends LitElement {
 	
-	static get is() {
-		return 'asc-ui-dialog';
-	}
+	@property({type: String})
+	header = '';
 	
-	static get properties() {
-		return {
-			header: {type: String},
-		};
-	}
+	hidden = true;
 	
-	constructor() {
-		super();
-		
-		this.header = '';
-		this.hidden = true;
-	}
 	
 	render() {
 		return html`
@@ -111,5 +100,3 @@ export class UiDialog extends LitElement {
 		}));
 	}
 }
-
-customElements.define(UiDialog.is, UiDialog);
