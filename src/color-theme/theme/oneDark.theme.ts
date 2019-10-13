@@ -1,4 +1,4 @@
-import {darculaTheme} from './darcula.theme';
+import { darculaTheme } from './darcula.theme';
 
 export const oneDarkTheme = darculaTheme.createFrom({
 	themeName: 'One Dark',

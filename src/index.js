@@ -14,7 +14,7 @@ function initAppsScriptColor() {
 				new ItemSubMenu(themeName, () => themeService.setCurrentTheme(themeName)),
 			),
 			new ItemHorizontalSeparator(),
-			new ItemSubMenu('Custom themes', () => CustomizeTheme.appendToBody()),
+			new ItemSubMenu('Custom themes', () => CustomizeTheme.open()),
 		],
 		() => themeService.currentTheme.themeName,
 	);

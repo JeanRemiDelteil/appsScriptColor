@@ -1,76 +1,49 @@
 import {defaultTheme, defaultThemes} from '../theme';
+import {CssTheme} from '../class/cssTheme';
+import {ICssThemeOptions} from '../interface/cssThemeOptions.interface';
+import {ICreateThemeFromOptions} from '../interface/createThemeFromOptions.interface';
+
+
+const CM_CUSTOM_STYLE_ID = 'cmCustomStyle';
+
 
 class ThemeService {
 	
-	constructor() {
-		/**
-		 * @type {Object<CssTheme>}
-		 */
-		this._themesMap = {};
+	private _currentTheme: CssTheme;
+	private _themesMap: { [themeName: string]: CssTheme } = {};
+	private _defaultThemeNames: string[] = defaultThemes.map(theme => {
+		this._themesMap[theme.themeName] = theme;
 		
-		/**
-		 * @type {string[]}
-		 */
-		this._defaultThemeNames = defaultThemes.map(theme => {
-			this._themesMap[theme.themeName] = theme;
-			
-			return theme.themeName;
-		});
-		/**
-		 * @type {string[]}
-		 */
-		this._customThemeNames = [];
-		
-		/**
-		 * @type {Set<function>}
-		 * @private
-		 */
-		this._callbacks = new Set();
-		
-		/**
-		 * @type {HTMLElement}
-		 * @private
-		 */
-		this._dom_divCmCustomStyle = null;
-		this._divCmCustomStyle_ID = 'cmCustomStyle';
-		
-		
-		// Initialize
-		this._loadCustomThemes();
-		const currentThemeName = localStorage.getItem('appScriptColor-theme') || 'Darcula';
-		
-		/**
-		 * @type {CssTheme}
-		 * @private
-		 */
-		this.setCurrentTheme(currentThemeName);
-		
-		this._setStyleObserver();
-	}
+		return theme.themeName;
+	});
+	private _customThemeNames: string[] = [];
+	private _callbacks: Set<Function> = new Set();
+	private _dom_divCmCustomStyle: HTMLElement = null;
 	
 	
-	/**
-	 * @return {string[]}
-	 */
-	get defaultThemeNames() {
+	get defaultThemeNames(): string[] {
 		return this._defaultThemeNames;
 	}
 	
-	/**
-	 * @return {string[]}
-	 */
-	get themeNames() {
+	get themeNames(): string[] {
 		return [
 			...this._defaultThemeNames,
 			...this._customThemeNames,
 		];
 	}
 	
-	/**
-	 * @return {CssTheme}
-	 */
-	get currentTheme() {
+	get currentTheme(): CssTheme {
 		return this._currentTheme;
+	}
+	
+	
+	constructor() {
+		// Load custom Themes if any
+		this._loadCustomThemes();
+		
+		this.setCurrentTheme(localStorage.getItem('appScriptColor-theme') || 'Darcula');
+		
+		this._setStyleObserver();
 	}
 	
 	
@@ -78,14 +51,12 @@ class ThemeService {
 	
 	/**
 	 * Apply chosen theme
-	 *
-	 * @param {CssTheme} theme
 	 */
-	_applyTheme(theme) {
+	private _applyTheme(theme: CssTheme): void {
 		// Init the custom style element
 		if (!this._dom_divCmCustomStyle) {
 			this._dom_divCmCustomStyle = document.createElement('style');
-			this._dom_divCmCustomStyle.setAttribute('id', this._divCmCustomStyle_ID);
+			this._dom_divCmCustomStyle.setAttribute('id', CM_CUSTOM_STYLE_ID);
 		}
 		
 		this._dom_divCmCustomStyle.innerHTML = theme.css;
@@ -95,18 +66,18 @@ class ThemeService {
 	}
 	
 	/**
-	 * one time set up to ensure that our stylesheet will always be the last applied style
+	 * One time set up to ensure that our stylesheet will always be the last applied style
 	 */
-	_setStyleObserver() {
+	private _setStyleObserver(): void {
 		// create an observer instance to detect <style> insertion
 		// to always be the last styleSheet
 		const observer = new MutationObserver(mutations => {
 			mutations.forEach(mutation => {
 				for (let item in mutation.addedNodes) {
-					let node = mutation.addedNodes[item];
+					const node = mutation.addedNodes[item] as HTMLElement;
 					
 					// Filter for STYLE elements (other than our styleSheet)
-					if (node.tagName !== 'STYLE' || node.id === this._divCmCustomStyle_ID) continue;
+					if (node.tagName !== 'STYLE' || node.id === CM_CUSTOM_STYLE_ID) continue;
 					
 					// Move style node to the end for the HEAD
 					document.head.appendChild(this._dom_divCmCustomStyle);
@@ -122,12 +93,11 @@ class ThemeService {
 		});
 	}
 	
-	
 	/**
-	 * @private
+	 * Store custom theme in localStore
 	 */
-	_saveCustomThemes() {
-		const customThemes = {};
+	private _saveCustomThemes(): void {
+		const customThemes: { [themeName: string]: ICssThemeOptions } = {};
 		
 		this._customThemeNames
 			.map(themeName => customThemes[themeName] = JSON.parse(this._themesMap[themeName].toJSON()));
@@ -136,15 +106,13 @@ class ThemeService {
 	}
 	
 	/**
-	 * @private
+	 * Load custom theme from localStore
 	 */
-	_loadCustomThemes() {
-		// Load custom themes
-		let customThemes;
+	private _loadCustomThemes(): void {
+		let customThemes: { [themeName: string]: ICssThemeOptions };
 		try {
-			customThemes = JSON.parse(localStorage.getItem('appScriptColor-theme-custom') || {});
-		}
-		catch (e) {
+			customThemes = JSON.parse(localStorage.getItem('appScriptColor-theme-custom') || '{}');
+		} catch (e) {
 			customThemes = {};
 		}
 		
@@ -160,10 +128,9 @@ class ThemeService {
 	}
 	
 	/**
-	 * @param {CssTheme} theme
-	 * @private
+	 * Add a theme in internal theme store
 	 */
-	_addTheme(theme) {
+	private _addTheme(theme: CssTheme): void {
 		if (this._themesMap[theme.themeName]) return;
 		
 		this._themesMap[theme.themeName] = theme;
@@ -175,9 +142,10 @@ class ThemeService {
 	
 	
 	/**
-	 * @private
+	 * Call every subscribers callback,
+	 * called on theme added or deleted
 	 */
-	_notifySubscribers() {
+	private _notifySubscribers(): void {
 		this._callbacks.forEach(callback => callback());
 	}
 	
@@ -185,9 +153,14 @@ class ThemeService {
 	
 	
 	/**
-	 * @param {string} themeName
+	 * Set the current theme
+	 *
+	 * Calling it will
+	 * - update currentTheme value,
+	 * - save currentTheme in localStorage
+	 * - apply the theme in the DOM
 	 */
-	setCurrentTheme(themeName) {
+	public setCurrentTheme(themeName: string): void {
 		this._currentTheme = this.getThemeByName(themeName);
 		localStorage.setItem('appScriptColor-theme', this._currentTheme.themeName);
 		
@@ -195,25 +168,21 @@ class ThemeService {
 	}
 	
 	/**
-	 * @param {string} name\
-	 *
-	 * @return {CssTheme}
+	 * Find a theme in store by his name
 	 */
-	getThemeByName(name) {
+	public getThemeByName(name: string): CssTheme {
 		return this._themesMap[name] || defaultTheme;
 	}
 	
 	
 	/**
-	 * @param {CssTheme} rootTheme
-	 * @param {string} themeName
-	 * @param {Object<string, string>} variables
-	 * @param {Object<string, Object<string, string>>} rules
-	 * @param {boolean} saveThemes
-	 *
-	 * @return {CssTheme}
+	 * Duplicate a theme and modify it
 	 */
-	createThemeFrom(rootTheme, {themeName, variables = {}, rules = {}}, saveThemes = true) {
+	public createThemeFrom(
+		rootTheme: CssTheme,
+		{themeName, variables = {}, rules = {}}: ICreateThemeFromOptions,
+		saveThemes = true,
+	): CssTheme {
 		
 		while (rootTheme.rootTheme) {
 			const themeObject = rootTheme.toObject();
@@ -240,12 +209,11 @@ class ThemeService {
 	}
 	
 	/**
-	 * @param {CssTheme} theme
-	 * @param {string} themeName
-	 * @param {Object<string, string>} variables
-	 * @param {Object<string, Object<string, string>>} rules
+	 * Modify an existing theme
+	 *
+	 * This function return the theme containing the new edited theme
 	 */
-	updateTheme(theme, {themeName, variables = {}, rules = {}}) {
+	public updateTheme(theme: CssTheme, {themeName, variables = {}, rules = {}}: ICreateThemeFromOptions) {
 		if (defaultThemes.includes(theme)) return;
 		
 		// Remove theme from custom theme
@@ -257,10 +225,10 @@ class ThemeService {
 	}
 	
 	/**
-	 * @param {CssTheme} theme
+	 * Delete a theme from the custom Theme list
 	 */
-	deleteTheme(theme) {
-		if (defaultThemes.includes(theme)) return;
+	public deleteTheme(theme: CssTheme): boolean {
+		if (defaultThemes.includes(theme)) return false;
 		
 		// Remove theme from custom theme
 		delete this._themesMap[theme.themeName];
@@ -269,14 +237,22 @@ class ThemeService {
 		
 		this._saveCustomThemes();
 		this._notifySubscribers();
+		
+		return true;
 	}
 	
 	
-	subscribe(callback) {
+	/**
+	 * Add a subscriber to add / delete theme event
+	 */
+	public subscribe(callback: Function): void {
 		this._callbacks.add(callback);
 	}
 	
-	unsubscribe(callback) {
+	/**
+	 * Remove a subscriber to add / delete theme event
+	 */
+	public unsubscribe(callback: Function): void {
 		this._callbacks.delete(callback);
 	}
 	
