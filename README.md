@@ -35,6 +35,9 @@ myFolder/some_subfolder/myfileName
 
 Updated :
 
+v1.1.1
+- Fix some colors changes
+
 v1.1.0
 - Custom theme editor allows to create theme derivated from the 3 default themes\
 Find the Theme Editor in the color menu
