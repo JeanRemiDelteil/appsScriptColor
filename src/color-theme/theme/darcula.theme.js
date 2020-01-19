@@ -123,7 +123,7 @@ export const darculaTheme = new CssTheme({
 		'.workspace .gwt-SplitLayoutPanel-HDragger:hover, .workspace .gwt-SplitLayoutPanel-VDragger:hover': {'background-color': '{{Drag bar hoover}}!important'},
 		
 		// Status bar
-		'.status-bar': {'background-color': '{{generalBackGround}}', 'border-top': '1px solid {{border}}'},
+		'.status-bar': {'background-color': '{{generalBackGround}}', 'color': '{{generalText}}', 'border-top': '1px solid {{border}}'},
 		
 		// general colors
 		'.workspace': {'color': '{{generalText}}'},
