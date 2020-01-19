@@ -102,7 +102,7 @@ export const darculaTheme = new CssTheme({
 		'.editor .gwt-TabLayoutPanelTabs': {'background-color': '{{generalBackGround}}', 'border-color': '{{border}}'},
 		'.editor .gwt-TabLayoutPanelTab': {'background-color': '{{tabBackGround}}', 'border-color': '{{border}}'},
 		'.editor .gwt-TabLayoutPanelTab:hover .name, .editor .gwt-TabLayoutPanelTab-selected .tab-header .name': {'color': '{{generalText}}'},
-		'.editor .gwt-TabLayoutPanelTab-selected:hover': {'background-color': '{{codeBackGround}}'},
+		'.editor .gwt-TabLayoutPanelTab-selected': {'background-color': '{{codeBackGround}}'},
 		'.editor .gwt-TabLayoutPanelTab:hover': {'background-color': '{{codeBackGround}}'},
 		
 		// resource panel
