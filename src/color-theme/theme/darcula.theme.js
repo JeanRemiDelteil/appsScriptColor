@@ -8,11 +8,12 @@ export const darculaTheme = new CssTheme({
 		'generalText': '#bbbbbb',
 		'textSelectionBackground': '#214283',
 		'border': '#242627',
+		'listItem': '#bbbbbb',
 		'listItemBackground': '#4b6eaf',
+		'listItemSelected': '#bbbbbb',
 		'listItemBackgroundSelected': '#0d293e',
 		'listItem Background secondary': '#49473f',
 		'tabBackGround': '#515658',
-		'listItemSelected': '#bbbbbb',
 		'Scrollbar': 'rgba(134, 130, 115, 0.45)',
 		'Drag bar': '#3c3f41',
 		'Drag bar hoover': '#0d293e',
@@ -50,8 +51,8 @@ export const darculaTheme = new CssTheme({
 		'div.CodeMirror-selected': {'background-color': '{{textSelectionBackground}}'},
 		
 		// color of auto-complete-list
-		'.autocomplete': {'background-color': '{{tabBackGround}}'},
-		'.autocomplete .selected': {'background-color': '{{codeBackGround}}', 'color': '{{listItemSelected}}'},
+		'.autocomplete': {'background-color': '{{tabBackGround}}', 'color': '{{listItem}}'},
+		'.autocomplete .selected': {'background-color': '{{listItemBackgroundSelected}}', 'color': '{{listItemSelected}}', 'font-weight': 'bold'},
 		
 		// line number area
 		'.editor .code-area .CodeMirror-gutter': {
