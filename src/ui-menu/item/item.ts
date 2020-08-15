@@ -3,11 +3,11 @@ export interface Item {
 }
 
 export class Item implements Item {
-	
+
 	itemUsed(item: HTMLDivElement) {
 		item.dispatchEvent(new CustomEvent('menu-item-used', {
 			bubbles: true,
 		}));
 	}
-	
+
 }

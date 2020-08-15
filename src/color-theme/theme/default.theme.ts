@@ -1,16 +1,17 @@
-import {CssTheme} from '../class/cssTheme';
+import { CssTheme } from '../class/cssTheme';
+
 
 export const defaultTheme = new CssTheme({
 	themeName: 'Default',
 	variables: {
 		'codeBackGround': '#fff',
 		'generalText': '#333',
-		
+
 		'Folder text': '#8a93ab',
 		'Folder background': '#bfbfbf29',
 	},
 	rules: {
-		
+
 		// Folders
 		'.asc_Folder>.asc_titleContainer': {
 			'color': '{{Folder text}}',
@@ -23,6 +24,6 @@ export const defaultTheme = new CssTheme({
 		'.asc_Folder': {
 			'background-color': '{{Folder background}}',
 		},
-		
+
 	},
 });

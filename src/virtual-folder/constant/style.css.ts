@@ -1,4 +1,5 @@
-import {CLASS_TITLE_CONTAINER} from './className';
+import { CLASS_TITLE_CONTAINER } from './className';
+
 
 export const css = `
 <style>

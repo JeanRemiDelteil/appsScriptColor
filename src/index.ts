@@ -1,12 +1,12 @@
-import {Folders} from './virtual-folder';
-import {UiMenu} from './ui-menu';
-import {CustomizeTheme, themeService} from './color-theme';
-import {ItemHorizontalSeparator, ItemSubMenu} from './ui-menu/item';
+import { Folders } from './virtual-folder';
+import { UiMenu } from './ui-menu';
+import { CustomizeTheme, themeService } from './color-theme';
+import { ItemHorizontalSeparator, ItemSubMenu } from './ui-menu/item';
 
 
-function initAppsScriptColor() {
+function initAppsScriptColor(): void {
 	const scriptKey = document.location.pathname.match(/\/([^\/]+?)\/edit/)[1];
-	
+
 	const colorMenu = new UiMenu(
 		'Colors',
 		() => [
@@ -18,11 +18,12 @@ function initAppsScriptColor() {
 		],
 		() => themeService.currentTheme.themeName,
 	);
-	const folders = new Folders(scriptKey);
-	
-	folders.init();
+
+	// Instantiated and start folder system
+	new Folders(scriptKey);
+
 	colorMenu.init();
-	
+
 	themeService.subscribe(colorMenu.updateItems);
 }
 

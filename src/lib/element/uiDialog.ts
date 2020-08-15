@@ -1,22 +1,19 @@
 import '../webComponents';
-import {customElement, html, LitElement, property} from 'lit-element';
+import { customElement, html, LitElement, property } from 'lit-element';
 import '@material/mwc-icon-button';
-import {ICON_CLOSE} from '../icons';
+import { ICON_CLOSE } from '../icons';
+
 
 @customElement('asc-ui-dialog')
 export class UiDialog extends LitElement {
-	
-	@property({type: String})
-	header: string = '';
-	
-	hidden: boolean = true;
-	
-	
+
 	static Events = {
 		UI_DIALOG_CLOSE: 'UI_DIALOG_CLOSE',
 	};
-	
-	
+	@property({type: String})
+	header: string = '';
+	hidden: boolean = true;
+
 	render() {
 		return html`
 <style>
@@ -93,7 +90,7 @@ export class UiDialog extends LitElement {
 </main>
 `;
 	}
-	
+
 	close(): void {
 		this.dispatchEvent(new CustomEvent(UiDialog.Events.UI_DIALOG_CLOSE, {
 			bubbles: true,

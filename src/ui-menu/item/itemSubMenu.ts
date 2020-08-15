@@ -1,18 +1,19 @@
 import { Item } from './item';
 
+
 export class ItemSubMenu extends Item {
-	
+
 	constructor(
 		public label: string,
 		public callback: (label: string) => void,
 	) {
 		super();
 	}
-	
+
 	getItem(): HTMLElement {
 		const domItem = document.createElement('div');
 		domItem.classList.add('goog-menuitem', 'apps-menuitem');
-		
+
 		domItem.innerHTML = `
 <div class="goog-menuitem-content" style="-webkit-user-select: none;">
 	<div class="docs-icon goog-inline-block goog-menuitem-icon asc-menu-item-icon" data-theme="${this.label}" style="-webkit-user-select:none;">
@@ -20,7 +21,7 @@ export class ItemSubMenu extends Item {
 	</div>
 	<span class="goog-menuitem-label" style="-webkit-user-select: none;">${this.label}</span>
 </div>`;
-		
+
 		// add function listeners
 		domItem.addEventListener('mouseenter', () => {
 			domItem.classList.toggle('goog-menuitem-highlight', true);
@@ -30,11 +31,11 @@ export class ItemSubMenu extends Item {
 		});
 		domItem.addEventListener('click', () => {
 			this.callback(this.label);
-			
+
 			this.itemUsed(domItem);
 		});
-		
+
 		return domItem;
 	}
-	
+
 }
