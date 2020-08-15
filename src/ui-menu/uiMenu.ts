@@ -1,22 +1,21 @@
+import { Item } from './item';
+
 export class UiMenu {
+	private _domMenuColorSub: HTMLElement;
+	private _domMenuColor: HTMLElement;
+	private _domMenuShield: HTMLElement;
+	private _menuColorState = false;
 	
-	/**
-	 * @param {string} menuTitle
-	 * @param {function()<Item[]>} getItems
-	 * @param {function} getSelectedItem
-	 */
-	constructor(menuTitle, getItems, getSelectedItem) {
-		this._menuTitle = menuTitle;
-		this._getItems = getItems;
-		this._getSelectedItem = getSelectedItem;
-		
-		this.menuColorState = false;
-		
+	constructor(
+		private _menuTitle: string,
+		private _getItems: () => Item[],
+		private _getSelectedItem: () => string,
+	) {
 		this.updateItems = this.updateItems.bind(this);
 	}
 	
 	
-	_insertMenuButton() {
+	private _insertMenuButton() {
 		document.head.insertAdjacentHTML('beforeend', `<style>.asc-menu-item-icon{display: none;}.asc-menu-item-icon-display{display: inherit;}</style>`);
 		
 		const googleScriptMenu = document.getElementById('docs-menubar');
@@ -54,30 +53,26 @@ export class UiMenu {
 		document.body.addEventListener('click', (event) => this._onBodyClick(event));
 	}
 	
-	/**
-	 * @param {HTMLDivElement} domParent
-	 * @private
-	 */
-	_buildMenuItems(domParent) {
+	private _buildMenuItems(domParent: HTMLElement) {
 		domParent.innerHTML = '';
 		
 		this._getItems()
 			.forEach(item => domParent.appendChild(item.getItem()));
 	}
 	
-	_onMenuItemUsed() {
+	private _onMenuItemUsed() {
 		this.close();
 	}
 	
-	_onMenuTitleEnter() {
+	private _onMenuTitleEnter() {
 		this._domMenuColor.classList.toggle('goog-control-hover', true);
 	}
 	
-	_onMenuTitleLeave() {
+	private _onMenuTitleLeave() {
 		this._domMenuColor.classList.toggle('goog-control-hover', false);
 	}
 	
-	_onMenuTitleClick() {
+	private _onMenuTitleClick() {
 		const domItemIcons = this._domMenuColorSub.querySelectorAll('.asc-menu-item-icon');
 		for (let i = 0; i < domItemIcons.length; i++) {
 			domItemIcons[i].classList.toggle('asc-menu-item-icon-display', (domItemIcons[i].getAttribute('data-theme') === this._getSelectedItem()));
@@ -102,14 +97,15 @@ width: ${menuRect.width - 2}px;
 height: 7px;`,
 		);
 		
-		this.menuColorState = true;
+		this._menuColorState = true;
 	}
 	
-	_onBodyClick(event) {
-		if (!this.menuColorState) return;
+	private _onBodyClick(event: MouseEvent) {
+		if (!this._menuColorState) return;
 		
-		for (let i = 0; i < event['path'].length; i++) {
-			if (event['path'][i] === this._domMenuColorSub || event['path'][i] === this._domMenuColor) return;
+		const path = event.composedPath();
+		for (let i = 0; i < path.length; i++) {
+			if (path[i] === this._domMenuColorSub || path[i] === this._domMenuColor) return;
 		}
 		
 		this._domMenuColor.classList.toggle('goog-control-open', false);

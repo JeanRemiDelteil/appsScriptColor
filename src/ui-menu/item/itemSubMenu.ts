@@ -1,16 +1,15 @@
-import {Item} from './item';
+import { Item } from './item';
 
 export class ItemSubMenu extends Item {
 	
-	constructor(label, callback) {
+	constructor(
+		public label: string,
+		public callback: (label: string) => void,
+	) {
 		super();
-		
-		this.label = label;
-		this.callback = callback;
 	}
 	
-	
-	getItem() {
+	getItem(): HTMLElement {
 		const domItem = document.createElement('div');
 		domItem.classList.add('goog-menuitem', 'apps-menuitem');
 		
