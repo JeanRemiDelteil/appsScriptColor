@@ -1,6 +1,6 @@
-const resolve = require('@rollup/plugin-node-resolve');
+const {nodeResolve: resolve} = require('@rollup/plugin-node-resolve');
 const {terser} = require('rollup-plugin-terser');
-const babel = require('rollup-plugin-babel');
+const {babel} = require('@rollup/plugin-babel');
 const customMinifyCss = require('@open-wc/building-utils/custom-minify-css');
 
 /**
@@ -13,7 +13,6 @@ const customMinifyCss = require('@open-wc/building-utils/custom-minify-css');
  * @return {{inputConfig: {}, outputConfig: {}}}
  */
 module.exports = function createExtensionConfig(options) {
-	
 	return {
 		inputConfig: {
 			input: options.input,
@@ -68,12 +67,11 @@ module.exports = function createExtensionConfig(options) {
 							},
 						],
 					],
+					babelHelpers: 'bundled',
 				}),
 				
 				// only minify if in production
-				options.production && terser({
-					sourcemap: false,
-				}),
+				options.production && terser(),
 			],
 		},
 		outputConfig: {
