@@ -1,4 +1,5 @@
-import {CssTheme} from '../class/cssTheme';
+import { CssTheme } from '../class/cssTheme';
+
 
 export const darculaTheme = new CssTheme({
 	themeName: 'Darcula',
@@ -17,10 +18,10 @@ export const darculaTheme = new CssTheme({
 		'Scrollbar': 'rgba(134, 130, 115, 0.45)',
 		'Drag bar': '#3c3f41',
 		'Drag bar hoover': '#0d293e',
-		
+
 		'Folder text': '#8a93ab',
 		'Folder background': '#15151529',
-		
+
 		'Line numbers': '#888888',
 		'Breakpoint': '#db4437',
 		'Cursor': '#ffffff',
@@ -45,15 +46,15 @@ export const darculaTheme = new CssTheme({
 	rules: {
 		'.editor .code-area .CodeMirror': {'background-color': '{{codeBackGround}}', 'line-height': '17px'},
 		'.editor .code-area .CodeMirror pre': {'color': '{{Code Punctuation}}'}, // punctuation
-		
+
 		'.editor .code-area .CodeMirror-cursor': {'border-left': '1px solid {{Cursor}}!important'},
 		'.CodeMirror-focused div.CodeMirror-selected': {'background-color': '{{textSelectionBackground}}'}, // selection background
 		'div.CodeMirror-selected': {'background-color': '{{textSelectionBackground}}'},
-		
+
 		// color of auto-complete-list
 		'.autocomplete': {'background-color': '{{tabBackGround}}', 'color': '{{listItem}}'},
 		'.autocomplete .selected': {'background-color': '{{listItemBackgroundSelected}}', 'color': '{{listItemSelected}}', 'font-weight': 'bold'},
-		
+
 		// line number area
 		'.editor .code-area .CodeMirror-gutter': {
 			'background-color': '{{codeBackGround}}',
@@ -72,7 +73,7 @@ export const darculaTheme = new CssTheme({
 			'line-height': '0.8em',
 			'font-size': '1.5em',
 		},
-		
+
 		// color of code
 		'.cm-s-default span.cm-keyword': {'color': '{{Keywords}}'}, // keywords
 		'.cm-s-default span.cm-atom': {'color': '{{Constants}}'}, // constant : true / false / undefined etc...
@@ -97,14 +98,14 @@ export const darculaTheme = new CssTheme({
 		'.cm-s-default span.cm-quote': {'color': '#090'},
 		'.cm-s-default span.cm-hr': {'color': '#999'},
 		'.cm-s-default span.cm-link': {'color': '#00c'},
-		
+
 		// UI colors
 		'.editor .gwt-TabLayoutPanelTabs': {'background-color': '{{generalBackGround}}', 'border-color': '{{border}}'},
 		'.editor .gwt-TabLayoutPanelTab': {'background-color': '{{tabBackGround}}', 'border-color': '{{border}}'},
 		'.editor .gwt-TabLayoutPanelTab:hover .name, .editor .gwt-TabLayoutPanelTab-selected .tab-header .name': {'color': '{{generalText}}'},
 		'.editor .gwt-TabLayoutPanelTab-selected': {'background-color': '{{codeBackGround}}'},
 		'.editor .gwt-TabLayoutPanelTab:hover': {'background-color': '{{codeBackGround}}'},
-		
+
 		// resource panel
 		'.resource-list': {'background-color': '{{generalBackGround}}', 'color': '{{generalText}}'},
 		'.resource-list .project-items-list .item': {'border-bottom': '1px solid {{border}}'},
@@ -116,18 +117,18 @@ export const darculaTheme = new CssTheme({
 			'background-color': '{{listItemBackgroundSelected}}',
 			'color': '{{generalText}}',
 		},
-		
+
 		// drag bar
 		'.workspace .gwt-SplitLayoutPanel-HDragger': {'background-color': '{{Drag bar}}!important', 'border-left': '1px solid {{border}}!important'},
 		'.workspace .gwt-SplitLayoutPanel-VDragger': {'background-color': '{{Drag bar}}!important', 'border-top': '1px solid {{border}}!important'},
 		'.workspace .gwt-SplitLayoutPanel-HDragger:hover, .workspace .gwt-SplitLayoutPanel-VDragger:hover': {'background-color': '{{Drag bar hoover}}!important'},
-		
+
 		// Status bar
 		'.status-bar': {'background-color': '{{generalBackGround}}', 'color': '{{generalText}}', 'border-top': '1px solid {{border}}'},
-		
+
 		// general colors
 		'.workspace': {'color': '{{generalText}}'},
-		
+
 		// Debug section
 		'.workspace .aux-info': {'background-color': '{{generalBackGround}}'},
 		'.workspace .aux-info .debugger-frame-label': {'background-color': '{{listItemBackground}}'},
@@ -136,14 +137,14 @@ export const darculaTheme = new CssTheme({
 		'.workspace .aux-info .treetable-wrapper': {'border-left': '1px solid {{border}}', 'border-top': '1px solid {{border}}'},
 		'.workspace .aux-info .treetable-background-2': {'background-color': '{{generalBackGround}}'},
 		'.workspace .aux-info .treetable-background-1': {'background-color': '{{listItem Background secondary}}'},
-		
+
 		// scrollBar
 		'.CodeMirror-scroll.cm-s-default::-webkit-scrollbar-thumb': {'background-color': '{{Scrollbar}}'},
-		
+
 		// Correction to context Menu
 		'.resource-context-menu': {color: '{{generalBackGround}}'},
-		
-		
+
+
 		// Folders
 		'.asc_Folder>.asc_titleContainer': {
 			'color': '{{Folder text}}',

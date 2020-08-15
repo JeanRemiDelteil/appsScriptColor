@@ -1,7 +1,7 @@
 module.exports = {
-	inputFile: 'index.js',
+	inputFile: 'index.ts',
 	inputDir: './src',
 	outputDir: 'AppScriptColorDEV',
 	
-	env: 'DEVELOPEMENT',
+	env: 'DEVELOPMENT',
 };

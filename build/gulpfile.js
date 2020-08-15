@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
 const {src, dest, series} = require('gulp');
-const rollup = require('rollup');
-const resolve = require('rollup-plugin-node-resolve');
-const {terser} = require('rollup-plugin-terser');
 const clean = require('gulp-clean');
 const {argv} = require('yargs');
+const rollup = require('rollup');
+const createExtensionConfig = require('./rollup.config');
 
 
 /**
@@ -39,41 +38,30 @@ function cleanBuildFolder() {
 }
 
 async function buildBundle() {
-	const bundle = await rollup.rollup({
+	
+	// Babel browser config is defined in package.json 
+	const chromeExtensionConfig = createExtensionConfig({
 		input: `../${settings.inputDir}/${settings.inputFile}`,
-		plugins: [
-			resolve(),
-			...(settings.env === 'PRODUCTION' ? [terser({
-				sourcemap: false,
-			})] : []),
-		],
+		outputFile: `./output/${settings.outputDir}/injectColor.js`,
+		production: settings.env === 'PRODUCTION',
 	});
 	
-	return bundle.write({
-		file: `./output/${settings.outputDir}/injectColor.js`,
-		format: 'iife',
-		sourcemap: false,
-	});
+	const bundle = await rollup.rollup(chromeExtensionConfig.inputConfig);
+	
+	return bundle.write(chromeExtensionConfig.outputConfig);
 }
 
 async function watchdBundle() {
-	// noinspection JSCheckFunctionSignatures
-	return rollup.watch({
+	// Babel browser config is defined in package.json 
+	const chromeExtensionConfig = createExtensionConfig({
 		input: `../${settings.inputDir}/${settings.inputFile}`,
-		plugins: [
-			resolve(),
-			terser({
-				sourcemap: false,
-			}),
-		],
-		
-		output: [
-			{
-				file: `./output/${settings.outputDir}/injectColor.js`,
-				format: 'iife',
-				sourcemap: false,
-			},
-		],
+		outputFile: `./output/${settings.outputDir}/injectColor.js`,
+		production: settings.env === 'PRODUCTION',
+	});
+	
+	return rollup.watch({
+		...chromeExtensionConfig.inputConfig,
+		output: [chromeExtensionConfig.outputConfig],
 		watch: {},
 	});
 }

@@ -1,1 +1,0 @@
-export {UiMenu} from './uiMenu';

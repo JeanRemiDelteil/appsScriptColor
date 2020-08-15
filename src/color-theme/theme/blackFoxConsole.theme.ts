@@ -1,4 +1,5 @@
-import {darculaTheme} from './darcula.theme';
+import { darculaTheme } from './darcula.theme';
+
 
 export const blackFoxConsoleTheme = darculaTheme.createFrom({
 	themeName: 'Black fox Console',
@@ -17,10 +18,10 @@ export const blackFoxConsoleTheme = darculaTheme.createFrom({
 		'Scrollbar': '#5C6773',
 		'Drag bar': '#000',
 		'Drag bar hoover': '#222',
-		
+
 		'Folder text': '#8a93ab',
 		'Folder background': '#17171729',
-		
+
 		'Line numbers': '#5C6773',
 		'Breakpoint': '#db4437',
 		'Cursor': '#ffffff',

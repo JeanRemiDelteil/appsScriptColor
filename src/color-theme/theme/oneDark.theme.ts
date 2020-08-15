@@ -1,4 +1,5 @@
-import {darculaTheme} from './darcula.theme';
+import { darculaTheme } from './darcula.theme';
+
 
 export const oneDarkTheme = darculaTheme.createFrom({
 	themeName: 'One Dark',
@@ -17,10 +18,10 @@ export const oneDarkTheme = darculaTheme.createFrom({
 		'Scrollbar': 'rgba(134,130,115,.45)',
 		'Drag bar': '#31343f',
 		'Drag bar hoover': '#4d505b',
-		
+
 		'Folder text': '#8a93ab',
 		'Folder background': '#15151529',
-		
+
 		'Line numbers': '#494f5a',
 		'Breakpoint': '#bf616a',
 		'Cursor': '#abb2bf',
