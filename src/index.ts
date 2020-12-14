@@ -2,7 +2,7 @@ import { CustomizeTheme, themeService } from './color-theme';
 import { detectIde, getScriptKey, IdeVersion } from './feature-detection';
 import { UiMenu } from './ui-menu';
 import { ItemHorizontalSeparator, ItemSubMenu } from './ui-menu/item';
-// import { Folders } from './virtual-folder';
+import { Folders } from './folders';
 import { FoldersOld } from './virtual-folder-old';
 
 
@@ -35,7 +35,7 @@ function initAppsScriptColor(): void {
 	}
 
 	// Bootstrap current version tools
-	// Folders.init(scriptKey);
+	Folders.init(scriptKey);
 }
 
 

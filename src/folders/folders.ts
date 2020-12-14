@@ -1,5 +1,4 @@
 import { GasRoot } from './class/gasRoot';
-import { getInfoShown, setInfoShown } from './data/settings';
 import * as uiCssSelector from './constant/cssSelectors';
 import { css } from './constant/style.css';
 import { IFolderStateDictionary } from './folderState.interface';
@@ -16,7 +15,6 @@ export class Folders {
 	};
 	gasStaticRoot: GasRoot = null;
 	private _timeOut_saveStaticFolders: number;
-	private _timeOut_infoShown: number;
 
 	constructor(private _key: string) {
 		this._insertCSS();
@@ -86,7 +84,7 @@ export class Folders {
 			`
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-${css}
+${ css }
 `,
 		);
 	}
@@ -95,8 +93,6 @@ ${css}
 	 * Insert all initial folders if any
 	 */
 	_initFolders(node: HTMLElement): void {
-		this._loadInfoShown();
-
 		// Init folders
 		this.dom.gasProjectFiles = node;
 		this.dom.gasFileList = node.querySelector(uiCssSelector.listItem);
@@ -104,16 +100,7 @@ ${css}
 		// Load all static folders
 		this.gasStaticRoot = new GasRoot(this.dom.gasFileList, this._saveStaticsFolder.bind(this));
 
-		this.gasStaticRoot.setUpVirtualFolder(this._loadVirtualFolder());
 		this.gasStaticRoot.setDeepToggleState(this._loadStaticsFolder());
-
-		// Shown by default, but hidden after first display
-		setInfoShown({
-			...getInfoShown(),
-			vFolder: true,
-		});
-
-		this._saveInfoShown();
 	}
 
 
@@ -125,7 +112,7 @@ ${css}
 		clearTimeout(this._timeOut_saveStaticFolders);
 
 		this._timeOut_saveStaticFolders = setTimeout(() => {
-			localStorage.setItem(`appScriptColor-static-Folders-${this._key}`, JSON.stringify(this.gasStaticRoot.getDeepToggleState()));
+			localStorage.setItem(`appScriptColor-static-Folders-${ this._key }`, JSON.stringify(this.gasStaticRoot.getDeepToggleState()));
 		}, 500) as unknown as number;
 	}
 
@@ -136,55 +123,13 @@ ${css}
 		let state: IFolderStateDictionary;
 
 		try {
-			state = JSON.parse(localStorage.getItem(`appScriptColor-static-Folders-${this._key}`));
+			state = JSON.parse(localStorage.getItem(`appScriptColor-static-Folders-${ this._key }`));
 		} catch (e) {}
 
 		return state || {};
 	}
 
-	/**
-	 * Load virtual folder state
-	 *
-	 * return {Array<{
-	 *   name: string,
-	 *   state: boolean,
-	 *   files: Array<string>
-	 * }>}
-	 */
-	private _loadVirtualFolder() {
-		let state;
-
-		try {
-			state = JSON.parse(localStorage.getItem(`appScriptColor-Folders-${this._key}`));
-		} catch (e) {
-		}
-
-		return state || [];
-	}
-
-
-	/**
-	 * Save all infoPopup shown
-	 * auto-debounce itself
-	 */
-	private _saveInfoShown(): void {
-		clearTimeout(this._timeOut_infoShown);
-
-		this._timeOut_infoShown = setTimeout(() => {
-			localStorage.setItem(`appScriptColor-infoShown`, JSON.stringify(getInfoShown()));
-		}, 500) as unknown as number;
-	}
-
-	/**
-	 * Load all infoPopup shown
-	 */
-	private _loadInfoShown(): void {
-		let infoShown;
-
-		try {
-			infoShown = JSON.parse(localStorage.getItem(`appScriptColor-infoShown`));
-		} catch (e) {}
-
-		infoShown && setInfoShown(infoShown);
+	static init(scriptKey: string): Folders {
+		return new Folders(scriptKey);
 	}
 }
