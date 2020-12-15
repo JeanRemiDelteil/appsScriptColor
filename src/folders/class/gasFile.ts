@@ -3,7 +3,7 @@ export class GasFile {
 	dom: {
 		main: HTMLElement,
 		name: HTMLElement,
-		item: HTMLElement,
+		// item: HTMLElement, // file type icon
 	};
 	name: string = '';
 	path: string = '';
@@ -16,19 +16,16 @@ export class GasFile {
 		this.dom = {
 			main: node,
 			name: node.querySelector(GasFile.SELECTOR_NAME),
-			item: node.querySelector(GasFile.SELECTOR_ITEM),
+			// item: node.querySelector(GasFile.SELECTOR_ITEM),
 		};
 
 		this.updatePath();
 	}
 
-	static get SELECTOR_NAME() {
-		return '.name';
-	}
+	static readonly SELECTOR_NAME = 'div[title]';
 
-	static get SELECTOR_ITEM() {
-		return '.item';
-	}
+	// static readonly SELECTOR_ITEM = '.item';
+
 
 	/**
 	 * Set File path (and name) and return if it changed since last update
@@ -50,7 +47,7 @@ export class GasFile {
 		this.type = (/\.([^.]+)$/.exec(this.name) || [])[1].replace('gs', 'js') || 'js';
 
 		// Set DOM file type
-		this.dom.item.classList.add(`file-type-${ this.type }`);
+		// this.dom.item.classList.add(`file-type-${ this.type }`);
 
 		return pathChanged;
 	}
@@ -59,7 +56,7 @@ export class GasFile {
 	 * Call before deleting all link to this file
 	 */
 	destroy(): void {
-		delete this.dom.main;
+		delete this.dom;
 	}
 
 

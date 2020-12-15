@@ -10,10 +10,8 @@ interface IMutatedFile {
 }
 
 export class GasRoot extends GasFolder {
-	/**
-	 * Node that will contain this root Folder
-	 */
-	root: HTMLElement = null;
+	private _rootMonitor: MutationObserver;
+
 	/**
 	 * Link between files and folder
 	 */
@@ -24,16 +22,21 @@ export class GasRoot extends GasFolder {
 	private _fileMap: Map<HTMLElement, GasFile> = new Map();
 
 	/**
+	 * Node that will contain this root Folder
+	 */
+	root: HTMLElement = null;
+
+	/**
 	 * Init a new root folder
 	 */
-	constructor(insertNode: HTMLElement, saveCallBack: () => void) {
+	constructor(rootNode: HTMLElement, saveCallBack: () => void) {
 		super('', saveCallBack);
 
 		// Update Root classes
 		this.dom.main.classList.remove(CLASS_FOLDER);
 		this.dom.main.classList.add(CLASS_ROOT);
 
-		this._setRoot(insertNode);
+		this._setRoot(rootNode);
 		this._monitorContainer();
 
 		this._updateChildList();
@@ -43,6 +46,16 @@ export class GasRoot extends GasFolder {
 		return true;
 	}
 
+	/**
+	 * Safely delete all registered listeners to avoid memory leak
+	 */
+	destroy() {
+		// Un-register monitor on list container
+		this._rootMonitor?.disconnect();
+
+		// TODO: unlink all dom var
+		// TODO: destroy all folder / file
+	}
 
 	//<editor-fold desc="# Private methods">
 
@@ -63,15 +76,13 @@ export class GasRoot extends GasFolder {
 	 * Set up a mutation Observer on the root node to detect GAS UI changes
 	 */
 	private _monitorContainer(): void {
-		const mutationCB: MutationCallback = _mutations => {
+		this._rootMonitor = new MutationObserver(() => {
 			// Just check on mutation if our root has no parent --> means GAS UI rebuilt file list
 			!this.dom.main.parentNode && this._updateChildList();
-		};
-
-		let observer = new MutationObserver(mutationCB);
+		});
 
 		// pass in the target node, as well as the observer options
-		observer.observe(this.root, {
+		this._rootMonitor.observe(this.root, {
 			childList: true,
 			attributes: false,
 			characterData: false,
@@ -88,10 +99,7 @@ export class GasRoot extends GasFolder {
 		let renamedFilesMap = new Map();
 
 		for (let i = 0, numChildren = this.root.childNodes.length; i < numChildren; i++) {
-			/**
-			 * @type {HTMLElement | Node}
-			 */
-			let node = this.root.childNodes[i] as HTMLElement;
+			const node = this.root.childNodes[i] as HTMLElement;
 
 			// Skip if it's our folder container node
 			if (node === this.dom.main || node.classList.contains(CLASS_FOLDER)) continue;
@@ -133,7 +141,7 @@ export class GasRoot extends GasFolder {
 	 */
 	private _updateChildList(forceUpdate?: boolean): void {
 		// Get existing children properties
-		let {removed, added, renamed} = !forceUpdate && this._getGasItems() || {
+		let { removed, added, renamed } = !forceUpdate && this._getGasItems() || {
 			renamed: new Map(),
 			removed: new Map(this._fileMap),
 			added: new Map(this._fileMap),
@@ -148,13 +156,13 @@ export class GasRoot extends GasFolder {
 		}
 
 		// Renamed nodes
-		renamed.forEach(/**@param {GasFile} file */file => {
+		renamed.forEach((file: GasFile) => {
 			added.set(file.dom.main, file);
 			removed.set(file.dom.main, file);
 		});
 
 		// Removed nodes
-		removed.forEach(/**@param {GasFile} file */file => {
+		removed.forEach((file: GasFile) => {
 			// Get file folder
 			let folder = this._fileFolderMap.get(file);
 
@@ -170,7 +178,7 @@ export class GasRoot extends GasFolder {
 		});
 
 		// Added nodes
-		added.forEach(/**@param {GasFile} file */file => {
+		added.forEach((file: GasFile) => {
 			// build folders tree needed for this file path
 			let currentFolder: GasFolder = this;
 			let splitPath = file.path.split('/');

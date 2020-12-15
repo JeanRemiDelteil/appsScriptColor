@@ -1,78 +1,46 @@
 import { GasRoot } from './class/gasRoot';
-import * as uiCssSelector from './constant/cssSelectors';
 import { css } from './constant/style.css';
+import { setDomObserver } from './dom-tools';
 import { IFolderStateDictionary } from './folderState.interface';
 
 
 export class Folders {
-
-	dom: {
-		gasProjectFiles: HTMLElement,
-		gasFileList: HTMLElement,
-	} = {
-		gasProjectFiles: null,
-		gasFileList: null,
-	};
-	gasStaticRoot: GasRoot = null;
 	private _timeOut_saveStaticFolders: number;
+
+	gasStaticRoot: GasRoot;
 
 	constructor(private _key: string) {
 		this._insertCSS();
-		this._waitInitialization();
+		this._setupDomObservers();
 	}
 
-
-	/**
-	 * Wait for a specific node to be added in the DOM by the page
-	 */
-	_setObserver(target: HTMLElement, childSelector: string): Promise<HTMLElement> {
-		return new Promise(resolve => {
-			const observerCB: MutationCallback = function (mutations, observer) {
-				mutations.forEach(mutation => {
-					for (let item in mutation.addedNodes) {
-						if (!mutation.addedNodes.hasOwnProperty(item)) continue;
-
-						let node = mutation.addedNodes[item] as HTMLElement;
-						let domChild = node.querySelector(childSelector);
-
-						if (!domChild) continue;
-
-						// We found the node, stop observing
-						observer.disconnect();
-
-						resolve(domChild as HTMLElement);
-					}
-				});
-			};
-
-			let observer = new MutationObserver(observerCB);
-
-			// pass in the target node, as well as the observer options
-			observer.observe(target, {
-				childList: true,
-				attributes: false,
-				characterData: false, /*,
-				 subtree: false,
-				 attributeOldValue: false,
-				 characterDataOldValue: false,
-				 attributeFilter: []
-				 */
-			});
-		});
-	}
 
 	/**
 	 * Detect page initialization by App Script, then init Folders,
 	 * Entry point
 	 */
-	_waitInitialization(): void {
-		// Find App script Workspace node
-		this._setObserver(document.body, uiCssSelector.workspace)
-			// Find App script Resource list node
-			.then(node => this._setObserver(node, uiCssSelector.listFile))
+	_setupDomObservers(): void {
+		const domFirstRendered = document.body.querySelector('body > div > c-wiz');
+		const domWatchedDiv = domFirstRendered.parentElement;
+		const dynRefToEditorJsRenderer = domFirstRendered.getAttribute('jsrenderer');
 
-			// Start adding folders
-			.then(node => this._initFolders(node));
+		const onEditorMainDomChanged = (node: HTMLElement) => {
+			// Get File list dom element
+			const domFileListContainer = node.querySelector('div[jsslot] ul[role="listbox"]') as HTMLElement;
+
+			this._initFolders(domFileListContainer);
+		};
+
+		setDomObserver({
+			target: domWatchedDiv,
+			immediateChildValidator: node => {
+				return node.tagName === 'C-WIZ' && node.getAttribute('jsrenderer') === dynRefToEditorJsRenderer;
+			},
+			callback: onEditorMainDomChanged,
+		});
+
+		// the observer does not fire for an existing element
+		onEditorMainDomChanged(domFirstRendered as HTMLElement);
 	}
 
 	/**
@@ -92,13 +60,11 @@ ${ css }
 	/**
 	 * Insert all initial folders if any
 	 */
-	_initFolders(node: HTMLElement): void {
-		// Init folders
-		this.dom.gasProjectFiles = node;
-		this.dom.gasFileList = node.querySelector(uiCssSelector.listItem);
+	_initFolders(domFileList: HTMLElement): void {
+		this.gasStaticRoot?.destroy();
 
 		// Load all static folders
-		this.gasStaticRoot = new GasRoot(this.dom.gasFileList, this._saveStaticsFolder.bind(this));
+		this.gasStaticRoot = new GasRoot(domFileList, () => this._saveStaticsFolder());
 
 		this.gasStaticRoot.setDeepToggleState(this._loadStaticsFolder());
 	}
@@ -111,9 +77,9 @@ ${ css }
 	_saveStaticsFolder(): void {
 		clearTimeout(this._timeOut_saveStaticFolders);
 
-		this._timeOut_saveStaticFolders = setTimeout(() => {
+		this._timeOut_saveStaticFolders = window.setTimeout(() => {
 			localStorage.setItem(`appScriptColor-static-Folders-${ this._key }`, JSON.stringify(this.gasStaticRoot.getDeepToggleState()));
-		}, 500) as unknown as number;
+		}, 500);
 	}
 
 	/**

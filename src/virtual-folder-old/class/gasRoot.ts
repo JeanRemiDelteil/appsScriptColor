@@ -1,8 +1,8 @@
-import { GasFolder } from './gasFolder';
-import { GasFile } from './gasFile';
-import { GasVirtualFolder } from './gasVirtualFolder';
 import { CLASS_FOLDER, CLASS_ROOT } from '../constant/className';
 import { IVirtualList } from '../virtualList.interface';
+import { GasFile } from './gasFile';
+import { GasFolder } from './gasFolder';
+import { GasVirtualFolder } from './gasVirtualFolder';
 
 
 interface IMutatedFile {
@@ -149,7 +149,7 @@ export class GasRoot extends GasFolder {
 	 */
 	private _updateChildList(forceUpdate?: boolean): void {
 		// Get existing children properties
-		let {removed, added, renamed} = !forceUpdate && this._getGasItems() || {
+		let { removed, added, renamed } = !forceUpdate && this._getGasItems() || {
 			renamed: new Map(),
 			removed: new Map(this._fileMap),
 			added: new Map(this._fileMap),
@@ -164,13 +164,13 @@ export class GasRoot extends GasFolder {
 		}
 
 		// Renamed nodes
-		renamed.forEach(/**@param {GasFile} file */file => {
+		renamed.forEach((file: GasFile) => {
 			added.set(file.dom.main, file);
 			removed.set(file.dom.main, file);
 		});
 
 		// Removed nodes
-		removed.forEach(/**@param {GasFile} file */file => {
+		removed.forEach((file: GasFile) => {
 			// Get file folder
 			let folder = this._fileFolderMap.get(file);
 
@@ -186,7 +186,7 @@ export class GasRoot extends GasFolder {
 		});
 
 		// Added nodes
-		added.forEach(/**@param {GasFile} file */file => {
+		added.forEach((file: GasFile) => {
 			// build folders tree needed for this file path
 			let currentFolder: GasFolder = this;
 			let splitPath = file.path.split('/');
