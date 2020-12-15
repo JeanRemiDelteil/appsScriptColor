@@ -59,7 +59,7 @@ export class GasVirtualFolder extends GasFolder {
 	toggleInfo(state?: boolean): void {
 		this._showInfo = state !== undefined ? state : !this._showInfo;
 
-		this.dom.infoPopup.classList.toggle('asc_info_popup-hide', !this._showInfo);
+		this.dom.infoPopup.classList.toggle('asc_old_info_popup-hide', !this._showInfo);
 	}
 
 	/**
@@ -70,10 +70,10 @@ export class GasVirtualFolder extends GasFolder {
 
 		this.dom.titleContainer.insertAdjacentHTML(
 			'beforeend',
-			`<div class="asc_folder_info">
+			`<div class="asc_old_folder_info">
 	<i class="material-icons">info</i>
 	
-	<div class="asc_info_popup ${!getInfoShown().vFolder ? 'asc_info_popup-hide' : ''}">
+	<div class="asc_old_info_popup ${ !getInfoShown().vFolder ? 'asc_old_info_popup-hide' : '' }">
 	    Virtual folders are deprecated. They can't be edited.<br><br>
 	    To still use folders, rename your files to include the whole path:<br><br>
 	    folderName/sub folder/my_fileName
@@ -81,8 +81,8 @@ export class GasVirtualFolder extends GasFolder {
 </div>`,
 		);
 
-		this.dom.infoPopup = this.dom.titleContainer.querySelector(`.asc_info_popup`);
-		this.dom.infoIcon = this.dom.titleContainer.querySelector(`.asc_folder_info`);
+		this.dom.infoPopup = this.dom.titleContainer.querySelector(`.asc_old_info_popup`);
+		this.dom.infoIcon = this.dom.titleContainer.querySelector(`.asc_old_folder_info`);
 
 		this.dom.infoIcon.addEventListener('click', event => {
 			this.toggleInfo();

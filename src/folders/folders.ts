@@ -63,6 +63,9 @@ ${ css }
 	_initFolders(domFileList: HTMLElement): void {
 		this.gasStaticRoot?.destroy();
 
+		// Set specific style to remove some selection artifact
+		domFileList.style.marginBottom = '1px';
+
 		// Load all static folders
 		this.gasStaticRoot = new GasRoot(domFileList, () => this._saveStaticsFolder());
 
