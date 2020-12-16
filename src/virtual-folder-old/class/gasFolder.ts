@@ -124,7 +124,7 @@ export class GasFolder {
 	toggle(open?: boolean): void {
 		this.opened = open !== undefined ? open : !this.opened;
 
-		this.dom.main.classList.toggle('asc_opened', this.opened);
+		this.dom.main.classList.toggle('asc_old_opened', this.opened);
 
 		// TODO: Set calls to depend on folder root
 		// only save if open is not undefined
@@ -193,17 +193,17 @@ export class GasFolder {
 	 */
 	protected _createDOM() {
 		this.dom.main = document.createElement('div');
-		this.dom.main.classList.add(CLASS_FOLDER, 'asc_opened');
+		this.dom.main.classList.add(CLASS_FOLDER, 'asc_old_opened');
 
 		this.dom.main.innerHTML = `
-<div class="${CLASS_TITLE_CONTAINER}">
-	<div class="asc_folderIcon">
-		<i class="asc_opened material-icons">folder_open</i>
-		<i class="asc_closed material-icons">folder</i>
+<div class="${ CLASS_TITLE_CONTAINER }">
+	<div class="asc_old_folderIcon">
+		<i class="asc_old_opened material-icons">folder_open</i>
+		<i class="asc_old_closed material-icons">folder</i>
 	</div>
-	<div class="${CLASS_TITLE}" title="${this.name}/">${this.name}</div>
+	<div class="${ CLASS_TITLE }" title="${ this.name }/">${ this.name }</div>
 </div>
-<div class="${CLASS_CHILDLIST}"></div>`;
+<div class="${ CLASS_CHILDLIST }"></div>`;
 
 		this.dom.titleContainer = this.dom.main.querySelector(`.${CLASS_TITLE_CONTAINER}`);
 		this.dom.title = this.dom.main.querySelector(`.${CLASS_TITLE}`);

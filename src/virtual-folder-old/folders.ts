@@ -86,7 +86,7 @@ export class Folders {
 			`
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-${css}
+${ css }
 `,
 		);
 	}
@@ -125,7 +125,7 @@ ${css}
 		clearTimeout(this._timeOut_saveStaticFolders);
 
 		this._timeOut_saveStaticFolders = setTimeout(() => {
-			localStorage.setItem(`appScriptColor-static-Folders-${this._key}`, JSON.stringify(this.gasStaticRoot.getDeepToggleState()));
+			localStorage.setItem(`appScriptColor-static-Folders-${ this._key }`, JSON.stringify(this.gasStaticRoot.getDeepToggleState()));
 		}, 500) as unknown as number;
 	}
 
@@ -136,7 +136,7 @@ ${css}
 		let state: IFolderStateDictionary;
 
 		try {
-			state = JSON.parse(localStorage.getItem(`appScriptColor-static-Folders-${this._key}`));
+			state = JSON.parse(localStorage.getItem(`appScriptColor-static-Folders-${ this._key }`));
 		} catch (e) {}
 
 		return state || {};
@@ -155,7 +155,7 @@ ${css}
 		let state;
 
 		try {
-			state = JSON.parse(localStorage.getItem(`appScriptColor-Folders-${this._key}`));
+			state = JSON.parse(localStorage.getItem(`appScriptColor-Folders-${ this._key }`));
 		} catch (e) {
 		}
 

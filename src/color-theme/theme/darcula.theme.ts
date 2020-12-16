@@ -136,25 +136,25 @@ export const darculaTheme = new CssTheme({
 		'.workspace .aux-info .debugger-callstack-wrapper': {'border-left': '1px solid {{border}}', 'border-top': '1px solid {{border}}'},
 		'.workspace .aux-info .treetable-wrapper': {'border-left': '1px solid {{border}}', 'border-top': '1px solid {{border}}'},
 		'.workspace .aux-info .treetable-background-2': {'background-color': '{{generalBackGround}}'},
-		'.workspace .aux-info .treetable-background-1': {'background-color': '{{listItem Background secondary}}'},
+		'.workspace .aux-info .treetable-background-1': { 'background-color': '{{listItem Background secondary}}' },
 
 		// scrollBar
-		'.CodeMirror-scroll.cm-s-default::-webkit-scrollbar-thumb': {'background-color': '{{Scrollbar}}'},
+		'.CodeMirror-scroll.cm-s-default::-webkit-scrollbar-thumb': { 'background-color': '{{Scrollbar}}' },
 
 		// Correction to context Menu
-		'.resource-context-menu': {color: '{{generalBackGround}}'},
+		'.resource-context-menu': { color: '{{generalBackGround}}' },
 
 
 		// Folders
-		'.asc_Folder>.asc_titleContainer': {
+		'.asc_old_Folder>.asc_titleContainer': {
 			'color': '{{Folder text}}',
 		},
-		'.asc_info_popup': {
+		'.asc_old_info_popup': {
 			'color': '{{generalText}}',
 			'background': '{{codeBackGround}}',
 			'border-color': '{{generalText}}',
 		},
-		'.asc_Folder': {
+		'.asc_old_Folder': {
 			'background-color': '{{Folder background}}',
 		},
 	},

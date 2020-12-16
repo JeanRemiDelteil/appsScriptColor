@@ -4,37 +4,37 @@ import { CLASS_TITLE_CONTAINER } from './className';
 export const css = `
 <style>
 /* Root */
-.asc_FolderRoot>.${CLASS_TITLE_CONTAINER}{
+.asc_old_FolderRoot>.${ CLASS_TITLE_CONTAINER }{
 	display: none;
 }
 
 /* Folder */
-.asc_Folder>.${CLASS_TITLE_CONTAINER}{
+.asc_old_Folder>.${ CLASS_TITLE_CONTAINER }{
 	display: flex;
 	align-items: center;
 	
 	user-select: none;
 	cursor: pointer;
 }
-.asc_Folder>.${CLASS_TITLE_CONTAINER} .asc_folderIcon{
+.asc_old_Folder>.${ CLASS_TITLE_CONTAINER } .asc_old_folderIcon{
 	font-size: 0;
 	padding: 5px;
 }
-.asc_Folder>.${CLASS_TITLE_CONTAINER} .asc_folderIcon>.material-icons{
+.asc_old_Folder>.${ CLASS_TITLE_CONTAINER } .asc_old_folderIcon>.material-icons{
 	font-size: 20px;
 }
 
-.asc_Folder>.${CLASS_TITLE_CONTAINER} .asc_closed{
+.asc_old_Folder>.${ CLASS_TITLE_CONTAINER } .asc_old_closed{
 	display: none;
 }
-.asc_Folder:not(.asc_opened)>.${CLASS_TITLE_CONTAINER} .asc_closed{
+.asc_old_Folder:not(.asc_old_opened)>.${ CLASS_TITLE_CONTAINER } .asc_old_closed{
 	display: unset;
 }
-.asc_Folder:not(.asc_opened)>.${CLASS_TITLE_CONTAINER} .asc_opened{
+.asc_old_Folder:not(.asc_old_opened)>.${ CLASS_TITLE_CONTAINER } .asc_old_opened{
 	display: none;
 }
 
-.asc_Folder>.${CLASS_TITLE_CONTAINER} .asc_folder_title {
+.asc_old_Folder>.${ CLASS_TITLE_CONTAINER } .asc_old_folder_title {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
@@ -43,23 +43,23 @@ export const css = `
 	padding: 7px 0;
 }
 
-.asc_Folder>.asc_folder_ChildList {
+.asc_old_Folder>.asc_old_folder_ChildList {
 	margin-left: 20px;
 }
-.asc_Folder:not(.asc_opened)>.asc_folder_ChildList{
+.asc_old_Folder:not(.asc_old_opened)>.asc_old_folder_ChildList{
 	display: none;
 }
 
-.asc_folder_info {
+.asc_old_folder_info {
 	display: flex;
 	padding: 6px;
 }
-.asc_folder_info>i.material-icons {
+.asc_old_folder_info>i.material-icons {
 	font-size: 18px;
 }
 
 /* Popup */
-.asc_info_popup {
+.asc_old_info_popup {
 	position: fixed;
 	margin-left: 24px;
 	width: 280px;
@@ -70,7 +70,7 @@ export const css = `
 	border-radius: 3px;
 	overflow: auto;
 }
-.asc_info_popup-hide{
+.asc_old_info_popup-hide{
 	display: none;
 }
 

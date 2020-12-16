@@ -1,30 +1,41 @@
-import { Folders } from './virtual-folder';
-import { UiMenu } from './ui-menu';
 import { CustomizeTheme, themeService } from './color-theme';
+import { detectIde, getScriptKey, IdeVersion } from './feature-detection';
+import { UiMenu } from './ui-menu';
 import { ItemHorizontalSeparator, ItemSubMenu } from './ui-menu/item';
+import { Folders } from './folders';
+import { FoldersOld } from './virtual-folder-old';
 
 
 function initAppsScriptColor(): void {
-	const scriptKey = document.location.pathname.match(/\/([^\/]+?)\/edit/)[1];
+	const scriptKey = getScriptKey();
+	const ideVersion = detectIde();
 
-	const colorMenu = new UiMenu(
-		'Colors',
-		() => [
-			...themeService.themeNames.map(themeName =>
-				new ItemSubMenu(themeName, () => themeService.setCurrentTheme(themeName)),
-			),
-			new ItemHorizontalSeparator(),
-			new ItemSubMenu('Custom themes', () => CustomizeTheme.open()),
-		],
-		() => themeService.currentTheme.themeName,
-	);
+	if (ideVersion === IdeVersion.NOT_IDE) {
+		return;
+	}
+	else if (ideVersion === IdeVersion.OLD) {
+		const colorMenu = new UiMenu(
+			'Colors',
+			() => [
+				...themeService.themeNames.map(themeName =>
+					new ItemSubMenu(themeName, () => themeService.setCurrentTheme(themeName)),
+				),
+				new ItemHorizontalSeparator(),
+				new ItemSubMenu('Custom themes', () => CustomizeTheme.open()),
+			],
+			() => themeService.currentTheme.themeName,
+		);
 
-	// Instantiated and start folder system
-	new Folders(scriptKey);
+		// Start folder system (old)
+		new FoldersOld(scriptKey);
 
-	colorMenu.init();
+		colorMenu.init();
 
-	themeService.subscribe(colorMenu.updateItems);
+		themeService.subscribe(colorMenu.updateItems);
+	}
+
+	// Bootstrap current version tools
+	Folders.init(scriptKey);
 }
 
 
