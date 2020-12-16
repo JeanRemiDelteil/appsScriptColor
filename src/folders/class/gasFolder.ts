@@ -1,9 +1,12 @@
-import { GasFile } from './gasFile';
 import { CLASS_CHILDLIST, CLASS_FOLDER, CLASS_TITLE, CLASS_TITLE_CONTAINER } from '../constant/className';
+import { eventSubFolderChanged } from '../constant/event';
 import { IFolderStateDictionary } from '../folderState.interface';
+import { GasFile } from './gasFile';
 
 
 export class GasFolder {
+	private _childListMonitor: MutationObserver;
+
 	dom: {
 		main: HTMLElement,
 		title: HTMLElement,
@@ -44,9 +47,7 @@ export class GasFolder {
 
 		this.itemNameMap.set(child.name, child);
 
-		(
-			child instanceof GasFolder
-		) && child._setParent(this);
+		(child instanceof GasFolder) && child._setParent(this);
 
 		return child;
 	}
@@ -98,6 +99,27 @@ export class GasFolder {
 
 			// Go through all sub directories
 			deepAssign && item instanceof GasFolder && item.assignDomChildren(true);
+		});
+
+		// Setup child list monitor to detect file renaming
+		if (this._childListMonitor) return;
+
+		let eventCounter = 0;
+		this._childListMonitor = new MutationObserver(() => {
+			eventCounter++;
+
+			// First is the start of name editing, second is end of edition
+			if (eventCounter === 2) {
+				this.dom.main.dispatchEvent(new CustomEvent(eventSubFolderChanged, { bubbles: true, composed: true }));
+				this._childListMonitor.disconnect();
+			}
+		});
+
+		// pass in the target node, as well as the observer options
+		this._childListMonitor.observe(this.dom.childList, {
+			childList: true,
+			attributes: false,
+			characterData: false,
 		});
 	}
 
@@ -178,7 +200,7 @@ export class GasFolder {
 		                                       : JSON.parse(item.toString()),
 		));
 
-		return JSON.stringify({[this.name]: sub});
+		return JSON.stringify({ [this.name]: sub });
 	}
 
 	/**

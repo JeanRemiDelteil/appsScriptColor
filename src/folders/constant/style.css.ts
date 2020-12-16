@@ -8,6 +8,7 @@ export const css = `
 	background: white;
 	position: relative;
 	padding-bottom: 7px;
+	margin-bottom: -1px;
 }
 
 .asc_FolderRoot>.${ CLASS_TITLE_CONTAINER }{
@@ -25,6 +26,7 @@ export const css = `
 .asc_Folder>.${ CLASS_TITLE_CONTAINER } .asc_folderIcon{
 	display: flex;
 	padding: 6px 3px;
+	margin-left: 5px;
 	font-size: 0;
 }
 .asc_Folder>.${ CLASS_TITLE_CONTAINER } .asc_folderIcon>.material-icons{
@@ -56,7 +58,7 @@ export const css = `
 	margin-top: 0!important;
 }
 .asc_Folder>.asc_folder_ChildList>li {
-	padding-left: 13px!important;
+	padding-left: 18px!important;
 }
 .asc_Folder:not(.asc_opened)>.asc_folder_ChildList{
 	display: none;

@@ -1,10 +1,12 @@
 import { GasRoot } from './class/gasRoot';
+import { eventSubFolderChanged } from './constant/event';
 import { css } from './constant/style.css';
 import { setDomObserver } from './dom-tools';
 import { IFolderStateDictionary } from './folderState.interface';
 
 
 export class Folders {
+	private _eventSubFolderChangedAction: () => void;
 	private _timeOut_saveStaticFolders: number;
 
 	gasStaticRoot: GasRoot;
@@ -65,11 +67,19 @@ ${ css }
 
 		// Set specific style to remove some selection artifact
 		domFileList.style.marginBottom = '1px';
+		domFileList.parentElement.style.marginBottom = '1px';
 
 		// Load all static folders
 		this.gasStaticRoot = new GasRoot(domFileList, () => this._saveStaticsFolder());
 
 		this.gasStaticRoot.setDeepToggleState(this._loadStaticsFolder());
+
+		this._eventSubFolderChangedAction && domFileList.removeEventListener(eventSubFolderChanged, this._eventSubFolderChangedAction);
+		this._eventSubFolderChangedAction = () => {
+			this.gasStaticRoot.resetList();
+			this._initFolders(domFileList);
+		};
+		domFileList.addEventListener(eventSubFolderChanged, this._eventSubFolderChangedAction);
 	}
 
 

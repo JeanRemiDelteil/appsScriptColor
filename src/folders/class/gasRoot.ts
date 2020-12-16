@@ -51,10 +51,24 @@ export class GasRoot extends GasFolder {
 	 */
 	destroy() {
 		// Un-register monitor on list container
-		this._rootMonitor?.disconnect();
+		this._disableMonitors();
 
 		// TODO: unlink all dom var
 		// TODO: destroy all folder / file
+	}
+
+	/**
+	 * Restore all list item to the original container
+	 */
+	resetList() {
+		this._disableMonitors();
+
+		Array.from(this.root.querySelectorAll('li'))
+			.forEach(listItem => this.root.append(listItem));
+
+		this.dom.main?.parentElement.removeChild(this.dom.main);
+
+		this._monitorContainer();
 	}
 
 	//<editor-fold desc="# Private methods">
@@ -87,6 +101,10 @@ export class GasRoot extends GasFolder {
 			attributes: false,
 			characterData: false,
 		});
+	}
+
+	private _disableMonitors(): void {
+		this._rootMonitor?.disconnect();
 	}
 
 	/**
@@ -132,9 +150,6 @@ export class GasRoot extends GasFolder {
 			renamed: renamedFilesMap,
 		};
 	}
-
-
-	//</editor-fold>
 
 	/**
 	 * Update root children list
@@ -206,5 +221,8 @@ export class GasRoot extends GasFolder {
 
 		this._setRoot();
 	}
+
+	//</editor-fold>
+
 
 }
