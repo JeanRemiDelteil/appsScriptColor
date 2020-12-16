@@ -8,11 +8,14 @@ export const css = `
 	background: white;
 	position: relative;
 	padding-bottom: 7px;
+	padding-left: 13px;
 	margin-bottom: -1px;
 }
-
 .asc_FolderRoot>.${ CLASS_TITLE_CONTAINER }{
 	display: none;
+}
+.asc_FolderRoot li {
+	padding-left: 3px!important;
 }
 
 /* Folder */
@@ -25,8 +28,7 @@ export const css = `
 }
 .asc_Folder>.${ CLASS_TITLE_CONTAINER } .asc_folderIcon{
 	display: flex;
-	padding: 6px 3px;
-	margin-left: 5px;
+	padding: 6px 0;
 	font-size: 0;
 }
 .asc_Folder>.${ CLASS_TITLE_CONTAINER } .asc_folderIcon>.material-icons{
@@ -52,13 +54,10 @@ export const css = `
 }
 
 .asc_Folder>.asc_folder_ChildList {
-	margin-left: 16px;
+	margin-left: 20px;
 }
 .asc_Folder>.asc_folder_ChildList>li:first-child {
 	margin-top: 0!important;
-}
-.asc_Folder>.asc_folder_ChildList>li {
-	padding-left: 18px!important;
 }
 .asc_Folder:not(.asc_opened)>.asc_folder_ChildList{
 	display: none;
