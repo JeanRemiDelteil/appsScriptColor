@@ -51,7 +51,7 @@ async function buildBundle() {
 	return bundle.write(chromeExtensionConfig.outputConfig);
 }
 
-async function watchdBundle() {
+async function watchBundle() {
 	// Babel browser config is defined in package.json 
 	const chromeExtensionConfig = createExtensionConfig({
 		input: `../${settings.inputDir}/${settings.inputFile}`,
@@ -80,4 +80,4 @@ function copyAssets() {
 // getSettings();
 
 exports.build = series(getSettings, cleanBuildFolder, copyManifest, copyAssets, buildBundle);
-exports.watch = series(getSettings, cleanBuildFolder, copyManifest, copyAssets, watchdBundle);
+exports.watch = series(getSettings, cleanBuildFolder, copyManifest, copyAssets, watchBundle);
