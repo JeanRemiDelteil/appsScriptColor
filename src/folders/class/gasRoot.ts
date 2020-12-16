@@ -52,9 +52,7 @@ export class GasRoot extends GasFolder {
 	destroy() {
 		// Un-register monitor on list container
 		this._disableMonitors();
-
-		// TODO: unlink all dom var
-		// TODO: destroy all folder / file
+		this.clearEmptyFolder();
 	}
 
 	/**
@@ -67,8 +65,6 @@ export class GasRoot extends GasFolder {
 			.forEach(listItem => this.root.append(listItem));
 
 		this.dom.main?.parentElement.removeChild(this.dom.main);
-
-		this._monitorContainer();
 	}
 
 	//<editor-fold desc="# Private methods">
