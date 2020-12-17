@@ -1,8 +1,11 @@
-import { CustomizeTheme, themeService } from './color-theme';
+// webComponents import MUST BE FIRST
+import './lib/webComponents';
+
+import { CustomizeTheme, ThemeService } from './color-theme';
 import { detectIde, getScriptKey, IdeVersion } from './feature-detection';
+import { Folders } from './folders';
 import { UiMenu } from './ui-menu';
 import { ItemHorizontalSeparator, ItemSubMenu } from './ui-menu/item';
-import { Folders } from './folders';
 import { FoldersOld } from './virtual-folder-old';
 
 
@@ -14,6 +17,8 @@ function initAppsScriptColor(): void {
 		return;
 	}
 	else if (ideVersion === IdeVersion.OLD) {
+		const themeService = new ThemeService();
+
 		const colorMenu = new UiMenu(
 			'Colors',
 			() => [
@@ -21,7 +26,7 @@ function initAppsScriptColor(): void {
 					new ItemSubMenu(themeName, () => themeService.setCurrentTheme(themeName)),
 				),
 				new ItemHorizontalSeparator(),
-				new ItemSubMenu('Custom themes', () => CustomizeTheme.open()),
+				new ItemSubMenu('Custom themes', () => CustomizeTheme.open(themeService)),
 			],
 			() => themeService.currentTheme.themeName,
 		);
@@ -32,6 +37,8 @@ function initAppsScriptColor(): void {
 		colorMenu.init();
 
 		themeService.subscribe(colorMenu.updateItems);
+
+		return;
 	}
 
 	// Bootstrap current version tools

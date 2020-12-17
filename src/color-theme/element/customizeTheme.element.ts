@@ -1,9 +1,8 @@
-import '../../lib/webComponents';
 import { customElement, html, LitElement, property } from 'lit-element';
 import '../../lib/element/uiDialog';
-// noinspection TypeScriptPreferShortImport
-import { themeService } from '../service/theme.service';
 import { CssTheme } from '../class/cssTheme';
+// noinspection TypeScriptPreferShortImport
+import { ThemeService } from '../service/theme.service';
 
 
 // Insert style needed to adapt layout
@@ -20,16 +19,19 @@ document.head.insertAdjacentHTML('beforeend', `<style>
 
 @customElement('asc-customize-theme')
 export class CustomizeTheme extends LitElement {
-
 	private static _domSidebarParent: HTMLElement = null;
 	private static _opened: boolean = false;
-	@property({type: Array})
-	themes: string[] = themeService.themeNames;
-	@property({type: Function})
+	private static _themeService: ThemeService;
+
+	private _themeService: ThemeService;
+
+	@property({ type: Array })
+	themes: string[];
+	@property({ type: Function })
 	themeClass: CssTheme = null;
-	@property({type: Object})
+	@property({ type: Object })
 	newColors: { [variable: string]: string } = {};
-	@property({type: String})
+	@property({ type: String })
 	newThemeName: string = '';
 	@property({
 		type: Boolean,
@@ -41,40 +43,22 @@ export class CustomizeTheme extends LitElement {
 	constructor() {
 		super();
 
+		this._themeService = CustomizeTheme._themeService;
+		this.themes = CustomizeTheme._themeService.themeNames;
+
 		this._updateThemeList = this._updateThemeList.bind(this);
 	}
 
 
 	//<editor-fold desc="# Lifecycle">
 
-	/**
-	 * Open the theme editor dialog, either in a sidebar, or as a fullscreen dialog
-	 */
-	public static open(): void {
-		if (this._opened) return;
-		this._opened = true;
-
-		const domWorkspace = document.querySelector('.workspace');
-
-		if (!domWorkspace) {
-			// Insert as a global dialog box
-			document.body.insertAdjacentHTML('beforeend', `<asc-customize-theme fullscreen></asc-customize-theme>`);
-		}
-		else {
-			this._domSidebarParent = domWorkspace.parentElement.parentElement.parentElement.parentElement;
-
-			this._domSidebarParent.classList.add('asc-main-sidebar');
-			this._domSidebarParent.insertAdjacentHTML('beforeend', `<asc-customize-theme></asc-customize-theme>`);
-		}
+	private _onUseTheme(themeClass: CssTheme): void {
+		this._themeService.setCurrentTheme(themeClass.themeName);
 	}
 
-	private static _onUseTheme(themeClass: CssTheme): void {
-		themeService.setCurrentTheme(themeClass.themeName);
-	}
-
-	private static _isDeleteButtonDisabled(themeClass: CssTheme): boolean {
+	private _isDeleteButtonDisabled(themeClass: CssTheme): boolean {
 		return themeClass
-		       && themeService
+		       && this._themeService
 			       .defaultThemeNames
 			       .includes(themeClass.themeName);
 	}
@@ -83,89 +67,95 @@ export class CustomizeTheme extends LitElement {
 
 	//<editor-fold desc="# Render">
 
-	public connectedCallback(): void {
+	connectedCallback(): void {
 		super.connectedCallback();
 
-		themeService.subscribe(this._updateThemeList);
+		this._themeService.subscribe(this._updateThemeList);
 	}
 
-	public disconnectedCallback(): void {
+	disconnectedCallback(): void {
 		super.disconnectedCallback();
 
-		themeService.unsubscribe(this._updateThemeList);
+		this._themeService.unsubscribe(this._updateThemeList);
 	}
 
-	public firstUpdated(): void {
-		this._selectTheme(themeService.currentTheme.themeName);
+	firstUpdated(): void {
+		this._selectTheme(this._themeService.currentTheme.themeName);
 	}
 
 	render() {
 		return html`
-<style>
-	:host {
-		display: block;
-		color: black;
-	}
-	:host, input, select, button {
-		font-family: Roboto, Arial, sans-serif;
-	}
-
-	.theme-selector {
-		display: flex;
-		align-items: baseline;
-	}
-	.theme-selector,
-	.theme-name {
-		margin-bottom: 1em;
-	}
-	
-	.theme-name {
-		display: flex;
-	}
-
-	.theme-variable {
-		display: flex;
-		align-items: baseline;
-		
-		margin-bottom: 0.5em;
-	}
-	.theme-selector > label,
-	.theme-name > label,
-	.theme-variable > label {
-		margin-right: auto;
-	}
-	.theme-selector > select,
-	.theme-name > input,
-	.theme-variable > input {
-		margin-left: 1em;
-	}
-	
-	.actions {
-		display: flex;
-		justify-content: flex-end;
-	}
-	.action-button {
-		margin-left: 1em;
-	}
-</style>
-
-<asc-ui-dialog ?fullscreen="${this.fullScreen}" header="Customize color Theme" @UI_DIALOG_CLOSE="${this.close}">
-	
-	<div class="theme-selector">
-		<label for="theme-selector">Select theme:</label>
-		<select id="theme-selector" .value="${this.themeClass && this.themeClass.themeName || ''}" @input="${this._onThemeSelection}">${this._render_ThemeSelector(this.themes)}</select>
-	</div>
-	
-	<div class="theme-name">
-		<label for="theme-name">Theme Name</label>
-		<input id="theme-name" .value="${this.themeClass ? this.themeClass.themeName : ''}" @input="${this._onEditThemeName}">
-	</div>
-	
-	<div class="theme-variables">${this._render_ThemeVariables(this.themeClass)}</div>
-	
-	<div class="actions" slot="action">${this._render_actions(this.themeClass, this.newThemeName, this.newColors)}</div>
-</asc-ui-dialog>
-`;
+			<style>
+				:host {
+					display: block;
+					color: black;
+				}
+				
+				:host, input, select, button {
+					font-family: Roboto, Arial, sans-serif;
+				}
+				
+				.theme-selector {
+					display: flex;
+					align-items: baseline;
+				}
+				
+				.theme-selector,
+				.theme-name {
+					margin-bottom: 1em;
+				}
+				
+				.theme-name {
+					display: flex;
+				}
+				
+				.theme-variable {
+					display: flex;
+					align-items: baseline;
+					
+					margin-bottom: 0.5em;
+				}
+				
+				.theme-selector > label,
+				.theme-name > label,
+				.theme-variable > label {
+					margin-right: auto;
+				}
+				
+				.theme-selector > select,
+				.theme-name > input,
+				.theme-variable > input {
+					margin-left: 1em;
+				}
+				
+				.actions {
+					display: flex;
+					justify-content: flex-end;
+				}
+				
+				.action-button {
+					margin-left: 1em;
+				}
+			</style>
+			
+			<asc-ui-dialog ?fullscreen="${ this.fullScreen }" header="Customize color Theme" @UI_DIALOG_CLOSE="${ this.close }">
+				
+				<div class="theme-selector">
+					<label for="theme-selector">Select theme:</label>
+					<select id="theme-selector" .value="${ this.themeClass && this.themeClass.themeName || '' }" @input="${ this._onThemeSelection }">${ this._render_ThemeSelector(
+						this.themes) }</select>
+				</div>
+				
+				<div class="theme-name">
+					<label for="theme-name">Theme Name</label>
+					<input id="theme-name" .value="${ this.themeClass ? this.themeClass.themeName : '' }" @input="${ this._onEditThemeName }">
+				</div>
+				
+				<div class="theme-variables">${ this._render_ThemeVariables(this.themeClass) }</div>
+				
+				<div class="actions" slot="action">${ this._render_actions(this.themeClass, this.newThemeName, this.newColors) }</div>
+			</asc-ui-dialog>
+		`;
 	}
 
 	//</editor-fold>
@@ -175,7 +165,7 @@ export class CustomizeTheme extends LitElement {
 	/**
 	 * Close the current Theme editor
 	 */
-	public close(): void {
+	close(): void {
 		this.remove();
 
 		if (CustomizeTheme._domSidebarParent) {
@@ -185,11 +175,12 @@ export class CustomizeTheme extends LitElement {
 		CustomizeTheme._opened = false;
 
 		// Reload applied theme
-		themeService.setCurrentTheme(themeService.currentTheme.themeName);
+		this._themeService.setCurrentTheme(this._themeService.currentTheme.themeName);
 	}
 
 	private _render_ThemeSelector(allThemeNames: string[]) {
-		return allThemeNames.map(themeName => html`<option value="${themeName}">${themeName}</option>`);
+		return allThemeNames.map(themeName => html`
+			<option value="${ themeName }">${ themeName }</option>`);
 	}
 
 	private _render_ThemeVariables(theme: CssTheme) {
@@ -199,20 +190,21 @@ export class CustomizeTheme extends LitElement {
 
 		return Object.keys(variables)
 			.map(variableName => html`
-<div class="theme-variable">
-	<label>${variableName}</label>
-	<input .value="${variables[variableName]}" @input="${(event: Event) => this._onVariableChange(variableName, event)}">
-</div>
-`);
+				<div class="theme-variable">
+					<label>${ variableName }</label>
+					<input .value="${ variables[variableName] }" @input="${ (event: Event) => this._onVariableChange(variableName, event) }">
+				</div>
+			`);
 	}
 
 	private _render_actions(themeClass: CssTheme, newName: string, newColors: { [variable: string]: string }) {
 		return html`
-<button class="action-button" @click="${() => this._onDeleteTheme(themeClass)}" ?disabled="${CustomizeTheme._isDeleteButtonDisabled(themeClass)}">Delete</button>
-<button class="action-button" @click="${() => this._onCopyTheme(themeClass, newName, newColors)}">Copy</button>
-<button class="action-button" @click="${() => this._onSaveTheme(themeClass, newName, newColors)}" ?disabled="${this._isSaveButtonDisabled(themeClass)}">Save</button>
-<button class="action-button" @click="${() => CustomizeTheme._onUseTheme(themeClass)}">Use</button>
-`;
+			<button class="action-button" @click="${ () => this._onDeleteTheme(themeClass) }" ?disabled="${ this._isDeleteButtonDisabled(themeClass) }">Delete</button>
+			<button class="action-button" @click="${ () => this._onCopyTheme(themeClass, newName, newColors) }">Copy</button>
+			<button class="action-button" @click="${ () => this._onSaveTheme(themeClass, newName, newColors) }" ?disabled="${ this._isSaveButtonDisabled(themeClass) }">Save
+			</button>
+			<button class="action-button" @click="${ () => this._onUseTheme(themeClass) }">Use</button>
+		`;
 	}
 
 	private _onThemeSelection(event: Event): void {
@@ -247,11 +239,11 @@ export class CustomizeTheme extends LitElement {
 	private _onCopyTheme(themeClass: CssTheme, themeName: string, themeColors: { [variable: string]: string }): void {
 		if (!themeName) themeName = themeClass.themeName;
 
-		if (themeService.themeNames.includes(themeName)) {
+		if (this._themeService.themeNames.includes(themeName)) {
 			themeName += ' ' + new Date().toISOString();
 		}
 
-		const newTheme = themeService.createThemeFrom(themeClass, {themeName, variables: themeColors});
+		const newTheme = this._themeService.createThemeFrom(themeClass, { themeName, variables: themeColors });
 
 		this._selectTheme(newTheme.themeName);
 	}
@@ -259,9 +251,9 @@ export class CustomizeTheme extends LitElement {
 	private _onSaveTheme(themeClass: CssTheme, themeName: string, themeColors: { [variable: string]: string }): void {
 		if (!themeName) themeName = themeClass.themeName;
 
-		const theme = themeService.updateTheme(
+		const theme = this._themeService.updateTheme(
 			themeClass,
-			{themeName, variables: themeColors},
+			{ themeName, variables: themeColors },
 		);
 
 		this._selectTheme(theme.themeName);
@@ -270,7 +262,7 @@ export class CustomizeTheme extends LitElement {
 	private _onDeleteTheme(themeClass: CssTheme): void {
 		const currentIndex = this.themes.findIndex(name => name === themeClass.themeName);
 
-		themeService.deleteTheme(themeClass);
+		this._themeService.deleteTheme(themeClass);
 
 		this.newThemeName = '';
 		this.newColors = {};
@@ -280,29 +272,51 @@ export class CustomizeTheme extends LitElement {
 	}
 
 	private _selectTheme(themeName: string): void {
-		window.requestAnimationFrame(() => this.themeClass = themeService.getThemeByName(themeName));
+		window.requestAnimationFrame(() => this.themeClass = this._themeService.getThemeByName(themeName));
 	}
 
 	private _loadTheme(themeName: string): void {
 		if (!themeName) return;
 
-		this.themeClass = themeService.getThemeByName(themeName);
+		this.themeClass = this._themeService.getThemeByName(themeName);
 	}
 
 	//</editor-fold>
 
 	private _updateThemeList(): void {
-		this.themes = themeService.themeNames;
+		this.themes = this._themeService.themeNames;
 	}
 
 	private _isSaveButtonDisabled(themeClass: CssTheme): boolean {
 		return themeClass
-		       && themeService
+		       && this._themeService
 			       .defaultThemeNames
 			       .includes(themeClass.themeName)
 		       || (
 			       !Object.keys(this.newColors).length
 			       && !this.newThemeName
 		       );
+	}
+
+	/**
+	 * Open the theme editor dialog, either in a sidebar, or as a fullscreen dialog
+	 */
+	static open(themeService: ThemeService): void {
+		if (this._opened) return;
+		this._opened = true;
+		this._themeService = themeService;
+
+		const domWorkspace = document.querySelector('.workspace');
+
+		if (!domWorkspace) {
+			// Insert as a global dialog box
+			document.body.insertAdjacentHTML('beforeend', `<asc-customize-theme fullscreen></asc-customize-theme>`);
+		}
+		else {
+			this._domSidebarParent = domWorkspace.parentElement.parentElement.parentElement.parentElement;
+
+			this._domSidebarParent.classList.add('asc-main-sidebar');
+			this._domSidebarParent.insertAdjacentHTML('beforeend', `<asc-customize-theme></asc-customize-theme>`);
+		}
 	}
 }

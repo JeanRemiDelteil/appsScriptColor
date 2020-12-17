@@ -1,13 +1,13 @@
-import { defaultTheme, defaultThemes } from '../theme';
 import { CssTheme } from '../class/cssTheme';
-import { ICssThemeOptions } from '../interface/cssThemeOptions.interface';
 import { ICreateThemeFromOptions } from '../interface/createThemeFromOptions.interface';
+import { ICssThemeOptions } from '../interface/cssThemeOptions.interface';
+import { defaultTheme, defaultThemes } from '../theme';
 
 
 const CM_CUSTOM_STYLE_ID = 'cmCustomStyle';
 
 
-class ThemeService {
+export class ThemeService {
 
 	private _themesMap: { [themeName: string]: CssTheme } = {};
 	private _customThemeNames: string[] = [];
@@ -76,7 +76,7 @@ class ThemeService {
 	 */
 	public createThemeFrom(
 		rootTheme: CssTheme,
-		{themeName, variables = {}, rules = {}}: ICreateThemeFromOptions,
+		{ themeName, variables = {}, rules = {} }: ICreateThemeFromOptions,
 		saveThemes = true,
 	): CssTheme {
 
@@ -96,7 +96,7 @@ class ThemeService {
 		}
 
 
-		const newTheme = rootTheme.createFrom({themeName, variables, rules});
+		const newTheme = rootTheme.createFrom({ themeName, variables, rules });
 		this._addTheme(newTheme);
 
 		saveThemes && this._saveCustomThemes();
@@ -109,7 +109,7 @@ class ThemeService {
 	 *
 	 * This function return the theme containing the new edited theme
 	 */
-	public updateTheme(theme: CssTheme, {themeName, variables = {}, rules = {}}: ICreateThemeFromOptions) {
+	public updateTheme(theme: CssTheme, { themeName, variables = {}, rules = {} }: ICreateThemeFromOptions) {
 		if (defaultThemes.includes(theme)) return;
 
 		// Remove theme from custom theme
@@ -117,7 +117,7 @@ class ThemeService {
 		this._customThemeNames = this._customThemeNames
 			.filter(name => name !== theme.themeName);
 
-		return this.createThemeFrom(theme, {themeName, variables, rules});
+		return this.createThemeFrom(theme, { themeName, variables, rules });
 	}
 
 	/**
@@ -222,11 +222,11 @@ class ThemeService {
 
 		Object.keys(customThemes)
 			.forEach(name => {
-				const {rootTheme, themeName, variables, rules} = customThemes[name];
+				const { rootTheme, themeName, variables, rules } = customThemes[name];
 
 				this.createThemeFrom(
 					this.getThemeByName(rootTheme),
-					{themeName, variables, rules},
+					{ themeName, variables, rules },
 					false,
 				);
 			});
@@ -254,5 +254,3 @@ class ThemeService {
 	}
 
 }
-
-export const themeService = new ThemeService();
