@@ -13,15 +13,15 @@ export const defaultTheme = new CssTheme({
 	rules: {
 
 		// Folders
-		'.asc_Folder>.asc_titleContainer': {
+		'.asc_old_Folder>.asc_titleContainer': {
 			'color': '{{Folder text}}',
 		},
-		'.asc_info_popup': {
+		'.asc_old_info_popup': {
 			'color': '{{generalText}}',
 			'background': '{{codeBackGround}}',
 			'border-color': '{{generalText}}',
 		},
-		'.asc_Folder': {
+		'.asc_old_Folder': {
 			'background-color': '{{Folder background}}',
 		},
 
