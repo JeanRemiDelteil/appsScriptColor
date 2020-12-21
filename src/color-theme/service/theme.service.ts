@@ -2,6 +2,7 @@ import { CssTheme } from '../class/cssTheme';
 import { ICreateThemeFromOptions } from '../interface/createThemeFromOptions.interface';
 import { ICssThemeOptions } from '../interface/cssThemeOptions.interface';
 import { defaultTheme, defaultThemes } from '../theme';
+import { darculaTheme } from '../theme/darcula.theme';
 
 
 const CM_CUSTOM_STYLE_ID = 'cmCustomStyle';
@@ -18,7 +19,7 @@ export class ThemeService {
 		// Load custom Themes if any
 		this._loadCustomThemes();
 
-		this.setCurrentTheme(localStorage.getItem('appScriptColor-theme') || 'Darcula');
+		this.setCurrentTheme(localStorage.getItem('appScriptColor-theme') || darculaTheme.themeName);
 
 		this._setStyleObserver();
 	}

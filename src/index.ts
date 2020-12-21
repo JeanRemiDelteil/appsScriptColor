@@ -1,8 +1,9 @@
 // webComponents import MUST BE FIRST
 import './lib/webComponents';
 
-import { CustomizeTheme, ThemeService } from './color-theme';
+import { CustomizeTheme, ThemeSelector, ThemeService } from './color-theme';
 import { detectIde, getScriptKey, IdeVersion } from './feature-detection';
+import { setupIdeDomWatcher } from './feature-detection/newIdeDomWatcher';
 import { Folders } from './folders';
 import { UiMenu } from './ui-menu';
 import { ItemHorizontalSeparator, ItemSubMenu } from './ui-menu/item';
@@ -43,6 +44,11 @@ function initAppsScriptColor(): void {
 
 	// Bootstrap current version tools
 	Folders.init(scriptKey);
+
+	const themeService = new ThemeService();
+	ThemeSelector.insertThemeSelector(themeService);
+
+	setupIdeDomWatcher();
 }
 
 

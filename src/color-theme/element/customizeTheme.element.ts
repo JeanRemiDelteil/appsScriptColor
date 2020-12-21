@@ -52,21 +52,6 @@ export class CustomizeTheme extends LitElement {
 
 	//<editor-fold desc="# Lifecycle">
 
-	private _onUseTheme(themeClass: CssTheme): void {
-		this._themeService.setCurrentTheme(themeClass.themeName);
-	}
-
-	private _isDeleteButtonDisabled(themeClass: CssTheme): boolean {
-		return themeClass
-		       && this._themeService
-			       .defaultThemeNames
-			       .includes(themeClass.themeName);
-	}
-
-	//</editor-fold>
-
-	//<editor-fold desc="# Render">
-
 	connectedCallback(): void {
 		super.connectedCallback();
 
@@ -82,6 +67,10 @@ export class CustomizeTheme extends LitElement {
 	firstUpdated(): void {
 		this._selectTheme(this._themeService.currentTheme.themeName);
 	}
+
+	//</editor-fold>
+
+	//<editor-fold desc="# Render">
 
 	render() {
 		return html`
@@ -158,26 +147,6 @@ export class CustomizeTheme extends LitElement {
 		`;
 	}
 
-	//</editor-fold>
-
-	//<editor-fold desc="# onEvent">
-
-	/**
-	 * Close the current Theme editor
-	 */
-	close(): void {
-		this.remove();
-
-		if (CustomizeTheme._domSidebarParent) {
-			CustomizeTheme._domSidebarParent.classList.remove('asc-main-sidebar');
-			delete CustomizeTheme._domSidebarParent;
-		}
-		CustomizeTheme._opened = false;
-
-		// Reload applied theme
-		this._themeService.setCurrentTheme(this._themeService.currentTheme.themeName);
-	}
-
 	private _render_ThemeSelector(allThemeNames: string[]) {
 		return allThemeNames.map(themeName => html`
 			<option value="${ themeName }">${ themeName }</option>`);
@@ -207,6 +176,26 @@ export class CustomizeTheme extends LitElement {
 		`;
 	}
 
+	//</editor-fold>
+
+	//<editor-fold desc="# onEvent">
+
+	/**
+	 * Close the current Theme editor
+	 */
+	close(): void {
+		this.remove();
+
+		if (CustomizeTheme._domSidebarParent) {
+			CustomizeTheme._domSidebarParent.classList.remove('asc-main-sidebar');
+			delete CustomizeTheme._domSidebarParent;
+		}
+		CustomizeTheme._opened = false;
+
+		// Reload applied theme
+		this._themeService.setCurrentTheme(this._themeService.currentTheme.themeName);
+	}
+
 	private _onThemeSelection(event: Event): void {
 		const domSelect = event.target as HTMLSelectElement;
 
@@ -231,10 +220,9 @@ export class CustomizeTheme extends LitElement {
 		this.newThemeName = domInput.value;
 	}
 
-	//</editor-fold>
-
-
-	//<editor-fold desc="# Private methods">
+	private _onUseTheme(themeClass: CssTheme): void {
+		this._themeService.setCurrentTheme(themeClass.themeName);
+	}
 
 	private _onCopyTheme(themeClass: CssTheme, themeName: string, themeColors: { [variable: string]: string }): void {
 		if (!themeName) themeName = themeClass.themeName;
@@ -271,6 +259,10 @@ export class CustomizeTheme extends LitElement {
 		this._selectTheme(this.themes[currentIndex - 1]);
 	}
 
+	//</editor-fold>
+
+	//<editor-fold desc="# Private methods">
+
 	private _selectTheme(themeName: string): void {
 		window.requestAnimationFrame(() => this.themeClass = this._themeService.getThemeByName(themeName));
 	}
@@ -281,10 +273,15 @@ export class CustomizeTheme extends LitElement {
 		this.themeClass = this._themeService.getThemeByName(themeName);
 	}
 
-	//</editor-fold>
-
 	private _updateThemeList(): void {
 		this.themes = this._themeService.themeNames;
+	}
+
+	private _isDeleteButtonDisabled(themeClass: CssTheme): boolean {
+		return themeClass
+		       && this._themeService
+			       .defaultThemeNames
+			       .includes(themeClass.themeName);
 	}
 
 	private _isSaveButtonDisabled(themeClass: CssTheme): boolean {
@@ -297,6 +294,9 @@ export class CustomizeTheme extends LitElement {
 			       && !this.newThemeName
 		       );
 	}
+
+	//</editor-fold>
+
 
 	/**
 	 * Open the theme editor dialog, either in a sidebar, or as a fullscreen dialog

@@ -31,9 +31,10 @@
     "yargs": "16.2.0"
   },
   "dependencies": {
-    "@material/mwc-icon-button": "0.18.0",
+    "@material/mwc-icon-button": "0.20.0",
+    "@material/mwc-icon-button-toggle": "0.20.0",
     "@webcomponents/custom-elements": "1.4.2",
-    "lit-element": "2.3.1"
+    "lit-element": "2.4.0"
   },
   "resolutions": {
     "**/terser": "5.5.1"

@@ -1,5 +1,5 @@
 import { CLASS_CHILDLIST, CLASS_FOLDER, CLASS_TITLE, CLASS_TITLE_CONTAINER } from '../constant/className';
-import { eventSubFolderChanged } from '../constant/event';
+import { EVENT_SUB_FOLDER_CHANGED } from '../event';
 import { IFolderStateDictionary } from '../folderState.interface';
 import { GasFile } from './gasFile';
 
@@ -110,7 +110,7 @@ export class GasFolder {
 
 			// First is the start of name editing, second is end of edition
 			if (eventCounter === 2) {
-				this.dom.main.dispatchEvent(new CustomEvent(eventSubFolderChanged, { bubbles: true, composed: true }));
+				this.dom.main.dispatchEvent(new CustomEvent(EVENT_SUB_FOLDER_CHANGED, { bubbles: true, composed: true }));
 				this._childListMonitor.disconnect();
 			}
 		});
