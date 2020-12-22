@@ -69,7 +69,7 @@ export const darculaTheme = new CssTheme({
 		'.editor .code-area .CodeMirror': { 'background-color': '{{DEPRECATED codeBackGround}}', 'line-height': '17px' },
 		'.editor .code-area .CodeMirror pre': { 'color': '{{DEPRECATED Code Punctuation}}' }, // punctuation
 
-		'.editor .code-area .CodeMirror-DEPRECATED Cursor': { 'border-left': '1px solid {{DEPRECATED Cursor}}!important' },
+		'.editor .code-area .CodeMirror-cursor': { 'border-left': '1px solid {{DEPRECATED Cursor}}!important' },
 		'.CodeMirror-focused div.CodeMirror-selected': { 'background-color': '{{DEPRECATED textSelectionBackground}}' }, // selection background
 		'div.CodeMirror-selected': { 'background-color': '{{DEPRECATED textSelectionBackground}}' },
 
@@ -177,7 +177,7 @@ export const darculaTheme = new CssTheme({
 		'.CodeMirror-scroll.cm-s-default::-webkit-DEPRECATED Scrollbar-thumb': { 'background-color': '{{DEPRECATED Scrollbar}}' },
 
 		// Correction to context Menu
-		'.resource-context-menu': { color: '{{DEPRECATED generalBackGround}}' },
+		'.resource-context-menu': { 'color': '{{DEPRECATED generalBackGround}}' },
 
 
 		// Folders
