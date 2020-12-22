@@ -23,7 +23,7 @@ export class CssTheme {
 	}
 
 	get monacoTheme(): IMonacoTheme | undefined {
-		return this._monacoTheme || undefined;
+		return this._monacoTheme ? CssTheme._monacoThemeBuilder(this._monacoTheme, this._variables) : undefined;
 	}
 
 	get themeName(): string {
@@ -42,7 +42,7 @@ export class CssTheme {
 	/**
 	 * Compose rules string with variables
 	 */
-	static _cssBuilder(rules: IRule, variables: IVariables): string {
+	private static _cssBuilder(rules: IRule, variables: IVariables): string {
 		let cssSheet = '';
 
 		for (let selector in rules) {
@@ -62,6 +62,41 @@ export class CssTheme {
 		return cssSheet;
 	}
 
+	private static _monacoThemeBuilder(theme: IMonacoTheme, variables: IVariables): IMonacoTheme {
+
+		function getRuleColorFromVariable(key: string): string | undefined {
+			if (!key) return undefined;
+
+			const color = variables[key];
+			if (!color) return key;
+
+			return color.replace(/^#/, '');
+		}
+
+		return {
+			base: theme.base,
+			inherit: theme.inherit,
+			rules: theme.rules.map(rule => {
+				const ruleSet = {
+					...rule,
+				};
+
+				let foreGround = getRuleColorFromVariable(rule.foreground);
+				let backGround = getRuleColorFromVariable(rule.background);
+
+				if (foreGround) ruleSet.foreground = foreGround;
+				if (backGround) ruleSet.background = backGround;
+
+				return ruleSet;
+			}),
+			colors: Object.keys(theme.colors)
+				.reduce((acc, key) => {
+					acc[key] = variables[theme.colors[key]] || theme.colors[key];
+
+					return acc;
+				}, {} as { [key: string]: string }),
+		};
+	};
 
 	/**
 	 * Convert class instance to a simple Object,

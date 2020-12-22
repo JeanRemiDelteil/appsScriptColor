@@ -4,7 +4,18 @@ import { CssTheme } from '../class/cssTheme';
 export const darculaTheme = new CssTheme({
 	themeName: 'Darcula',
 	variables: {
-		// 'IDE code background': '#2B2B2B',
+		'IDE_code_background': '#2B2B2B',
+		'IDE_code_comment': '#888888',
+		'IDE_code_string': '#6a8759',
+		'IDE_code_keyword': '#cc7832',
+		'IDE_code_number': '#6897bb',
+		'IDE_code_class': '#ffc66d',
+		'IDE_code_identifier': '#b589cc',
+		'IDE_code_delimiter': '#bbbbbb',
+		'IDE_code_regex': '#ff5500',
+		'IDE_code_html_tag': '#ffc66d',
+		'IDE_code_html_attribute': '#A772D0',
+		'IDE_code_css_selector': '#FF861E',
 
 		//region # OLD IDE
 		'DEPRECATED codeBackGround': '#2B2B2B',
@@ -49,16 +60,16 @@ export const darculaTheme = new CssTheme({
 	},
 	rules: {
 		// Monaco IDE
-		// '.monaco-editor-background': {
-		// 	'background-color': '{{IDE code background}}',
-		// },
+		'.monaco-editor .reference-zone-widget .preview .reference-decoration': {
+			'background-color': '#864b00b3',
+		},
 
 		//region # OLD IDE
 
 		'.editor .code-area .CodeMirror': { 'background-color': '{{DEPRECATED codeBackGround}}', 'line-height': '17px' },
 		'.editor .code-area .CodeMirror pre': { 'color': '{{DEPRECATED Code Punctuation}}' }, // punctuation
 
-		'.editor .code-area .CodeMirror-DEPRECATED Cursor': { 'DEPRECATED border-left': '1px solid {{DEPRECATED Cursor}}!important' },
+		'.editor .code-area .CodeMirror-DEPRECATED Cursor': { 'border-left': '1px solid {{DEPRECATED Cursor}}!important' },
 		'.CodeMirror-focused div.CodeMirror-selected': { 'background-color': '{{DEPRECATED textSelectionBackground}}' }, // selection background
 		'div.CodeMirror-selected': { 'background-color': '{{DEPRECATED textSelectionBackground}}' },
 
@@ -69,9 +80,9 @@ export const darculaTheme = new CssTheme({
 		// line number area
 		'.editor .code-area .CodeMirror-gutter': {
 			'background-color': '{{DEPRECATED codeBackGround}}',
-			'DEPRECATED border-left': '1px solid',
-			'DEPRECATED border-right': '1px solid',
-			'DEPRECATED border-color': '{{DEPRECATED border}}',
+			'border-left': '1px solid',
+			'border-right': '1px solid',
+			'border-color': '{{DEPRECATED border}}',
 		},
 		'.editor .code-area .CodeMirror-gutter-text': {
 			'background-color': '{{DEPRECATED codeBackGround}}',
@@ -111,15 +122,15 @@ export const darculaTheme = new CssTheme({
 		'.cm-s-default span.cm-link': { 'color': '#00c' },
 
 		// UI colors
-		'.editor .gwt-TabLayoutPanelTabs': { 'background-color': '{{DEPRECATED generalBackGround}}', 'DEPRECATED border-color': '{{DEPRECATED border}}' },
-		'.editor .gwt-TabLayoutPanelTab': { 'background-color': '{{DEPRECATED tabBackGround}}', 'DEPRECATED border-color': '{{DEPRECATED border}}' },
+		'.editor .gwt-TabLayoutPanelTabs': { 'background-color': '{{DEPRECATED generalBackGround}}', 'border-color': '{{DEPRECATED border}}' },
+		'.editor .gwt-TabLayoutPanelTab': { 'background-color': '{{DEPRECATED tabBackGround}}', 'border-color': '{{DEPRECATED border}}' },
 		'.editor .gwt-TabLayoutPanelTab:hover .name, .editor .gwt-TabLayoutPanelTab-selected .tab-header .name': { 'color': '{{DEPRECATED generalText}}' },
 		'.editor .gwt-TabLayoutPanelTab-selected': { 'background-color': '{{DEPRECATED codeBackGround}}' },
 		'.editor .gwt-TabLayoutPanelTab:hover': { 'background-color': '{{DEPRECATED codeBackGround}}' },
 
 		// resource panel
 		'.resource-list': { 'background-color': '{{DEPRECATED generalBackGround}}', 'color': '{{DEPRECATED generalText}}' },
-		'.resource-list .project-items-list .item': { 'DEPRECATED border-bottom': '1px solid {{DEPRECATED border}}' },
+		'.resource-list .project-items-list .item': { 'border-bottom': '1px solid {{DEPRECATED border}}' },
 		'.resource-list .project-items-list .selected, .resource-list .project-items-list .selected:hover': {
 			'background-color': '{{DEPRECATED listItemBackground}}',
 			'color': '{{DEPRECATED listItemSelected}}',
@@ -132,11 +143,11 @@ export const darculaTheme = new CssTheme({
 		// DEPRECATED Drag bar
 		'.workspace .gwt-SplitLayoutPanel-HDragger': {
 			'background-color': '{{DEPRECATED Drag bar}}!important',
-			'DEPRECATED border-left': '1px solid {{DEPRECATED border}}!important',
+			'border-left': '1px solid {{DEPRECATED border}}!important',
 		},
 		'.workspace .gwt-SplitLayoutPanel-VDragger': {
 			'background-color': '{{DEPRECATED Drag bar}}!important',
-			'DEPRECATED border-top': '1px solid {{DEPRECATED border}}!important',
+			'border-top': '1px solid {{DEPRECATED border}}!important',
 		},
 		'.workspace .gwt-SplitLayoutPanel-HDragger:hover, .workspace .gwt-SplitLayoutPanel-VDragger:hover': { 'background-color': '{{DEPRECATED Drag bar hoover}}!important' },
 
@@ -144,7 +155,7 @@ export const darculaTheme = new CssTheme({
 		'.status-bar': {
 			'background-color': '{{DEPRECATED generalBackGround}}',
 			'color': '{{DEPRECATED generalText}}',
-			'DEPRECATED border-top': '1px solid {{DEPRECATED border}}',
+			'border-top': '1px solid {{DEPRECATED border}}',
 		},
 
 		// general colors
@@ -155,10 +166,10 @@ export const darculaTheme = new CssTheme({
 		'.workspace .aux-info .debugger-frame-label': { 'background-color': '{{DEPRECATED listItemBackground}}' },
 		'.workspace .aux-info .debugger-frame-label-selected': { 'background-color': '{{DEPRECATED listItemBackgroundSelected}}', 'color': '{{DEPRECATED generalText}}' },
 		'.workspace .aux-info .debugger-callstack-wrapper': {
-			'DEPRECATED border-left': '1px solid {{DEPRECATED border}}',
-			'DEPRECATED border-top': '1px solid {{DEPRECATED border}}',
+			'border-left': '1px solid {{DEPRECATED border}}',
+			'border-top': '1px solid {{DEPRECATED border}}',
 		},
-		'.workspace .aux-info .treetable-wrapper': { 'DEPRECATED border-left': '1px solid {{DEPRECATED border}}', 'DEPRECATED border-top': '1px solid {{DEPRECATED border}}' },
+		'.workspace .aux-info .treetable-wrapper': { 'border-left': '1px solid {{DEPRECATED border}}', 'border-top': '1px solid {{DEPRECATED border}}' },
 		'.workspace .aux-info .treetable-background-2': { 'background-color': '{{DEPRECATED generalBackGround}}' },
 		'.workspace .aux-info .treetable-background-1': { 'background-color': '{{DEPRECATED listItem Background secondary}}' },
 
@@ -176,7 +187,7 @@ export const darculaTheme = new CssTheme({
 		'.asc_old_info_popup': {
 			'color': '{{DEPRECATED generalText}}',
 			'background': '{{DEPRECATED codeBackGround}}',
-			'DEPRECATED border-color': '{{DEPRECATED generalText}}',
+			'border-color': '{{DEPRECATED generalText}}',
 		},
 		'.asc_old_Folder': {
 			'background-color': '{{DEPRECATED Folder background}}',
@@ -189,137 +200,85 @@ export const darculaTheme = new CssTheme({
 		'inherit': true,
 		'rules': [
 			{
-				'background': '272822',
+				'background': 'IDE_code_background',
 				'token': '',
 			},
 			{
-				'foreground': '75715e',
+				'foreground': 'IDE_code_comment',
 				'token': 'comment',
 			},
 			{
-				'foreground': 'e6db74',
+				'foreground': 'IDE_code_string',
 				'token': 'string',
 			},
 			{
-				'foreground': 'ae81ff',
-				'token': 'constant.numeric',
+				'foreground': 'IDE_code_number',
+				'token': 'number',
 			},
 			{
-				'foreground': 'ae81ff',
-				'token': 'constant.language',
-			},
-			{
-				'foreground': 'ae81ff',
-				'token': 'constant.character',
-			},
-			{
-				'foreground': 'ae81ff',
-				'token': 'constant.other',
-			},
-			{
-				'foreground': 'f92672',
+				'foreground': 'IDE_code_keyword',
 				'token': 'keyword',
 			},
 			{
-				'foreground': 'f92672',
-				'token': 'storage',
+				'foreground': 'IDE_code_identifier',
+				'token': 'identifier',
 			},
 			{
-				'foreground': '66d9ef',
-				'fontStyle': 'italic',
-				'token': 'storage.type',
+				'foreground': 'IDE_code_class',
+				'token': 'type.identifier',
 			},
 			{
-				'foreground': 'a6e22e',
-				'fontStyle': 'underline',
-				'token': 'entity.name.class',
+				'foreground': 'IDE_code_delimiter',
+				'token': 'delimiter',
 			},
 			{
-				'foreground': 'a6e22e',
-				'fontStyle': 'italic underline',
-				'token': 'entity.other.inherited-class',
+				'foreground': 'IDE_code_regex',
+				'token': 'regexp',
 			},
 			{
-				'foreground': 'a6e22e',
-				'token': 'entity.name.function',
+				'foreground': 'IDE_code_html_tag',
+				'token': 'tag.html',
 			},
 			{
-				'foreground': 'fd971f',
-				'fontStyle': 'italic',
-				'token': 'variable.parameter',
+				'foreground': 'IDE_code_html_attribute',
+				'token': 'attribute.name.html',
 			},
 			{
-				'foreground': 'f92672',
-				'token': 'entity.name.tag',
+				'foreground': 'IDE_code_string',
+				'token': 'attribute.value.html',
 			},
 			{
-				'foreground': 'a6e22e',
-				'token': 'entity.other.attribute-name',
+				'foreground': 'IDE_code_comment',
+				'token': 'metatag.html',
 			},
 			{
-				'foreground': '66d9ef',
-				'token': 'support.function',
+				'foreground': 'IDE_code_comment',
+				'token': 'metatag.content.html',
 			},
 			{
-				'foreground': '66d9ef',
-				'token': 'support.constant',
+				'foreground': 'IDE_code_css_selector',
+				'token': 'tag.css',
 			},
 			{
-				'foreground': '66d9ef',
-				'fontStyle': 'italic',
-				'token': 'support.type',
+				'foreground': 'IDE_code_html_attribute',
+				'token': 'attribute.name.css',
 			},
 			{
-				'foreground': '66d9ef',
-				'fontStyle': 'italic',
-				'token': 'support.class',
+				'foreground': 'IDE_code_string',
+				'token': 'attribute.value.css',
 			},
 			{
-				'foreground': 'f8f8f0',
-				'background': 'f92672',
-				'token': 'invalid',
+				'foreground': 'IDE_code_identifier',
+				'token': 'string.key.json',
 			},
 			{
-				'foreground': 'f8f8f0',
-				'background': 'ae81ff',
-				'token': 'invalid.deprecated',
-			},
-			{
-				'foreground': 'cfcfc2',
-				'token': 'meta.structure.dictionary.json string.quoted.double.json',
-			},
-			{
-				'foreground': '75715e',
-				'token': 'meta.diff',
-			},
-			{
-				'foreground': '75715e',
-				'token': 'meta.diff.header',
-			},
-			{
-				'foreground': 'f92672',
-				'token': 'markup.deleted',
-			},
-			{
-				'foreground': 'a6e22e',
-				'token': 'markup.inserted',
-			},
-			{
-				'foreground': 'e6db74',
-				'token': 'markup.changed',
-			},
-			{
-				'foreground': 'ae81ffa0',
-				'token': 'constant.numeric.line-number.find-in-files - match',
-			},
-			{
-				'foreground': 'e6db74',
-				'token': 'entity.name.filename.find-in-files',
+				'foreground': 'IDE_code_string',
+				'token': 'string.value.json',
 			},
 		],
 		'colors': {
-			'editor.foreground': '#F8F8F2',
-			'editor.background': '#272822',
+			'editor.foreground': '#bbbbbb',
+			'editor.background': 'IDE_code_background',
 			'editor.selectionBackground': '#49483E',
 			'editor.lineHighlightBackground': '#3E3D32',
 			'editorCursor.foreground': '#F8F8F0',

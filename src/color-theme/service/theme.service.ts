@@ -163,8 +163,10 @@ export class ThemeService {
 		this._dom_divCmCustomStyle.innerHTML = theme.css;
 
 		if (detectIde() === IdeVersion.MONACO) {
-			if (theme.monacoTheme) {
-				ThemeService.setMonacoThemeFn(theme.themeName, theme.monacoTheme);
+			const monacoTheme = theme.monacoTheme;
+
+			if (monacoTheme) {
+				ThemeService.setMonacoThemeFn(theme.themeName, monacoTheme);
 			}
 			else {
 				ThemeService.resetMonacoThemeFn();
