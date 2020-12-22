@@ -3,6 +3,7 @@ import { customElement, html, LitElement, property } from 'lit-element';
 import { EVENT_IDE_DOM_UPDATED } from '../../feature-detection';
 import { CssTheme } from '../class/cssTheme';
 import { ThemeService } from '../service/theme.service';
+import { darculaTheme, defaultTheme } from '../theme';
 
 
 @customElement('asc-theme-selector')
@@ -22,26 +23,13 @@ export class ThemeSelector extends LitElement {
 
 		this._themeService = ThemeSelector._themeService;
 		this.themes = this._themeService.themeNames;
-		this._updateThemeList = this._updateThemeList.bind(this);
 	}
 
 
 	//<editor-fold desc="# Lifecycle">
 
-	connectedCallback(): void {
-		super.connectedCallback();
-
-		this._themeService.subscribe(this._updateThemeList);
-	}
-
-	disconnectedCallback(): void {
-		super.disconnectedCallback();
-
-		this._themeService.unsubscribe(this._updateThemeList);
-	}
-
 	firstUpdated(): void {
-		this._selectTheme(this._themeService.currentTheme.themeName);
+		this._applyTheme(this._themeService.currentTheme.themeName);
 	}
 
 	//</editor-fold>
@@ -67,26 +55,30 @@ export class ThemeSelector extends LitElement {
 				}
 			</style>
 			
-			<mwc-icon-button-toggle onIcon="brightness_2" offIcon="wb_sunny"></mwc-icon-button-toggle>
+			<mwc-icon-button-toggle
+				onIcon="brightness_2"
+				offIcon="wb_sunny"
+				@MDCIconButtonToggle:change="${ this._onToggle }"
+				.on="${ this.themeClass !== defaultTheme }"
+			></mwc-icon-button-toggle>
 		`;
+	}
+
+	//</editor-fold>
+
+	//<editor-fold desc="# Events">
+
+	_onToggle({ detail: { isOn } }: { detail: { isOn: boolean } }) {
+		this._applyTheme(isOn ? darculaTheme.themeName : defaultTheme.themeName);
 	}
 
 	//</editor-fold>
 
 	//<editor-fold desc="# Private methods">
 
-	private _selectTheme(themeName: string): void {
-		window.requestAnimationFrame(() => this.themeClass = this._themeService.getThemeByName(themeName));
-	}
-
-	private _updateThemeList(): void {
-		this.themes = this._themeService.themeNames;
-	}
-
-	private _loadTheme(themeName: string): void {
-		if (!themeName) return;
-
+	private _applyTheme(themeName: string): void {
 		this.themeClass = this._themeService.getThemeByName(themeName);
+		this._themeService.setCurrentTheme(this.themeClass.themeName);
 	}
 
 	//</editor-fold>

@@ -4,26 +4,34 @@ import { CssTheme } from '../class/cssTheme';
 export const defaultTheme = new CssTheme({
 	themeName: 'Default',
 	variables: {
-		'codeBackGround': '#fff',
-		'generalText': '#333',
 
-		'Folder text': '#8a93ab',
-		'Folder background': '#bfbfbf29',
+
+		//region # OLD IDE
+		'DEPRECATED codeBackGround': '#fff',
+		'DEPRECATED generalText': '#333',
+
+		'DEPRECATED Folder text': '#8a93ab',
+		'DEPRECATED Folder background': '#bfbfbf29',
+		//endregion
 	},
 	rules: {
 
+
+		//region # OLD IDE
+
 		// Folders
 		'.asc_old_Folder>.asc_titleContainer': {
-			'color': '{{Folder text}}',
+			'color': '{{DEPRECATED Folder text}}',
 		},
 		'.asc_old_info_popup': {
-			'color': '{{generalText}}',
-			'background': '{{codeBackGround}}',
-			'border-color': '{{generalText}}',
+			'color': '{{DEPRECATED generalText}}',
+			'background': '{{DEPRECATED codeBackGround}}',
+			'border-color': '{{DEPRECATED generalText}}',
 		},
 		'.asc_old_Folder': {
-			'background-color': '{{Folder background}}',
+			'background-color': '{{DEPRECATED Folder background}}',
 		},
 
+		//endregion
 	},
 });

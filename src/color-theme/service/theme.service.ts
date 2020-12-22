@@ -1,40 +1,27 @@
 import { CssTheme } from '../class/cssTheme';
 import { ICreateThemeFromOptions } from '../interface/createThemeFromOptions.interface';
 import { ICssThemeOptions } from '../interface/cssThemeOptions.interface';
-import { defaultTheme, defaultThemes } from '../theme';
-import { darculaTheme } from '../theme/darcula.theme';
+import { darculaTheme, defaultTheme, defaultThemes } from '../theme';
 
 
 const CM_CUSTOM_STYLE_ID = 'cmCustomStyle';
 
 
 export class ThemeService {
-
 	private _themesMap: { [themeName: string]: CssTheme } = {};
 	private _customThemeNames: string[] = [];
 	private _callbacks: Set<Function> = new Set();
 	private _dom_divCmCustomStyle: HTMLElement = null;
-
-	constructor() {
-		// Load custom Themes if any
-		this._loadCustomThemes();
-
-		this.setCurrentTheme(localStorage.getItem('appScriptColor-theme') || darculaTheme.themeName);
-
-		this._setStyleObserver();
-	}
-
-	private _currentTheme: CssTheme;
-
-	get currentTheme(): CssTheme {
-		return this._currentTheme;
-	}
-
 	private _defaultThemeNames: string[] = defaultThemes.map(theme => {
 		this._themesMap[theme.themeName] = theme;
 
 		return theme.themeName;
 	});
+	private _currentTheme: CssTheme;
+
+	get currentTheme(): CssTheme {
+		return this._currentTheme;
+	}
 
 	get defaultThemeNames(): string[] {
 		return this._defaultThemeNames;
@@ -48,7 +35,15 @@ export class ThemeService {
 	}
 
 
-	//<editor-fold desc="# Private methods">
+	constructor() {
+		// Load custom Themes if any
+		this._loadCustomThemes();
+
+		this.setCurrentTheme(localStorage.getItem('appScriptColor-theme') || darculaTheme.themeName);
+
+		this._setStyleObserver();
+	}
+
 
 	/**
 	 * Set the current theme
@@ -58,7 +53,7 @@ export class ThemeService {
 	 * - save currentTheme in localStorage
 	 * - apply the theme in the DOM
 	 */
-	public setCurrentTheme(themeName: string): void {
+	setCurrentTheme(themeName: string): void {
 		this._currentTheme = this.getThemeByName(themeName);
 		localStorage.setItem('appScriptColor-theme', this._currentTheme.themeName);
 
@@ -68,14 +63,14 @@ export class ThemeService {
 	/**
 	 * Find a theme in store by his name
 	 */
-	public getThemeByName(name: string): CssTheme {
+	getThemeByName(name: string): CssTheme {
 		return this._themesMap[name] || defaultTheme;
 	}
 
 	/**
 	 * Duplicate a theme and modify it
 	 */
-	public createThemeFrom(
+	createThemeFrom(
 		rootTheme: CssTheme,
 		{ themeName, variables = {}, rules = {} }: ICreateThemeFromOptions,
 		saveThemes = true,
@@ -110,7 +105,7 @@ export class ThemeService {
 	 *
 	 * This function return the theme containing the new edited theme
 	 */
-	public updateTheme(theme: CssTheme, { themeName, variables = {}, rules = {} }: ICreateThemeFromOptions) {
+	updateTheme(theme: CssTheme, { themeName, variables = {}, rules = {} }: ICreateThemeFromOptions) {
 		if (defaultThemes.includes(theme)) return;
 
 		// Remove theme from custom theme
@@ -124,7 +119,7 @@ export class ThemeService {
 	/**
 	 * Delete a theme from the custom Theme list
 	 */
-	public deleteTheme(theme: CssTheme): boolean {
+	deleteTheme(theme: CssTheme): boolean {
 		if (defaultThemes.includes(theme)) return false;
 
 		// Remove theme from custom theme
@@ -141,18 +136,19 @@ export class ThemeService {
 	/**
 	 * Add a subscriber to add / delete theme event
 	 */
-	public subscribe(callback: Function): void {
+	subscribe(callback: Function): void {
 		this._callbacks.add(callback);
 	}
-
-	//</editor-fold>
 
 	/**
 	 * Remove a subscriber to add / delete theme event
 	 */
-	public unsubscribe(callback: Function): void {
+	unsubscribe(callback: Function): void {
 		this._callbacks.delete(callback);
 	}
+
+
+	//<editor-fold desc="# Private methods">
 
 	/**
 	 * Apply chosen theme
@@ -253,5 +249,7 @@ export class ThemeService {
 	private _notifySubscribers(): void {
 		this._callbacks.forEach(callback => callback());
 	}
+
+	//</editor-fold>
 
 }

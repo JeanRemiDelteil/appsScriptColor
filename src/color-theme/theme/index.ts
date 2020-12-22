@@ -13,4 +13,5 @@ export const defaultThemes = [
 
 export {
 	defaultTheme,
+	darculaTheme,
 };
