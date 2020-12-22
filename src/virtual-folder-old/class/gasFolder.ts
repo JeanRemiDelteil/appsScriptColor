@@ -1,6 +1,6 @@
-import { GasFile } from './gasFile';
 import { CLASS_CHILDLIST, CLASS_FOLDER, CLASS_TITLE, CLASS_TITLE_CONTAINER } from '../constant/className';
 import { IFolderStateDictionary } from '../folderState.interface';
+import { GasFile } from './gasFile';
 
 
 export class GasFolder {
@@ -67,7 +67,7 @@ export class GasFolder {
 		this.itemNameMap.delete(child.name);
 
 		// If child node is valid and in this folder, remove it from current folder
-		child.dom.main && child.dom.main.parentElement === this.dom.main && this.dom.main.removeChild(child.dom.main);
+		child.dom?.main?.parentElement && child.dom.main.parentElement === this.dom?.main && this.dom.main.removeChild(child.dom.main);
 	}
 
 	/**
@@ -178,7 +178,7 @@ export class GasFolder {
 		                                       : JSON.parse(item.toString()),
 		));
 
-		return JSON.stringify({[this.name]: sub});
+		return JSON.stringify({ [this.name]: sub });
 	}
 
 	/**
@@ -205,9 +205,9 @@ export class GasFolder {
 </div>
 <div class="${ CLASS_CHILDLIST }"></div>`;
 
-		this.dom.titleContainer = this.dom.main.querySelector(`.${CLASS_TITLE_CONTAINER}`);
-		this.dom.title = this.dom.main.querySelector(`.${CLASS_TITLE}`);
-		this.dom.childList = this.dom.main.querySelector(`.${CLASS_CHILDLIST}`);
+		this.dom.titleContainer = this.dom.main.querySelector(`.${ CLASS_TITLE_CONTAINER }`);
+		this.dom.title = this.dom.main.querySelector(`.${ CLASS_TITLE }`);
+		this.dom.childList = this.dom.main.querySelector(`.${ CLASS_CHILDLIST }`);
 
 		// Bind toggle listener, avoid passing event argument to toggle() 
 		this.dom.titleContainer.addEventListener('click', () => this.toggle());
@@ -259,7 +259,7 @@ export class GasFolder {
 		delete this.children;
 		delete this.itemNameMap;
 
-		this.dom.main && this.dom.main.parentElement && this.dom.main.parentElement.removeChild(this.dom.main);
+		this?.dom?.main?.parentElement && this.dom.main.parentElement.removeChild(this.dom.main);
 
 		delete this.dom.main;
 		delete this.dom.title;

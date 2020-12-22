@@ -68,7 +68,7 @@ export class GasFolder {
 		this.itemNameMap.delete(child.name);
 
 		// If child node is valid and in this folder, remove it from current folder
-		child.dom.main && child.dom.main.parentElement === this.dom.main && this.dom.main.removeChild(child.dom.main);
+		child.dom?.main?.parentElement && child.dom.main.parentElement === this.dom?.main && this.dom.main.removeChild(child.dom.main);
 	}
 
 	/**
@@ -281,7 +281,7 @@ export class GasFolder {
 		delete this.children;
 		delete this.itemNameMap;
 
-		this.dom.main && this.dom.main.parentElement && this.dom.main.parentElement.removeChild(this.dom.main);
+		this?.dom?.main?.parentElement && this.dom.main.parentElement.removeChild(this.dom.main);
 
 		delete this.dom.main;
 		delete this.dom.title;
