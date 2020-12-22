@@ -1,7 +1,4 @@
-import { IRule } from '../interface/rule.interface';
-import { IVariables } from '../interface/variables.interface';
-import { ICssThemeOptions } from '../interface/cssThemeOptions.interface';
-import { ICreateThemeFromOptions } from '../interface/createThemeFromOptions.interface';
+import { ICreateThemeFromOptions, ICssThemeOptions, IMonacoTheme, IRule, IVariables } from '../interface';
 
 
 export class CssTheme {
@@ -9,18 +6,24 @@ export class CssTheme {
 	private readonly _themeName: string;
 	private readonly _variables: IVariables;
 	private readonly _rules: IRule;
+	private readonly _monacoTheme: IMonacoTheme;
 	private readonly _rootTheme: string;
 
-	constructor({themeName, variables, rules, rootTheme = ''}: ICssThemeOptions) {
+	constructor({ themeName, variables, rules, monacoTheme, rootTheme = '' }: ICssThemeOptions) {
 		this._themeName = themeName;
 		this._variables = variables;
 		this._rules = rules;
+		this._monacoTheme = monacoTheme;
 		this._rootTheme = rootTheme;
 	}
 
 
 	get css(): string {
 		return CssTheme._cssBuilder(this._rules, this._variables);
+	}
+
+	get monacoTheme(): IMonacoTheme | undefined {
+		return this._monacoTheme || undefined;
 	}
 
 	get themeName(): string {
@@ -39,7 +42,7 @@ export class CssTheme {
 	/**
 	 * Compose rules string with variables
 	 */
-	public static _cssBuilder(rules: IRule, variables: IVariables): string {
+	static _cssBuilder(rules: IRule, variables: IVariables): string {
 		let cssSheet = '';
 
 		for (let selector in rules) {
@@ -49,11 +52,11 @@ export class CssTheme {
 
 			for (let property in cssSettings) {
 				// replace declared variables
-				propertyStr += `${property}:${cssSettings[property]
-					.replace(/{{([^}{]+?)}}/g, (m, p1) => p1 in variables ? variables[p1] : m)};`;
+				propertyStr += `${ property }:${ cssSettings[property]
+					.replace(/{{([^}{]+?)}}/g, (m, p1) => p1 in variables ? variables[p1] : m) };`;
 			}
 
-			cssSheet += `${selector}{${propertyStr}}`;
+			cssSheet += `${ selector }{${ propertyStr }}`;
 		}
 
 		return cssSheet;
@@ -66,19 +69,20 @@ export class CssTheme {
 	 *
 	 * Overridden when using createFrom()
 	 */
-	public toObject() {
+	toObject() {
 		return {
 			rootTheme: this._rootTheme,
 			themeName: this._themeName,
 			variables: this._variables,
 			rules: this._rules,
+			monacoTheme: this._monacoTheme,
 		};
 	}
 
 	/**
 	 * Export the theme as JSON
 	 */
-	public toJSON(): string {
+	toJSON(): string {
 		return JSON.stringify(this.toObject());
 	}
 
@@ -89,7 +93,7 @@ export class CssTheme {
 	 * the relationship remains, so that once exported to JSON
 	 * it does not include the parent duplicated information
 	 */
-	public createFrom({themeName, variables = {}, rules = {}}: ICreateThemeFromOptions): CssTheme {
+	createFrom({ themeName, variables = {}, rules = {} }: ICreateThemeFromOptions): CssTheme {
 		const rootTheme = this._themeName;
 		const createdTheme = new CssTheme({
 			themeName,
@@ -101,16 +105,18 @@ export class CssTheme {
 				...this._rules,
 				...rules,
 			},
-			rootTheme: rootTheme,
+			rootTheme,
+			monacoTheme: this._monacoTheme,
 		});
 
-		// Only export variation when stringify a copied theme
+		// Only export variation when stringifying a copied theme
 		createdTheme.toObject = function () {
 			return {
-				rootTheme: rootTheme,
-				themeName: themeName,
-				variables: variables,
-				rules: rules,
+				rootTheme,
+				themeName,
+				variables,
+				rules,
+				monacoTheme: undefined,
 			};
 		};
 

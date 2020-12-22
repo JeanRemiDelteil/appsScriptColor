@@ -1,6 +1,6 @@
+import { detectIde, IdeVersion } from '../../feature-detection';
 import { CssTheme } from '../class/cssTheme';
-import { ICreateThemeFromOptions } from '../interface/createThemeFromOptions.interface';
-import { ICssThemeOptions } from '../interface/cssThemeOptions.interface';
+import { ICreateThemeFromOptions, ICssThemeOptions, IMonacoTheme } from '../interface';
 import { darculaTheme, defaultTheme, defaultThemes } from '../theme';
 
 
@@ -162,8 +162,63 @@ export class ThemeService {
 
 		this._dom_divCmCustomStyle.innerHTML = theme.css;
 
+		if (detectIde() === IdeVersion.MONACO) {
+			if (theme.monacoTheme) {
+				ThemeService.setMonacoThemeFn(theme.themeName, theme.monacoTheme);
+			}
+			else {
+				ThemeService.resetMonacoThemeFn();
+			}
+		}
+
 		// add style element last in the HEAD
 		document.head.appendChild(this._dom_divCmCustomStyle);
+	}
+
+	private static setMonacoThemeFn(themeName: string, theme: IMonacoTheme): void {
+		ThemeService._inject(`
+function setTheme() {
+	window.monaco?.editor.defineTheme('${ themeName }', ${ JSON.stringify(theme) });
+	window.monaco?.editor.setTheme('${ themeName }');
+}
+
+if (window.monaco) {
+	setTheme();
+}
+else {
+	const observer = new MutationObserver(mutations => {
+		mutations.some(mutation => {
+			const domMonacoStyle = Array.from(mutation.addedNodes).find(node => !(node.tagName !== 'STYLE' || !node.classList.contains('monaco-colors')));
+			
+			if (domMonacoStyle) {
+				setTheme();
+				observer.disconnect();
+				return true;
+			}
+			
+			return false;
+		});
+	});
+
+	observer.observe(document.head, {
+		childList: true,
+		attributes: false,
+		characterData: false
+	});
+}
+`);
+	}
+
+	private static resetMonacoThemeFn(): void {
+		ThemeService._inject(`window.monaco?.editor.setTheme('');`);
+	}
+
+	private static _inject(code: string) {
+		const domScript = document.createElement('script');
+
+		domScript.textContent = `(function() {\n${ code }\n})()`;
+		document.head.appendChild(domScript);
+		document.head.removeChild(domScript);
 	}
 
 	/**

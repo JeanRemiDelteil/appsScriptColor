@@ -1,5 +1,5 @@
 export enum IdeVersion {
 	OLD     = 'OLD',
-	CURRENT = 'CURRENT',
+	MONACO  = 'MONACO',
 	NOT_IDE = 'NOT_IDE',
 }
