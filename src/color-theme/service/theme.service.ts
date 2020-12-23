@@ -1,39 +1,27 @@
-import { defaultTheme, defaultThemes } from '../theme';
+import { detectIde, IdeVersion } from '../../feature-detection';
 import { CssTheme } from '../class/cssTheme';
-import { ICssThemeOptions } from '../interface/cssThemeOptions.interface';
-import { ICreateThemeFromOptions } from '../interface/createThemeFromOptions.interface';
+import { ICreateThemeFromOptions, ICssThemeOptions, IMonacoTheme } from '../interface';
+import { darculaTheme, defaultTheme, defaultThemes, monokaiTheme } from '../theme';
 
 
 const CM_CUSTOM_STYLE_ID = 'cmCustomStyle';
 
 
-class ThemeService {
-
+export class ThemeService {
 	private _themesMap: { [themeName: string]: CssTheme } = {};
 	private _customThemeNames: string[] = [];
 	private _callbacks: Set<Function> = new Set();
 	private _dom_divCmCustomStyle: HTMLElement = null;
-
-	constructor() {
-		// Load custom Themes if any
-		this._loadCustomThemes();
-
-		this.setCurrentTheme(localStorage.getItem('appScriptColor-theme') || 'Darcula');
-
-		this._setStyleObserver();
-	}
-
-	private _currentTheme: CssTheme;
-
-	get currentTheme(): CssTheme {
-		return this._currentTheme;
-	}
-
 	private _defaultThemeNames: string[] = defaultThemes.map(theme => {
 		this._themesMap[theme.themeName] = theme;
 
 		return theme.themeName;
 	});
+	private _currentTheme: CssTheme;
+
+	get currentTheme(): CssTheme {
+		return this._currentTheme;
+	}
 
 	get defaultThemeNames(): string[] {
 		return this._defaultThemeNames;
@@ -47,7 +35,19 @@ class ThemeService {
 	}
 
 
-	//<editor-fold desc="# Private methods">
+	constructor() {
+		// Load custom Themes if any
+		this._loadCustomThemes();
+
+		// Init current theme, but do not apply it automatically
+		this._currentTheme = this.getThemeByName(localStorage.getItem('appScriptColor-theme') || darculaTheme.themeName);
+		localStorage.setItem('appScriptColor-theme', this._currentTheme.themeName);
+
+		// Init style dom
+		this.resetTheme();
+		this._setStyleObserver();
+	}
+
 
 	/**
 	 * Set the current theme
@@ -57,7 +57,7 @@ class ThemeService {
 	 * - save currentTheme in localStorage
 	 * - apply the theme in the DOM
 	 */
-	public setCurrentTheme(themeName: string): void {
+	setCurrentTheme(themeName: string): void {
 		this._currentTheme = this.getThemeByName(themeName);
 		localStorage.setItem('appScriptColor-theme', this._currentTheme.themeName);
 
@@ -65,18 +65,25 @@ class ThemeService {
 	}
 
 	/**
+	 * Apply default theme, without saving it in the preference
+	 */
+	resetTheme() {
+		this._applyTheme(defaultTheme);
+	}
+
+	/**
 	 * Find a theme in store by his name
 	 */
-	public getThemeByName(name: string): CssTheme {
+	getThemeByName(name: string): CssTheme {
 		return this._themesMap[name] || defaultTheme;
 	}
 
 	/**
 	 * Duplicate a theme and modify it
 	 */
-	public createThemeFrom(
+	createThemeFrom(
 		rootTheme: CssTheme,
-		{themeName, variables = {}, rules = {}}: ICreateThemeFromOptions,
+		{ themeName, variables = {}, rules = {} }: ICreateThemeFromOptions,
 		saveThemes = true,
 	): CssTheme {
 
@@ -96,7 +103,7 @@ class ThemeService {
 		}
 
 
-		const newTheme = rootTheme.createFrom({themeName, variables, rules});
+		const newTheme = rootTheme.createFrom({ themeName, variables, rules });
 		this._addTheme(newTheme);
 
 		saveThemes && this._saveCustomThemes();
@@ -109,7 +116,7 @@ class ThemeService {
 	 *
 	 * This function return the theme containing the new edited theme
 	 */
-	public updateTheme(theme: CssTheme, {themeName, variables = {}, rules = {}}: ICreateThemeFromOptions) {
+	updateTheme(theme: CssTheme, { themeName, variables = {}, rules = {} }: ICreateThemeFromOptions) {
 		if (defaultThemes.includes(theme)) return;
 
 		// Remove theme from custom theme
@@ -117,13 +124,13 @@ class ThemeService {
 		this._customThemeNames = this._customThemeNames
 			.filter(name => name !== theme.themeName);
 
-		return this.createThemeFrom(theme, {themeName, variables, rules});
+		return this.createThemeFrom(theme, { themeName, variables, rules });
 	}
 
 	/**
 	 * Delete a theme from the custom Theme list
 	 */
-	public deleteTheme(theme: CssTheme): boolean {
+	deleteTheme(theme: CssTheme): boolean {
 		if (defaultThemes.includes(theme)) return false;
 
 		// Remove theme from custom theme
@@ -140,18 +147,19 @@ class ThemeService {
 	/**
 	 * Add a subscriber to add / delete theme event
 	 */
-	public subscribe(callback: Function): void {
+	subscribe(callback: Function): void {
 		this._callbacks.add(callback);
 	}
-
-	//</editor-fold>
 
 	/**
 	 * Remove a subscriber to add / delete theme event
 	 */
-	public unsubscribe(callback: Function): void {
+	unsubscribe(callback: Function): void {
 		this._callbacks.delete(callback);
 	}
+
+
+	//<editor-fold desc="# Private methods">
 
 	/**
 	 * Apply chosen theme
@@ -165,8 +173,106 @@ class ThemeService {
 
 		this._dom_divCmCustomStyle.innerHTML = theme.css;
 
+		if (detectIde() === IdeVersion.MONACO) {
+			const monacoTheme = theme.monacoTheme;
+
+			if (monacoTheme) {
+				ThemeService.setMonacoThemeFn(theme.themeName, monacoTheme);
+			}
+			else {
+				ThemeService.resetMonacoThemeFn();
+			}
+		}
+
 		// add style element last in the HEAD
 		document.head.appendChild(this._dom_divCmCustomStyle);
+	}
+
+	private static setMonacoThemeFn(themeName: string, theme: IMonacoTheme): void {
+		// language="ECMAScript 6"
+		ThemeService._inject(`
+if (!jsWireMonacoEditor._themeService._knownThemes.has('${ themeName }')) {
+	monaco.editor.defineTheme('${ themeName }', ${ JSON.stringify(theme) });
+}
+monaco.editor.setTheme('${ themeName }');
+`);
+	}
+
+	private static resetMonacoThemeFn(): void {
+		// language="ECMAScript 6"
+		ThemeService._inject(`
+monaco.editor.setTheme('apps-script-light');
+
+if (!jsWireMonacoEditor._themeService._knownThemes.has('${ monokaiTheme.themeName }')) {
+	monaco.editor.defineTheme('Monokai', ${ JSON.stringify(monokaiTheme.monacoTheme) });
+	monaco.editor.defineTheme('Darcula', ${ JSON.stringify(darculaTheme.monacoTheme) });
+	
+	// Add a command for themes
+	jsWireMonacoEditor.addAction({
+		id: 'asc-set-theme-monokai',
+		label: 'AppsScriptColor: Use dark theme: Monokai',
+		
+		precondition: null,
+		keybindingContext: null,
+		contextMenuGroupId: 'navigation',
+		contextMenuOrder: 1.5,
+	
+		run: function () {
+			monaco.editor.setTheme('Monokai');
+			localStorage.setItem('appScriptColor-theme', 'Monokai');
+		}
+	})
+	jsWireMonacoEditor.addAction({
+		id: 'asc-set-theme-darcula',
+		label: 'AppsScriptColor: Use dark theme: Darcula',
+		
+		precondition: null,
+		keybindingContext: null,
+		contextMenuGroupId: 'navigation',
+		contextMenuOrder: 1.5,
+	
+		run: function () {
+			monaco.editor.setTheme('Darcula');
+			localStorage.setItem('appScriptColor-theme', 'Darcula');
+		}
+	})
+}
+`);
+	}
+
+	private static _inject(code: string) {
+		const domScript = document.createElement('script');
+
+		// language="ECMAScript 6"
+		domScript.textContent = `(function () {
+			function action() {
+				${ code }
+			}
+			
+			if (window.monaco && window.jsWireMonacoEditor) {
+				action();
+			}
+			else {
+				const observer = new MutationObserver(mutations => {
+					mutations.some(mutation => {
+						const domMonacoStyle = Array.from(mutation.addedNodes).find(node => !(node.tagName !== 'STYLE' || !node.classList.contains('monaco-colors')));
+						if (!domMonacoStyle) return false;
+						
+						action();
+						observer.disconnect();
+						return true;
+					});
+				});
+				
+				observer.observe(document.head, {
+					childList: true,
+					attributes: false,
+					characterData: false
+				});
+			}
+		})()`;
+		document.head.appendChild(domScript);
+		document.head.removeChild(domScript);
 	}
 
 	/**
@@ -222,11 +328,11 @@ class ThemeService {
 
 		Object.keys(customThemes)
 			.forEach(name => {
-				const {rootTheme, themeName, variables, rules} = customThemes[name];
+				const { rootTheme, themeName, variables, rules } = customThemes[name];
 
 				this.createThemeFrom(
 					this.getThemeByName(rootTheme),
-					{themeName, variables, rules},
+					{ themeName, variables, rules },
 					false,
 				);
 			});
@@ -253,6 +359,6 @@ class ThemeService {
 		this._callbacks.forEach(callback => callback());
 	}
 
-}
+	//</editor-fold>
 
-export const themeService = new ThemeService();
+}

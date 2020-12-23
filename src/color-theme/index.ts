@@ -1,2 +1,2 @@
-export { themeService } from './service/theme.service';
-export { CustomizeTheme } from './element/customizeTheme.element';
+export { ThemeService } from './service/theme.service';
+export * from './element';

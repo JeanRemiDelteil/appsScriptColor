@@ -1,5 +1,5 @@
 import { CLASS_CHILDLIST, CLASS_FOLDER, CLASS_TITLE, CLASS_TITLE_CONTAINER } from '../constant/className';
-import { eventSubFolderChanged } from '../constant/event';
+import { EVENT_SUB_FOLDER_CHANGED } from '../event';
 import { IFolderStateDictionary } from '../folderState.interface';
 import { GasFile } from './gasFile';
 
@@ -68,7 +68,7 @@ export class GasFolder {
 		this.itemNameMap.delete(child.name);
 
 		// If child node is valid and in this folder, remove it from current folder
-		child.dom.main && child.dom.main.parentElement === this.dom.main && this.dom.main.removeChild(child.dom.main);
+		child.dom?.main?.parentElement && child.dom.main.parentElement === this.dom?.main && this.dom.main.removeChild(child.dom.main);
 	}
 
 	/**
@@ -110,7 +110,7 @@ export class GasFolder {
 
 			// First is the start of name editing, second is end of edition
 			if (eventCounter === 2) {
-				this.dom.main.dispatchEvent(new CustomEvent(eventSubFolderChanged, { bubbles: true, composed: true }));
+				this.dom.main.dispatchEvent(new CustomEvent(EVENT_SUB_FOLDER_CHANGED, { bubbles: true, composed: true }));
 				this._childListMonitor.disconnect();
 			}
 		});
@@ -281,7 +281,7 @@ export class GasFolder {
 		delete this.children;
 		delete this.itemNameMap;
 
-		this.dom.main && this.dom.main.parentElement && this.dom.main.parentElement.removeChild(this.dom.main);
+		this?.dom?.main?.parentElement && this.dom.main.parentElement.removeChild(this.dom.main);
 
 		delete this.dom.main;
 		delete this.dom.title;

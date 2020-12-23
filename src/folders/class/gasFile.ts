@@ -38,13 +38,17 @@ export class GasFile {
 		let pathChanged = this.path !== path;
 
 		this.path = path;
-		this.name = (/([^\/]+)$/.exec(path) || [])[1] || 'error';
+		this.name = (
+		            /([^\/\\]+)$/.exec(path) || []
+		            )[1] || 'error';
 
 		// update DOM file name
 		this.dom.name.innerHTML = this.name;
 
 		// get file type
-		this.type = (/\.([^.]+)$/.exec(this.name) || [])[1].replace('gs', 'js') || 'js';
+		this.type = (
+		            /\.([^.]+)$/.exec(this.name) || []
+		            )[1].replace('gs', 'js') || 'js';
 
 		// Set DOM file type
 		// this.dom.item.classList.add(`file-type-${ this.type }`);

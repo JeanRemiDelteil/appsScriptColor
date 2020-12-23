@@ -1,4 +1,3 @@
-import '../webComponents';
 import { customElement, html, LitElement, property } from 'lit-element';
 import '@material/mwc-icon-button';
 import { ICON_CLOSE } from '../icons';

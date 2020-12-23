@@ -1,7 +1,6 @@
+import { EVENT_IDE_DOM_UPDATED } from '../feature-detection';
 import { GasRoot } from './class/gasRoot';
-import { eventSubFolderChanged } from './constant/event';
 import { css } from './constant/style.css';
-import { setDomObserver } from './dom-tools';
 import { IFolderStateDictionary } from './folderState.interface';
 
 
@@ -13,7 +12,7 @@ export class Folders {
 
 	constructor(private _key: string) {
 		this._insertCSS();
-		this._setupDomObservers();
+		this._listenForDomUpdate();
 	}
 
 
@@ -21,28 +20,13 @@ export class Folders {
 	 * Detect page initialization by App Script, then init Folders,
 	 * Entry point
 	 */
-	_setupDomObservers(): void {
-		const domFirstRendered = document.body.querySelector('body > div > c-wiz');
-		const domWatchedDiv = domFirstRendered.parentElement;
-		const dynRefToEditorJsRenderer = domFirstRendered.getAttribute('jsrenderer');
-
-		const onEditorMainDomChanged = (node: HTMLElement) => {
+	_listenForDomUpdate(): void {
+		window.addEventListener(EVENT_IDE_DOM_UPDATED, ({ detail: { node } }) => {
 			// Get File list dom element
 			const domFileListContainer = node.querySelector('div[jsslot] ul[role="listbox"]') as HTMLElement;
 
 			this._initFolders(domFileListContainer);
-		};
-
-		setDomObserver({
-			target: domWatchedDiv,
-			immediateChildValidator: node => {
-				return node.tagName === 'C-WIZ' && node.getAttribute('jsrenderer') === dynRefToEditorJsRenderer;
-			},
-			callback: onEditorMainDomChanged,
 		});
-
-		// the observer does not fire for an existing element
-		onEditorMainDomChanged(domFirstRendered as HTMLElement);
 	}
 
 	/**
@@ -74,12 +58,12 @@ ${ css }
 
 		this.gasStaticRoot.setDeepToggleState(this._loadStaticsFolder());
 
-		this._eventSubFolderChangedAction && domFileList.removeEventListener(eventSubFolderChanged, this._eventSubFolderChangedAction);
+		this._eventSubFolderChangedAction && domFileList.removeEventListener(EVENT_IDE_DOM_UPDATED, this._eventSubFolderChangedAction);
 		this._eventSubFolderChangedAction = () => {
 			this.gasStaticRoot.resetList();
 			this._initFolders(domFileList);
 		};
-		domFileList.addEventListener(eventSubFolderChanged, this._eventSubFolderChangedAction);
+		domFileList.addEventListener(EVENT_IDE_DOM_UPDATED, this._eventSubFolderChangedAction);
 	}
 
 

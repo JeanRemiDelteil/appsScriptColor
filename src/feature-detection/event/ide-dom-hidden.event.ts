@@ -1,0 +1,10 @@
+export const EVENT_IDE_DOM_HIDDEN = 'EVENT_IDE_DOM_HIDDEN';
+export type EVENT_IDE_DOM_HIDDEN = void
+
+declare global {
+	interface WindowEventMap {
+		[EVENT_IDE_DOM_HIDDEN]: CustomEvent<EVENT_IDE_DOM_HIDDEN>;
+	}
+}
+
+export const dispatchEventIdeDomHidden = () => window.dispatchEvent(new CustomEvent(EVENT_IDE_DOM_HIDDEN));

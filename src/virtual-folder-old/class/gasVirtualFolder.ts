@@ -1,7 +1,7 @@
-import { GasFolder } from './gasFolder';
 import { getInfoShown } from '../data/settings';
 import { IVirtualList } from '../virtualList.interface';
 import { GasFile } from './gasFile';
+import { GasFolder } from './gasFolder';
 
 
 export class GasVirtualFolder extends GasFolder {
@@ -12,6 +12,13 @@ export class GasVirtualFolder extends GasFolder {
 		childList: HTMLElement,
 		infoPopup: HTMLElement,
 		infoIcon: HTMLElement,
+	} = {
+		main: null,
+		title: null,
+		titleContainer: null,
+		childList: null,
+		infoPopup: null,
+		infoIcon: null,
 	};
 	private _showInfo: boolean;
 	private _vList: Map<string, GasFolder>;
