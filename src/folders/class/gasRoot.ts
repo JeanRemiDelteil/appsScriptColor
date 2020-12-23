@@ -76,7 +76,10 @@ export class GasRoot extends GasFolder {
 		if (!node && !this.root) return;
 
 		// Store rootNode
-		node && (this.root = node);
+		node &&
+		(
+			this.root = node
+		);
 
 		// Put folder in root dom
 		this.root.appendChild(this.dom.main);
@@ -192,7 +195,7 @@ export class GasRoot extends GasFolder {
 		added.forEach((file: GasFile) => {
 			// build folders tree needed for this file path
 			let currentFolder: GasFolder = this;
-			let splitPath = file.path.split('/');
+			let splitPath = file.path.split(/[\\\/]/);
 
 			splitPath.forEach((name, i) => {
 				// Last name -> file name, add a file in current folder
@@ -204,7 +207,9 @@ export class GasRoot extends GasFolder {
 				}
 
 				// Init folder && Move down a folder
-				currentFolder = (currentFolder.getChild(name) as GasFolder) || currentFolder.addChild(new GasFolder(name, this._saveCallback));
+				currentFolder = (
+					                currentFolder.getChild(name) as GasFolder
+				                ) || currentFolder.addChild(new GasFolder(name, this._saveCallback));
 			});
 		});
 
