@@ -26,6 +26,10 @@ export class CssTheme {
 		return this._monacoTheme ? CssTheme._monacoThemeBuilder(this._monacoTheme, this._variables) : undefined;
 	}
 
+	get hasMonacoTheme(): boolean {
+		return !!this._monacoTheme;
+	}
+
 	get themeName(): string {
 		return this._themeName;
 	}

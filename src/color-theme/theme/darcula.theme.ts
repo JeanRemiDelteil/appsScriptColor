@@ -59,7 +59,23 @@ export const darculaTheme = new CssTheme({
 		//endregion
 	},
 	rules: {
-		// Monaco IDE
+		// // Page theme
+		// 'c-wiz': {
+		// 	'background-color': '#3c3f41',
+		// },
+		// 'c-wiz>div>div:first-child>div': {
+		// 	'background-color': '#3c3f41',
+		// },
+		// 'header': {
+		// 	'background-color': '#272727!important',
+		// },
+		//
+		// // Folder fixes
+		// '.asc_FolderRoot': {
+		// 	'background-color': 'unset',
+		// },
+
+		// Monaco IDE fixes
 		'.monaco-editor .reference-zone-widget .preview .reference-decoration': {
 			'background-color': '#864b00b3',
 		},

@@ -1,7 +1,7 @@
 import { detectIde, IdeVersion } from '../../feature-detection';
 import { CssTheme } from '../class/cssTheme';
 import { ICreateThemeFromOptions, ICssThemeOptions, IMonacoTheme } from '../interface';
-import { darculaTheme, defaultTheme, defaultThemes } from '../theme';
+import { darculaTheme, defaultTheme, defaultThemes, monokaiTheme } from '../theme';
 
 
 const CM_CUSTOM_STYLE_ID = 'cmCustomStyle';
@@ -189,47 +189,88 @@ export class ThemeService {
 	}
 
 	private static setMonacoThemeFn(themeName: string, theme: IMonacoTheme): void {
+		// language="ECMAScript 6"
 		ThemeService._inject(`
-function setTheme() {
-	window.monaco?.editor.defineTheme('${ themeName }', ${ JSON.stringify(theme) });
-	window.monaco?.editor.setTheme('${ themeName }');
+if (!jsWireMonacoEditor._themeService._knownThemes.has('${ themeName }')) {
+	monaco.editor.defineTheme('${ themeName }', ${ JSON.stringify(theme) });
 }
-
-if (window.monaco) {
-	setTheme();
-}
-else {
-	const observer = new MutationObserver(mutations => {
-		mutations.some(mutation => {
-			const domMonacoStyle = Array.from(mutation.addedNodes).find(node => !(node.tagName !== 'STYLE' || !node.classList.contains('monaco-colors')));
-			
-			if (domMonacoStyle) {
-				setTheme();
-				observer.disconnect();
-				return true;
-			}
-			
-			return false;
-		});
-	});
-
-	observer.observe(document.head, {
-		childList: true,
-		attributes: false,
-		characterData: false
-	});
-}
+monaco.editor.setTheme('${ themeName }');
 `);
 	}
 
 	private static resetMonacoThemeFn(): void {
-		ThemeService._inject(`window.monaco?.editor.setTheme('');`);
+		// language="ECMAScript 6"
+		ThemeService._inject(`
+monaco.editor.setTheme('apps-script-light');
+
+if (!jsWireMonacoEditor._themeService._knownThemes.has('${ monokaiTheme.themeName }')) {
+	monaco.editor.defineTheme('Monokai', ${ JSON.stringify(monokaiTheme.monacoTheme) });
+	monaco.editor.defineTheme('Darcula', ${ JSON.stringify(darculaTheme.monacoTheme) });
+	
+	// Add a command for themes
+	jsWireMonacoEditor.addAction({
+		id: 'asc-set-theme-monokai',
+		label: 'AppsScriptColor: Use dark theme: Monokai',
+		
+		precondition: null,
+		keybindingContext: null,
+		contextMenuGroupId: 'navigation',
+		contextMenuOrder: 1.5,
+	
+		run: function () {
+			monaco.editor.setTheme('Monokai');
+			localStorage.setItem('appScriptColor-theme', 'Monokai');
+		}
+	})
+	jsWireMonacoEditor.addAction({
+		id: 'asc-set-theme-darcula',
+		label: 'AppsScriptColor: Use dark theme: Darcula',
+		
+		precondition: null,
+		keybindingContext: null,
+		contextMenuGroupId: 'navigation',
+		contextMenuOrder: 1.5,
+	
+		run: function () {
+			monaco.editor.setTheme('Darcula');
+			localStorage.setItem('appScriptColor-theme', 'Darcula');
+		}
+	})
+}
+`);
 	}
 
 	private static _inject(code: string) {
 		const domScript = document.createElement('script');
 
-		domScript.textContent = `(function() {\n${ code }\n})()`;
+		// language="ECMAScript 6"
+		domScript.textContent = `(function () {
+			function action() {
+				${ code }
+			}
+			
+			if (window.monaco && window.jsWireMonacoEditor) {
+				action();
+			}
+			else {
+				const observer = new MutationObserver(mutations => {
+					mutations.some(mutation => {
+						const domMonacoStyle = Array.from(mutation.addedNodes).find(node => !(node.tagName !== 'STYLE' || !node.classList.contains('monaco-colors')));
+						if (!domMonacoStyle) return false;
+						
+						action();
+						observer.disconnect();
+						return true;
+					});
+				});
+				
+				observer.observe(document.head, {
+					childList: true,
+					attributes: false,
+					characterData: false
+				});
+			}
+		})()`;
 		document.head.appendChild(domScript);
 		document.head.removeChild(domScript);
 	}

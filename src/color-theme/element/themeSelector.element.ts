@@ -27,7 +27,7 @@ export class ThemeSelector extends LitElement {
 	//<editor-fold desc="# Lifecycle">
 
 	firstUpdated(): void {
-		this._applyTheme(this._themeService.currentTheme.themeName);
+		this._applyTheme(this._themeService.currentTheme.hasMonacoTheme ? this._themeService.currentTheme.themeName : darculaTheme.themeName);
 	}
 
 	//</editor-fold>
@@ -67,7 +67,13 @@ export class ThemeSelector extends LitElement {
 	//<editor-fold desc="# Events">
 
 	_onToggle({ detail: { isOn } }: { detail: { isOn: boolean } }) {
-		this._applyTheme(isOn ? darculaTheme.themeName : defaultTheme.themeName);
+		if (isOn) {
+			this._applyTheme(this._themeService.currentTheme.hasMonacoTheme ? this._themeService.currentTheme.themeName : darculaTheme.themeName);
+		}
+		else {
+			this._themeService.resetTheme();
+			this.themeClass = defaultTheme;
+		}
 	}
 
 	//</editor-fold>
