@@ -195,6 +195,7 @@ export const darculaTheme = new CssTheme({
 
 		//endregion
 	},
+	// Find help here: https://github.com/brijeshb42/monaco-themes/blob/master/themes/Monokai.json
 	monacoTheme: {
 		'base': 'vs-dark',
 		'inherit': true,

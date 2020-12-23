@@ -39,8 +39,12 @@ export class ThemeService {
 		// Load custom Themes if any
 		this._loadCustomThemes();
 
-		this.setCurrentTheme(localStorage.getItem('appScriptColor-theme') || darculaTheme.themeName);
+		// Init current theme, but do not apply it automatically
+		this._currentTheme = this.getThemeByName(localStorage.getItem('appScriptColor-theme') || darculaTheme.themeName);
+		localStorage.setItem('appScriptColor-theme', this._currentTheme.themeName);
 
+		// Init style dom
+		this.resetTheme();
 		this._setStyleObserver();
 	}
 
@@ -58,6 +62,13 @@ export class ThemeService {
 		localStorage.setItem('appScriptColor-theme', this._currentTheme.themeName);
 
 		this._applyTheme(this._currentTheme);
+	}
+
+	/**
+	 * Apply default theme, without saving it in the preference
+	 */
+	resetTheme() {
+		this._applyTheme(defaultTheme);
 	}
 
 	/**

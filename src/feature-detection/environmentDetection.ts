@@ -9,4 +9,10 @@ export const detectIde = (): IdeVersion => {
 	         : IdeVersion.NOT_IDE;
 };
 
-export const getScriptKey = (): string => document.location.pathname.match(/\/([^\/]+?)\/edit/)[1];
+export const getScriptKey = (): string => (
+	(
+	document.location.pathname.match(/\/([^\/]+?)\/edit/) ||
+	document.location.pathname.match(/\/home\/projects\/([^\/]+?)(?:\/|$)/)
+	)
+	|| []
+)[1];

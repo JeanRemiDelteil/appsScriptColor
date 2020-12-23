@@ -1,6 +1,6 @@
 import '@material/mwc-icon-button-toggle';
 import { customElement, html, LitElement, property } from 'lit-element';
-import { EVENT_IDE_DOM_UPDATED } from '../../feature-detection';
+import { EVENT_IDE_DOM_HIDDEN, EVENT_IDE_DOM_UPDATED } from '../../feature-detection';
 import { CssTheme } from '../class/cssTheme';
 import { ThemeService } from '../service/theme.service';
 import { darculaTheme, defaultTheme } from '../theme';
@@ -12,8 +12,7 @@ export class ThemeSelector extends LitElement {
 
 	private _themeService: ThemeService;
 
-	@property({ type: Array })
-	themes: string[];
+
 	@property({ type: Function })
 	themeClass: CssTheme = null;
 
@@ -22,7 +21,6 @@ export class ThemeSelector extends LitElement {
 		super();
 
 		this._themeService = ThemeSelector._themeService;
-		this.themes = this._themeService.themeNames;
 	}
 
 
@@ -84,12 +82,13 @@ export class ThemeSelector extends LitElement {
 	//</editor-fold>
 
 
-	static insertThemeSelector(themeService: ThemeService): void {
+	static init(themeService: ThemeService): void {
 		this._themeService = themeService;
 
 		window.addEventListener(EVENT_IDE_DOM_UPDATED, ({ detail: { node } }) => {
 			// Get IDE dom element container
 			const domListBox = node.querySelector('div[jsslot] div[role="listbox"]') as HTMLElement;
+			if (!domListBox) return;
 
 			const domToolBox = domListBox?.parentElement?.parentElement?.parentElement;
 			const domToolBoxes = domToolBox.parentElement;
@@ -99,5 +98,7 @@ export class ThemeSelector extends LitElement {
 
 			domSpacer.insertAdjacentHTML('beforebegin', `<div class="${ domToolBox.className }"><asc-theme-selector></asc-theme-selector></div>`);
 		});
+
+		window.addEventListener(EVENT_IDE_DOM_HIDDEN, () => themeService.resetTheme());
 	}
 }
