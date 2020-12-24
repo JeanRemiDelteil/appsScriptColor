@@ -7,7 +7,10 @@ export class IdeDomWatcher {
 	private static _observer: MutationObserver;
 	private static _animationFrameRef: number;
 
-	private static _isCWizCodeIde = (node: HTMLElement): boolean => {
+	private static _isCWizVisibleCodeIde = (node: HTMLElement): boolean => {
+		// check visibility
+		if (node.style.display === 'none') return false;
+
 		const domFirstLink = node.querySelector('div[role="link"]');
 		if (!domFirstLink) return false;
 
@@ -26,12 +29,16 @@ export class IdeDomWatcher {
 	};
 
 	static init() {
-		const domFirstRendered = document.body.querySelector('body > div > c-wiz') as HTMLElement;
-		const domWatchedDiv = domFirstRendered.parentElement;
-		const isDomFirstRenderedIDE = this._isCWizCodeIde(domFirstRendered);
+		const domFirstCWiz = Array.from(document.body.querySelectorAll('body > div > c-wiz')) as HTMLElement[];
+		const domWatchedDiv = domFirstCWiz[0]?.parentElement;
+		// Should never happen
+		if (!domWatchedDiv) return;
 
-		let dynRefToEditorJsRenderer = isDomFirstRenderedIDE ? domFirstRendered.getAttribute('jsrenderer') : undefined;
-		let isIdeShown = isDomFirstRenderedIDE;
+		// Find correct CWiz
+		const domFirstRendered = domFirstCWiz.find(node => this._isCWizVisibleCodeIde(node));
+
+		let dynRefToEditorJsRenderer = domFirstRendered?.getAttribute('jsrenderer') || undefined;
+		let isIdeShown = !!domFirstRendered;
 
 		this._observer = new MutationObserver(mutations => {
 			let ideNodeFound = false;
@@ -39,14 +46,14 @@ export class IdeDomWatcher {
 			mutations.forEach(mutation => {
 				const node = Array.from(mutation.addedNodes)
 					.find((node: HTMLElement) => {
-							return node.tagName === 'C-WIZ'
-							       && (
-								       (
+						return node.tagName === 'C-WIZ'
+						       && (
+							       (
 									       dynRefToEditorJsRenderer
 									       && node.getAttribute('jsrenderer') === dynRefToEditorJsRenderer
 								       ) || (
-									       !dynRefToEditorJsRenderer && this._isCWizCodeIde(node)
-								       )
+								       !dynRefToEditorJsRenderer && this._isCWizVisibleCodeIde(node)
+							       )
 							       );
 						},
 					) as HTMLElement;
@@ -82,7 +89,7 @@ export class IdeDomWatcher {
 		});
 
 		// fire first event
-		isDomFirstRenderedIDE && dispatchEventIdeDomUpdated({ node: domFirstRendered as HTMLElement });
+		domFirstRendered && dispatchEventIdeDomUpdated({ node: domFirstRendered as HTMLElement });
 	}
 
 	static destroy() {
