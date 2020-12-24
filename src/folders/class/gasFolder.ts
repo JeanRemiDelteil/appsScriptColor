@@ -47,7 +47,9 @@ export class GasFolder {
 
 		this.itemNameMap.set(child.name, child);
 
-		(child instanceof GasFolder) && child._setParent(this);
+		(
+			child instanceof GasFolder
+		) && child._setParent(this);
 
 		return child;
 	}
@@ -134,7 +136,7 @@ export class GasFolder {
 		if (this.isRoot || this.children.size) return;
 
 		// Delete this folder from parentFolder
-		this.parentFolder && this.parentFolder.removeChild(this);
+		this.parentFolder?.removeChild(this);
 
 		// Clear this
 		this._destroy();
@@ -196,13 +198,14 @@ export class GasFolder {
 		let sub: string[] = [];
 
 		this.children.forEach(item => sub.push(item instanceof GasFile
-		                                       ? item.name
-		                                       : JSON.parse(item.toString()),
+			? item.name
+			: JSON.parse(item.toString()),
 		));
 
 		return JSON.stringify({ [this.name]: sub });
 	}
 
+	// noinspection JSUnusedGlobalSymbols
 	/**
 	 * @return folder structure as JSON
 	 */
@@ -248,16 +251,16 @@ export class GasFolder {
 				let bIsFile = b instanceof GasFile;
 
 				return aIsFile !== bIsFile
-				       ? aIsFile
-				         ? 1
-				         : -1
-				       : a.name < b.name
-				         ? -1
-				         : (
-					         a.name > b.name
-					         ? 1
-					         : 0
-				         );
+					? aIsFile
+						? 1
+						: -1
+					: a.name < b.name
+						? -1
+						: (
+							a.name > b.name
+								? 1
+								: 0
+						);
 			}),
 		);
 	}
@@ -276,12 +279,12 @@ export class GasFolder {
 	 *
 	 * @private
 	 */
-	private _destroy() {
+	protected _destroy() {
 		delete this.parentFolder;
 		delete this.children;
 		delete this.itemNameMap;
 
-		this?.dom?.main?.parentElement && this.dom.main.parentElement.removeChild(this.dom.main);
+		this.dom?.main?.parentElement?.removeChild(this.dom.main);
 
 		delete this.dom.main;
 		delete this.dom.title;

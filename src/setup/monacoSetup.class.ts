@@ -18,6 +18,12 @@ export class MonacoSetup {
 	}
 
 	static destroy() {
+		IdeDomWatcher.destroy();
 
+		ThemeSelector.destroy();
+		Folders.destroy();
+
+		this._themeService?.destroy();
+		this._themeService = undefined;
 	}
 }

@@ -1,8 +1,8 @@
 import { CLASS_TITLE_CONTAINER } from './className';
 
 
+// language=CSS
 export const css = `
-<style>
 /* Root */
 .asc_FolderRoot{
 	background: white;
@@ -53,14 +53,16 @@ export const css = `
 	white-space: nowrap;
 }
 
-.asc_Folder>.asc_folder_ChildList {
+.asc_Folder > .asc_folder_ChildList {
 	margin-left: 20px;
 }
-.asc_Folder>.asc_folder_ChildList>li:first-child {
-	margin-top: 0!important;
+
+.asc_Folder > .asc_folder_ChildList > li:first-child {
+	margin-top: 0 !important;
 }
-.asc_Folder:not(.asc_opened)>.asc_folder_ChildList{
+
+.asc_Folder:not(.asc_opened) > .asc_folder_ChildList {
 	display: none;
 }
 
-</style>`;
+`;

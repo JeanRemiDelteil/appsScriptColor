@@ -1,5 +1,5 @@
 import { detectIde, getScriptKey } from './environmentDetection';
-import { IdeVersion } from './ide-version.enum';
+import { IdeVersion } from './ideVersion.enum';
 
 
 interface INavigationCallbackParam {

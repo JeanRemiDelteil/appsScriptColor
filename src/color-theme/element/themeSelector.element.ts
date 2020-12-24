@@ -88,10 +88,13 @@ export class ThemeSelector extends LitElement {
 	//</editor-fold>
 
 
+	private static _onDomChanged: (param: { detail: { node: HTMLElement } }) => void;
+	private static _onDomHidden: () => void;
+
 	static init(themeService: ThemeService): void {
 		this._themeService = themeService;
 
-		window.addEventListener(EVENT_IDE_DOM_UPDATED, ({ detail: { node } }) => {
+		this._onDomChanged = ({ detail: { node } }: { detail: { node: HTMLElement } }): void => {
 			// Get IDE dom element container
 			const domListBox = node.querySelector('div[jsslot] div[role="listbox"]') as HTMLElement;
 			if (!domListBox) return;
@@ -103,8 +106,18 @@ export class ThemeSelector extends LitElement {
 				                  .find(child => !child.classList.contains(domToolBox.className)) as HTMLElement || domToolBoxes.lastChild as HTMLElement;
 
 			domSpacer.insertAdjacentHTML('beforebegin', `<div class="${ domToolBox.className }"><asc-theme-selector></asc-theme-selector></div>`);
-		});
+		};
+		this._onDomHidden = () => this._themeService.resetTheme();
 
-		window.addEventListener(EVENT_IDE_DOM_HIDDEN, () => themeService.resetTheme());
+		window.addEventListener(EVENT_IDE_DOM_UPDATED, this._onDomChanged);
+		window.addEventListener(EVENT_IDE_DOM_HIDDEN, this._onDomHidden);
+	}
+
+	static destroy() {
+		window.removeEventListener(EVENT_IDE_DOM_UPDATED, this._onDomChanged);
+		window.removeEventListener(EVENT_IDE_DOM_HIDDEN, this._onDomHidden);
+
+		this._themeService = undefined;
 	}
 }
+
