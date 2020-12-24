@@ -1,4 +1,4 @@
-import { IdeVersion } from './ide-version.enum';
+import { IdeVersion } from './ideVersion.enum';
 
 
 export const detectIde = (): IdeVersion => {

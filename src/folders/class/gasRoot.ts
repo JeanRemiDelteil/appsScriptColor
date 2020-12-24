@@ -50,9 +50,22 @@ export class GasRoot extends GasFolder {
 	 * Safely delete all registered listeners to avoid memory leak
 	 */
 	destroy() {
-		// Un-register monitor on list container
-		this._disableMonitors();
+		// Also Un-register monitor on list container
+		this.resetList();
+
+		// Remove all files
+		this._fileMap.forEach((file: GasFile) => {
+			// Get file folder
+			let folder = this._fileFolderMap.get(file);
+
+			folder?.removeChild(file);
+			this._fileFolderMap.delete(file);
+		});
+
 		this.clearEmptyFolder();
+
+		this._destroy();
+		this.root = undefined;
 	}
 
 	/**
@@ -61,10 +74,10 @@ export class GasRoot extends GasFolder {
 	resetList() {
 		this._disableMonitors();
 
-		Array.from(this.root.querySelectorAll('li'))
-			.forEach(listItem => this.root.append(listItem));
+		Array.from(this.root?.querySelectorAll('li'))
+			.forEach(listItem => this.root?.append(listItem));
 
-		this.dom.main?.parentElement.removeChild(this.dom.main);
+		this.dom.main?.parentElement?.removeChild(this.dom.main);
 	}
 
 	//<editor-fold desc="# Private methods">
@@ -94,7 +107,6 @@ export class GasRoot extends GasFolder {
 			!this.dom.main.parentNode && this._updateChildList();
 		});
 
-		// pass in the target node, as well as the observer options
 		this._rootMonitor.observe(this.root, {
 			childList: true,
 			attributes: false,
@@ -180,15 +192,10 @@ export class GasRoot extends GasFolder {
 			// Get file folder
 			let folder = this._fileFolderMap.get(file);
 
-			// Should never happens
-			if (!folder) {
-				console.log('** WARNING: NO FOLDER **');
-
-				return;
-			}
-
-			folder.removeChild(file);
+			folder?.removeChild(file);
 			this._fileFolderMap.delete(file);
+
+			!added.has(file.dom.main) && file.destroy();
 		});
 
 		// Added nodes

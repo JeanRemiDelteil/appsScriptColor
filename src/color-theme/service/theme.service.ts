@@ -4,10 +4,9 @@ import { ICreateThemeFromOptions, ICssThemeOptions, IMonacoTheme } from '../inte
 import { darculaTheme, defaultTheme, defaultThemes, monokaiTheme } from '../theme';
 
 
-const CM_CUSTOM_STYLE_ID = 'cmCustomStyle';
-
-
 export class ThemeService {
+	private readonly _customStyleId = `cmCustomStyle-${ new Date().toISOString() }`;
+
 	private _themesMap: { [themeName: string]: CssTheme } = {};
 	private _customThemeNames: string[] = [];
 	private _callbacks: Set<Function> = new Set();
@@ -18,6 +17,7 @@ export class ThemeService {
 		return theme.themeName;
 	});
 	private _currentTheme: CssTheme;
+	private _styleObserver: MutationObserver;
 
 	get currentTheme(): CssTheme {
 		return this._currentTheme;
@@ -158,6 +158,22 @@ export class ThemeService {
 		this._callbacks.delete(callback);
 	}
 
+	destroy() {
+		// Remove styles
+		if (this._dom_divCmCustomStyle) {
+			const domStyleParent = this._dom_divCmCustomStyle.parentElement;
+			if (domStyleParent) {
+				domStyleParent.removeChild(this._dom_divCmCustomStyle);
+			}
+
+			this._dom_divCmCustomStyle = undefined;
+		}
+
+		this._styleObserver?.disconnect();
+		this._styleObserver = undefined;
+
+		this._callbacks.clear();
+	}
 
 	//<editor-fold desc="# Private methods">
 
@@ -168,7 +184,7 @@ export class ThemeService {
 		// Init the custom style element
 		if (!this._dom_divCmCustomStyle) {
 			this._dom_divCmCustomStyle = document.createElement('style');
-			this._dom_divCmCustomStyle.setAttribute('id', CM_CUSTOM_STYLE_ID);
+			this._dom_divCmCustomStyle.setAttribute('id', this._customStyleId);
 		}
 
 		this._dom_divCmCustomStyle.innerHTML = theme.css;
@@ -188,106 +204,19 @@ export class ThemeService {
 		document.head.appendChild(this._dom_divCmCustomStyle);
 	}
 
-	private static setMonacoThemeFn(themeName: string, theme: IMonacoTheme): void {
-		// language="ECMAScript 6"
-		ThemeService._inject(`
-if (!jsWireMonacoEditor._themeService._knownThemes.has('${ themeName }')) {
-	monaco.editor.defineTheme('${ themeName }', ${ JSON.stringify(theme) });
-}
-monaco.editor.setTheme('${ themeName }');
-`);
-	}
-
-	private static resetMonacoThemeFn(): void {
-		// language="ECMAScript 6"
-		ThemeService._inject(`
-monaco.editor.setTheme('apps-script-light');
-
-if (!jsWireMonacoEditor._themeService._knownThemes.has('${ monokaiTheme.themeName }')) {
-	monaco.editor.defineTheme('Monokai', ${ JSON.stringify(monokaiTheme.monacoTheme) });
-	monaco.editor.defineTheme('Darcula', ${ JSON.stringify(darculaTheme.monacoTheme) });
-	
-	// Add a command for themes
-	jsWireMonacoEditor.addAction({
-		id: 'asc-set-theme-monokai',
-		label: 'AppsScriptColor: Use dark theme: Monokai',
-		
-		precondition: null,
-		keybindingContext: null,
-		contextMenuGroupId: 'navigation',
-		contextMenuOrder: 1.5,
-	
-		run: function () {
-			monaco.editor.setTheme('Monokai');
-			localStorage.setItem('appScriptColor-theme', 'Monokai');
-		}
-	})
-	jsWireMonacoEditor.addAction({
-		id: 'asc-set-theme-darcula',
-		label: 'AppsScriptColor: Use dark theme: Darcula',
-		
-		precondition: null,
-		keybindingContext: null,
-		contextMenuGroupId: 'navigation',
-		contextMenuOrder: 1.5,
-	
-		run: function () {
-			monaco.editor.setTheme('Darcula');
-			localStorage.setItem('appScriptColor-theme', 'Darcula');
-		}
-	})
-}
-`);
-	}
-
-	private static _inject(code: string) {
-		const domScript = document.createElement('script');
-
-		// language="ECMAScript 6"
-		domScript.textContent = `(function () {
-			function action() {
-				${ code }
-			}
-			
-			if (window.monaco && window.jsWireMonacoEditor) {
-				action();
-			}
-			else {
-				const observer = new MutationObserver(mutations => {
-					mutations.some(mutation => {
-						const domMonacoStyle = Array.from(mutation.addedNodes).find(node => !(node.tagName !== 'STYLE' || !node.classList.contains('monaco-colors')));
-						if (!domMonacoStyle) return false;
-						
-						action();
-						observer.disconnect();
-						return true;
-					});
-				});
-				
-				observer.observe(document.head, {
-					childList: true,
-					attributes: false,
-					characterData: false
-				});
-			}
-		})()`;
-		document.head.appendChild(domScript);
-		document.head.removeChild(domScript);
-	}
-
 	/**
 	 * One time set up to ensure that our stylesheet will always be the last applied style
 	 */
 	private _setStyleObserver(): void {
 		// create an observer instance to detect <style> insertion
 		// to always be the last styleSheet
-		const observer = new MutationObserver(mutations => {
+		this._styleObserver = new MutationObserver(mutations => {
 			mutations.forEach(mutation => {
 				for (let item in mutation.addedNodes) {
 					const node = mutation.addedNodes[item] as HTMLElement;
 
 					// Filter for STYLE elements (other than our styleSheet)
-					if (node.tagName !== 'STYLE' || node.id === CM_CUSTOM_STYLE_ID) continue;
+					if (node.tagName !== 'STYLE' || node.id === this._customStyleId) continue;
 
 					// Move style node to the end for the HEAD
 					document.head.appendChild(this._dom_divCmCustomStyle);
@@ -295,8 +224,7 @@ if (!jsWireMonacoEditor._themeService._knownThemes.has('${ monokaiTheme.themeNam
 			});
 		});
 
-		// pass in the target node, as well as the observer options
-		observer.observe(document.head, {
+		this._styleObserver.observe(document.head, {
 			childList: true,
 			attributes: false,
 			characterData: false,
@@ -361,4 +289,132 @@ if (!jsWireMonacoEditor._themeService._knownThemes.has('${ monokaiTheme.themeNam
 
 	//</editor-fold>
 
+
+	private static _insertThemeAction(): string {
+		// language="ECMAScript 6"
+		return `
+			// Add a command for themes
+			window.jsWireMonacoEditor.addAction({
+				id: 'asc-set-theme-monokai',
+				label: 'AppsScriptColor: Use dark theme: Monokai',
+				
+				precondition: null,
+				keybindingContext: null,
+				contextMenuGroupId: 'navigation',
+				contextMenuOrder: 1.5,
+				
+				run: function () {
+					monaco.editor.setTheme('Monokai');
+					localStorage.setItem('appScriptColor-theme', 'Monokai');
+				}
+			})
+			window.jsWireMonacoEditor.addAction({
+				id: 'asc-set-theme-darcula',
+				label: 'AppsScriptColor: Use dark theme: Darcula',
+				
+				precondition: null,
+				keybindingContext: null,
+				contextMenuGroupId: 'navigation',
+				contextMenuOrder: 1.5,
+				
+				run: function () {
+					monaco.editor.setTheme('Darcula');
+					localStorage.setItem('appScriptColor-theme', 'Darcula');
+				}
+			})
+		`;
+	}
+
+	private static setMonacoThemeFn(themeName: string, theme: IMonacoTheme): void {
+		// language="ECMAScript 6"
+		ThemeService._inject(`
+			if (!jsWireMonacoEditor._themeService._knownThemes.has('${ themeName }')) {
+				monaco.editor.defineTheme('${ themeName }', ${ JSON.stringify(theme) });
+			}
+			monaco.editor.setTheme('${ themeName }');
+			
+			${ this._insertThemeAction() }
+		`);
+	}
+
+	private static resetMonacoThemeFn(): void {
+		// language="ECMAScript 6"
+		ThemeService._inject(`
+			monaco.editor.setTheme('apps-script-light');
+			
+			if (!window.jsWireMonacoEditor?._themeService._knownThemes.has('${ monokaiTheme.themeName }')) {
+				monaco.editor.defineTheme('Monokai', ${ JSON.stringify(monokaiTheme.monacoTheme) });
+				monaco.editor.defineTheme('Darcula', ${ JSON.stringify(darculaTheme.monacoTheme) });
+			}
+			
+			${ this._insertThemeAction() }
+		`);
+	}
+
+	private static _inject(code: string) {
+		const domScript = document.createElement('script');
+
+		// language="ECMAScript 6"
+		domScript.textContent = `(function () {
+			function action() {
+				${ code }
+			}
+			
+			if (window.monaco && window.jsWireMonacoEditor) {
+				action();
+			}
+			else {
+				const observer = new MutationObserver(mutations => {
+					mutations.some(mutation => {
+						const domMonacoStyle = Array.from(mutation.addedNodes).find(node => !(node.tagName !== 'STYLE' || !node.classList.contains('monaco-colors')));
+						if (!domMonacoStyle) return false;
+						
+						action();
+						observer.disconnect();
+						return true;
+					});
+				});
+				
+				observer.observe(document.head, {
+					childList: true,
+					attributes: false,
+					characterData: false
+				});
+			}
+		})()`;
+		document.head.appendChild(domScript);
+		document.head.removeChild(domScript);
+	}
+}
+
+// Type for js interface in top frame
+declare global {
+	// noinspection JSUnusedGlobalSymbols
+	interface Window {
+		jsWireMonacoEditor: {
+			_themeService: {
+				_knownThemes: Map<string, {}>;
+			}
+
+			addAction: (param: {
+				id: string,
+				label: string,
+
+				precondition: null,
+				keybindingContext: null,
+				contextMenuGroupId: string,
+				contextMenuOrder: number,
+
+				run: () => void,
+			}) => void;
+			getAction: (id: string) => {};
+		}
+
+		monaco: {
+			editor: {
+				defineTheme: (themeName: string, theme: {}) => void;
+				setTheme: (themeName: string) => void;
+			}
+		}
+	}
 }

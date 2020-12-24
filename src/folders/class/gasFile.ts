@@ -47,7 +47,7 @@ export class GasFile {
 
 		// get file type
 		this.type = (
-		            /\.([^.]+)$/.exec(this.name) || []
+		            /\.([^.]+)$/.exec(this.name) || [null, '']
 		            )[1].replace('gs', 'js') || 'js';
 
 		// Set DOM file type

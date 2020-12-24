@@ -4,6 +4,7 @@ export type EVENT_IDE_DOM_UPDATED = {
 }
 
 declare global {
+	// noinspection JSUnusedGlobalSymbols
 	interface WindowEventMap {
 		[EVENT_IDE_DOM_UPDATED]: CustomEvent<EVENT_IDE_DOM_UPDATED>;
 	}
