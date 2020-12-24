@@ -290,6 +290,41 @@ export class ThemeService {
 	//</editor-fold>
 
 
+	private static _insertThemeAction(): string {
+		// language="ECMAScript 6"
+		return `
+			// Add a command for themes
+			window.jsWireMonacoEditor.addAction({
+				id: 'asc-set-theme-monokai',
+				label: 'AppsScriptColor: Use dark theme: Monokai',
+				
+				precondition: null,
+				keybindingContext: null,
+				contextMenuGroupId: 'navigation',
+				contextMenuOrder: 1.5,
+				
+				run: function () {
+					monaco.editor.setTheme('Monokai');
+					localStorage.setItem('appScriptColor-theme', 'Monokai');
+				}
+			})
+			window.jsWireMonacoEditor.addAction({
+				id: 'asc-set-theme-darcula',
+				label: 'AppsScriptColor: Use dark theme: Darcula',
+				
+				precondition: null,
+				keybindingContext: null,
+				contextMenuGroupId: 'navigation',
+				contextMenuOrder: 1.5,
+				
+				run: function () {
+					monaco.editor.setTheme('Darcula');
+					localStorage.setItem('appScriptColor-theme', 'Darcula');
+				}
+			})
+		`;
+	}
+
 	private static setMonacoThemeFn(themeName: string, theme: IMonacoTheme): void {
 		// language="ECMAScript 6"
 		ThemeService._inject(`
@@ -297,6 +332,8 @@ export class ThemeService {
 				monaco.editor.defineTheme('${ themeName }', ${ JSON.stringify(theme) });
 			}
 			monaco.editor.setTheme('${ themeName }');
+			
+			${ this._insertThemeAction() }
 		`);
 	}
 
@@ -305,40 +342,12 @@ export class ThemeService {
 		ThemeService._inject(`
 			monaco.editor.setTheme('apps-script-light');
 			
-			if (!jsWireMonacoEditor._themeService._knownThemes.has('${ monokaiTheme.themeName }')) {
+			if (!window.jsWireMonacoEditor?._themeService._knownThemes.has('${ monokaiTheme.themeName }')) {
 				monaco.editor.defineTheme('Monokai', ${ JSON.stringify(monokaiTheme.monacoTheme) });
 				monaco.editor.defineTheme('Darcula', ${ JSON.stringify(darculaTheme.monacoTheme) });
-				
-				// Add a command for themes
-				jsWireMonacoEditor.addAction({
-					id: 'asc-set-theme-monokai',
-					label: 'AppsScriptColor: Use dark theme: Monokai',
-					
-					precondition: null,
-					keybindingContext: null,
-					contextMenuGroupId: 'navigation',
-					contextMenuOrder: 1.5,
-					
-					run: function () {
-						monaco.editor.setTheme('Monokai');
-						localStorage.setItem('appScriptColor-theme', 'Monokai');
-					}
-				})
-				jsWireMonacoEditor.addAction({
-					id: 'asc-set-theme-darcula',
-					label: 'AppsScriptColor: Use dark theme: Darcula',
-					
-					precondition: null,
-					keybindingContext: null,
-					contextMenuGroupId: 'navigation',
-					contextMenuOrder: 1.5,
-					
-					run: function () {
-						monaco.editor.setTheme('Darcula');
-						localStorage.setItem('appScriptColor-theme', 'Darcula');
-					}
-				})
 			}
+			
+			${ this._insertThemeAction() }
 		`);
 	}
 
@@ -398,6 +407,7 @@ declare global {
 
 				run: () => void,
 			}) => void;
+			getAction: (id: string) => {};
 		}
 
 		monaco: {
