@@ -1,6 +1,7 @@
 import { detectIde, IdeVersion } from '../../feature-detection';
+import { settingsService } from '../../storage';
 import { CssTheme } from '../class/cssTheme';
-import { ICreateThemeFromOptions, ICssThemeOptions, IMonacoTheme } from '../interface';
+import { ICreateThemeFromOptions, ICustomThemes, IMonacoTheme } from '../interface';
 import { darculaTheme, defaultTheme, defaultThemes, monokaiTheme } from '../theme';
 
 
@@ -40,8 +41,8 @@ export class ThemeService {
 		this._loadCustomThemes();
 
 		// Init current theme, but do not apply it automatically
-		this._currentTheme = this.getThemeByName(localStorage.getItem('appScriptColor-theme') || darculaTheme.themeName);
-		localStorage.setItem('appScriptColor-theme', this._currentTheme.themeName);
+		this._currentTheme = this.getThemeByName(settingsService.getThemeInUse() || darculaTheme.themeName);
+		settingsService.setThemeInUse(this._currentTheme.themeName);
 
 		// Init style dom
 		this.resetTheme();
@@ -54,12 +55,12 @@ export class ThemeService {
 	 *
 	 * Calling it will
 	 * - update currentTheme value,
-	 * - save currentTheme in localStorage
+	 * - save currentTheme
 	 * - apply the theme in the DOM
 	 */
 	setCurrentTheme(themeName: string): void {
 		this._currentTheme = this.getThemeByName(themeName);
-		localStorage.setItem('appScriptColor-theme', this._currentTheme.themeName);
+		settingsService.setThemeInUse(this._currentTheme.themeName);
 
 		this._applyTheme(this._currentTheme);
 	}
@@ -235,29 +236,21 @@ export class ThemeService {
 	 * Store custom theme in localStore
 	 */
 	private _saveCustomThemes(): void {
-		const customThemes: { [themeName: string]: ICssThemeOptions } = {};
+		const customThemes: ICustomThemes = {};
 
 		this._customThemeNames
 			.map(themeName => customThemes[themeName] = JSON.parse(this._themesMap[themeName].toJSON()));
 
-		localStorage.setItem('appScriptColor-theme-custom', JSON.stringify(customThemes));
+		settingsService.setCustomThemes(customThemes);
 	}
 
 	/**
 	 * Load custom theme from localStore
 	 */
 	private _loadCustomThemes(): void {
-		let customThemes: { [themeName: string]: ICssThemeOptions };
-		try {
-			customThemes = JSON.parse(localStorage.getItem('appScriptColor-theme-custom') || '{}');
-		} catch (e) {
-			customThemes = {};
-		}
-
-		Object.keys(customThemes)
-			.forEach(name => {
-				const { rootTheme, themeName, variables, rules } = customThemes[name];
-
+		Object
+			.values(settingsService.getCustomThemes())
+			.forEach(({ rootTheme, themeName, variables, rules }) => {
 				this.createThemeFrom(
 					this.getThemeByName(rootTheme),
 					{ themeName, variables, rules },
@@ -305,7 +298,7 @@ export class ThemeService {
 				
 				run: function () {
 					monaco.editor.setTheme('Monokai');
-					localStorage.setItem('appScriptColor-theme', 'Monokai');
+					${ settingsService.setterForThemeInUse('Monokai') }
 				}
 			})
 			window.jsWireMonacoEditor.addAction({
@@ -319,7 +312,7 @@ export class ThemeService {
 				
 				run: function () {
 					monaco.editor.setTheme('Darcula');
-					localStorage.setItem('appScriptColor-theme', 'Darcula');
+					${ settingsService.setterForThemeInUse('Darcula') }
 				}
 			})
 		`;
