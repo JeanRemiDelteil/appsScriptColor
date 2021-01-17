@@ -48,21 +48,20 @@ myFolder/some_subfolder/myfileName
 
 Updated :
 
-v1.4.0
+v1.4.1
+- Fix https://github.com/JeanRemiDelteil/appsScriptColor/issues/21
 
+v1.4.0
 - Full support of the new GAS online IDE (not all theme are available)
 
 v1.1.1
-
 - Fix some colors changes
 
 v1.1.0
-
 - Custom theme editor allows to create theme derivated from the 3 default themes\
   Find the Theme Editor in the color menu
 
 v1.0.2
-
 - Folder are grouped above files
 - Folder color match their nesting level
 
