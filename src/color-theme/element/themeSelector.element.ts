@@ -1,9 +1,9 @@
 import '@material/mwc-icon-button-toggle';
-import { customElement, html, LitElement, property } from 'lit-element';
+import { customElement, html, internalProperty, LitElement } from 'lit-element';
 import { EVENT_IDE_DOM_HIDDEN, EVENT_IDE_DOM_UPDATED } from '../../feature-detection';
-import { CssTheme } from '../class/cssTheme';
+import { settingsService } from '../../storage';
 import { ThemeService } from '../service/theme.service';
-import { darculaTheme, defaultTheme } from '../theme';
+import { darculaTheme } from '../theme';
 
 
 @customElement('asc-theme-selector')
@@ -13,8 +13,14 @@ export class ThemeSelector extends LitElement {
 	private _themeService: ThemeService;
 
 
-	@property({ type: Function })
-	themeClass: CssTheme = null;
+	@internalProperty()
+	get useTheme(): boolean {
+		return settingsService.useTheme();
+	};
+
+	set useTheme(useTheme: boolean) {
+		settingsService.useTheme(useTheme);
+	};
 
 
 	constructor() {
@@ -27,7 +33,7 @@ export class ThemeSelector extends LitElement {
 	//<editor-fold desc="# Lifecycle">
 
 	firstUpdated(): void {
-		this._applyTheme(this._themeService.currentTheme.hasMonacoTheme ? this._themeService.currentTheme.themeName : darculaTheme.themeName);
+		this._onToggle(this.useTheme);
 	}
 
 	//</editor-fold>
@@ -56,8 +62,8 @@ export class ThemeSelector extends LitElement {
 			<mwc-icon-button-toggle
 				onIcon="brightness_2"
 				offIcon="wb_sunny"
-				@MDCIconButtonToggle:change="${ this._onToggle }"
-				.on="${ this.themeClass !== defaultTheme }"
+				@MDCIconButtonToggle:change="${ ({ detail: { isOn } }: { detail: { isOn: boolean } }) => this._onToggle(isOn) }"
+				.on="${ this.useTheme }"
 			></mwc-icon-button-toggle>
 		`;
 	}
@@ -66,58 +72,52 @@ export class ThemeSelector extends LitElement {
 
 	//<editor-fold desc="# Events">
 
-	_onToggle({ detail: { isOn } }: { detail: { isOn: boolean } }) {
+	_onToggle(isOn: boolean) {
 		if (isOn) {
-			this._applyTheme(this._themeService.currentTheme.hasMonacoTheme ? this._themeService.currentTheme.themeName : darculaTheme.themeName);
+			this._themeService.setCurrentTheme(
+				this._themeService.currentTheme.hasMonacoTheme
+					? this._themeService.currentTheme.themeName
+					: darculaTheme.themeName,
+			);
 		}
 		else {
 			this._themeService.resetTheme();
-			this.themeClass = defaultTheme;
 		}
-	}
 
-	//</editor-fold>
-
-	//<editor-fold desc="# Private methods">
-
-	private _applyTheme(themeName: string): void {
-		this.themeClass = this._themeService.getThemeByName(themeName);
-		this._themeService.setCurrentTheme(this.themeClass.themeName);
+		this.useTheme = isOn;
 	}
 
 	//</editor-fold>
 
 
-	private static _onDomChanged: (param: { detail: { node: HTMLElement } }) => void;
-	private static _onDomHidden: () => void;
+	private static _onDomChanged = ({ detail: { node } }: { detail: { node: HTMLElement } }): void => {
+		// Get IDE dom element container
+		const domListBox = node.querySelector('div[jsslot] div[role="listbox"]') as HTMLElement;
+		if (!domListBox) return;
+
+		const domToolBox = domListBox?.parentElement?.parentElement?.parentElement;
+		const domToolBoxes = domToolBox.parentElement;
+
+		const domSpacer = Array.from(domToolBoxes.children)
+			                  .find(child => !child.classList.contains(domToolBox.className)) as HTMLElement || domToolBoxes.lastChild as HTMLElement;
+
+		domSpacer.insertAdjacentHTML('beforebegin', `<div class="${ domToolBox.className }"><asc-theme-selector></asc-theme-selector></div>`);
+	};
+
+	private static _onDomHidden = (): void => ThemeSelector._themeService.resetTheme();
 
 	static init(themeService: ThemeService): void {
 		this._themeService = themeService;
-
-		this._onDomChanged = ({ detail: { node } }: { detail: { node: HTMLElement } }): void => {
-			// Get IDE dom element container
-			const domListBox = node.querySelector('div[jsslot] div[role="listbox"]') as HTMLElement;
-			if (!domListBox) return;
-
-			const domToolBox = domListBox?.parentElement?.parentElement?.parentElement;
-			const domToolBoxes = domToolBox.parentElement;
-
-			const domSpacer = Array.from(domToolBoxes.children)
-				                  .find(child => !child.classList.contains(domToolBox.className)) as HTMLElement || domToolBoxes.lastChild as HTMLElement;
-
-			domSpacer.insertAdjacentHTML('beforebegin', `<div class="${ domToolBox.className }"><asc-theme-selector></asc-theme-selector></div>`);
-		};
-		this._onDomHidden = () => this._themeService.resetTheme();
 
 		window.addEventListener(EVENT_IDE_DOM_UPDATED, this._onDomChanged);
 		window.addEventListener(EVENT_IDE_DOM_HIDDEN, this._onDomHidden);
 	}
 
 	static destroy() {
+		this._themeService = undefined;
+
 		window.removeEventListener(EVENT_IDE_DOM_UPDATED, this._onDomChanged);
 		window.removeEventListener(EVENT_IDE_DOM_HIDDEN, this._onDomHidden);
-
-		this._themeService = undefined;
 	}
 }
 

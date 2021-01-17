@@ -1,4 +1,5 @@
 import { EVENT_IDE_DOM_UPDATED } from '../feature-detection';
+import { settingsService } from '../storage';
 import { GasRoot } from './class/gasRoot';
 import { css } from './constant/style.css';
 import { EVENT_SUB_FOLDER_CHANGED } from './event';
@@ -109,7 +110,7 @@ export class Folders {
 		clearTimeout(this._timeOut_saveStaticFolders);
 
 		this._timeOut_saveStaticFolders = window.setTimeout(() => {
-			localStorage.setItem(`appScriptColor-static-Folders-${ this._key }`, JSON.stringify(this.gasStaticRoot.getDeepToggleState()));
+			settingsService.setFolderStates(this._key, this.gasStaticRoot.getDeepToggleState());
 		}, 500);
 	}
 
@@ -117,13 +118,7 @@ export class Folders {
 	 * Load statics folder state
 	 */
 	private _loadStaticsFolder(): IFolderStateDictionary {
-		let state: IFolderStateDictionary;
-
-		try {
-			state = JSON.parse(localStorage.getItem(`appScriptColor-static-Folders-${ this._key }`));
-		} catch (e) {}
-
-		return state || {};
+		return settingsService.getFolderStates(this._key);
 	}
 
 
