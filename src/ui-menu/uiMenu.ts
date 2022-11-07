@@ -29,7 +29,7 @@ export class UiMenu {
 	}
 
 	private _insertMenuButton() {
-		document.head.insertAdjacentHTML('beforeend', `<style>.asc-menu-item-icon{display: none;}.asc-menu-item-icon-display{display: inherit;}</style>`);
+		// document.head.insertAdjacentHTML('beforeend', `<style>.asc-menu-item-icon{display: none;}.asc-menu-item-icon-display{display: inherit;}</style>`);
 
 		const googleScriptMenu = document.getElementById('docs-menubar');
 		// no menu, we quit now

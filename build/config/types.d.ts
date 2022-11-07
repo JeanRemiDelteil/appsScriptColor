@@ -1,5 +1,5 @@
 interface BuildConfig {
-	inputFile: string;
+	inputFiles: { input: string, output: string }[];
 	inputDir: string;
 	outputDir: string;
 

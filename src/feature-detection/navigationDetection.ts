@@ -13,7 +13,7 @@ export enum NavigationEvent {
 }
 
 export class NavigationDetection {
-	private readonly _interval: number;
+	private _interval: number;
 	private _location: string;
 	private _ideVersion: IdeVersion;
 	private _scriptKey: string;
@@ -21,7 +21,9 @@ export class NavigationDetection {
 	constructor(
 		private _eventMap: { [event: string]: (param: INavigationCallbackParam) => void },
 	) {
-		this._interval = window.setInterval(() => this._checkLocation(), 50);
+        window.setTimeout(() => {
+            this._interval = window.setInterval(() => this._checkLocation(), 50);
+        }, 1500)
 	}
 
 	private _checkLocation() {

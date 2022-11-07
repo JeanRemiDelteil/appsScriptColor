@@ -15,10 +15,9 @@ class SettingsStorage {
 	setThemeInUse(themeName: string): void {
 		return this._setSetting('theme', undefined, themeName);
 	}
-
+    
 	setterForThemeInUse(themeName: string): string {
-		// language="ECMAScript 6"
-		return `localStorage.setItem('appScriptColor-theme', '${ themeName }');`;
+        localStorage.setItem('appScriptColor-theme', themeName);
 	}
 
 	useTheme(useTheme?: boolean): boolean {

@@ -6,15 +6,15 @@ import { ThemeService } from '../service/theme.service';
 
 
 // Insert style needed to adapt layout
-document.head.insertAdjacentHTML('beforeend', `<style>
-.asc-main-sidebar {
-	display: flex;
-}
-.asc-main-sidebar > div:nth-child(2) {
-    position: relative!important;
-    flex: auto;
-}
-</style>`);
+//document.head.insertAdjacentHTML('beforeend', `<style>
+//.asc-main-sidebar {
+//	display: flex;
+//}
+//.asc-main-sidebar > div:nth-child(2) {
+//    position: relative!important;
+//    flex: auto;
+//}
+//</style>`);
 
 
 @customElement('asc-customize-theme')
