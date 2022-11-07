@@ -1,3 +1,4 @@
 export enum BackgroundMessageEvent {
-    INJECT = 'INJECT',
+    RESET_THEME = 'RESET_THEME',
+    SET_THEME = 'SET_THEME',
 }

@@ -1,5 +1,8 @@
-import { injectInTab } from "../injector";
-import { BackgroundMessageEvent } from "./message-event.enum";
+import {IMessagerEvent} from "../event";
+import {injectInTab} from "../injector";
+import {BackgroundMessageEvent} from "./message-event.enum";
+import {resetTheme} from "../monaco/reset-theme";
+import { setTheme } from "../monaco/set-theme";
 
 export class BackgroundMessager {
     constructor() {
@@ -8,16 +11,19 @@ export class BackgroundMessager {
 
     private _initialize(): void {
         chrome.runtime.onMessage.addListener(
-            (request: { event: BackgroundMessageEvent }, sender) => {
+            (request: IMessagerEvent, sender) => {
                 console.log('RECEIVED', request, sender);
 
                 if (!sender.tab || !request.event) return;
 
                 switch (request.event) {
-                    case BackgroundMessageEvent.INJECT:
-                        injectInTab(sender.tab, () => {
-                            console.log('injected', window.monaco)
-                        });
+                    case BackgroundMessageEvent.RESET_THEME:
+                        injectInTab(sender.tab, resetTheme);
+
+                        break;
+
+                    case BackgroundMessageEvent.SET_THEME:
+                        injectInTab(sender.tab, setTheme(request.theme));
 
                         break;
 
