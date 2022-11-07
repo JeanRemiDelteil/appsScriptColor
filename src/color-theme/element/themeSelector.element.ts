@@ -62,7 +62,7 @@ export class ThemeSelector extends LitElement {
 			<mwc-icon-button-toggle
 				onIcon="brightness_2"
 				offIcon="wb_sunny"
-				@MDCIconButtonToggle:change="${ ({ detail: { isOn } }: { detail: { isOn: boolean } }) => this._onToggle(isOn) }"
+                 @icon-button-toggle-change="${ ({ detail: { isOn } }: { detail: { isOn: boolean } }) => this._onToggle(isOn) }"
 				.on="${ this.useTheme }"
 			></mwc-icon-button-toggle>
 		`;

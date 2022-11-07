@@ -1,6 +1,8 @@
-import { settingsService } from "../../storage";
+import {settingsService} from "../../storage";
 
 export const insertThemeAction = () => {
+    console.log('insertThemeAction');
+
     // Add a command for themes
     window.jsWireMonacoEditor.addAction({
         id: 'asc-set-theme-monokai',
