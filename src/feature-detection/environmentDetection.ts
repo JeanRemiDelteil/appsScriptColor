@@ -1,18 +1,16 @@
-import { IdeVersion } from './ideVersion.enum';
-
+import { IdeVersion } from "./ideVersion.enum";
 
 export const detectIde = (): IdeVersion => {
-	return /\/home\/projects\/([^\/]+?)\/edit/.test(document.location.pathname)
-	       ? IdeVersion.MONACO
-	       : /\/([^\/]+?)\/edit/.test(document.location.pathname)
-	         ? IdeVersion.OLD
-	         : IdeVersion.NOT_IDE;
+    return /\/home\/projects\/([^\/]+?)\/edit/.test(document.location.pathname)
+        ? IdeVersion.MONACO
+        : /\/([^\/]+?)\/edit/.test(document.location.pathname)
+        ? IdeVersion.OLD
+        : IdeVersion.NOT_IDE;
 };
 
-export const getScriptKey = (): string => (
-	(
-	document.location.pathname.match(/\/([^\/]+?)\/edit/) ||
-	document.location.pathname.match(/\/home\/projects\/([^\/]+?)(?:\/|$)/)
-	)
-	|| []
-)[1];
+export const getScriptKey = (): string =>
+    (document.location.pathname.match(/\/([^\/]+?)\/edit/) ||
+        document.location.pathname.match(
+            /\/home\/projects\/([^\/]+?)(?:\/|$)/
+        ) ||
+        [])[1];

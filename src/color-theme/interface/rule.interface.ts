@@ -1,5 +1,5 @@
 export interface IRule {
-	[cssPath: string]: {
-		[cssProperty: string]: string
-	};
+    [cssPath: string]: {
+        [cssProperty: string]: string;
+    };
 }

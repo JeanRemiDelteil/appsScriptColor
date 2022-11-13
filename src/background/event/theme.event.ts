@@ -1,5 +1,5 @@
-import {BackgroundMessageEvent} from "../messager/message-event.enum";
-import {IMessagerEventBase} from "./event.interface";
+import { BackgroundMessageEvent } from "../messager/message-event.enum";
+import { IMessagerEventBase } from "./event.interface";
 
 export interface IResetThemeEvent extends IMessagerEventBase {
     event: BackgroundMessageEvent.RESET_THEME;

@@ -1,1 +1,1 @@
-export * from './background-messager';
+export * from "./background-messager";

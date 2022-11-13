@@ -1,15 +1,15 @@
 export interface IInfoShown {
-	vFolder: boolean,
+    vFolder: boolean;
 }
 
 let infoShown: IInfoShown = {
-	vFolder: false,
+    vFolder: false,
 };
 
 export function getInfoShown(): IInfoShown {
-	return infoShown;
+    return infoShown;
 }
 
 export function setInfoShown(value: IInfoShown): IInfoShown {
-	return infoShown = value;
+    return (infoShown = value);
 }

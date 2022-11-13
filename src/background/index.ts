@@ -1,3 +1,3 @@
-import {BackgroundRunner} from "./backgroundRunner";
+import { BackgroundRunner } from "./backgroundRunner";
 
 BackgroundRunner.init();

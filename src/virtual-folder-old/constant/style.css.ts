@@ -1,40 +1,39 @@
-import { CLASS_TITLE_CONTAINER } from './className';
-
+import { CLASS_TITLE_CONTAINER } from "./className";
 
 export const css = `
 <style>
 /* Root */
-.asc_old_FolderRoot>.${ CLASS_TITLE_CONTAINER }{
+.asc_old_FolderRoot>.${CLASS_TITLE_CONTAINER}{
 	display: none;
 }
 
 /* Folder */
-.asc_old_Folder>.${ CLASS_TITLE_CONTAINER }{
+.asc_old_Folder>.${CLASS_TITLE_CONTAINER}{
 	display: flex;
 	align-items: center;
 	
 	user-select: none;
 	cursor: pointer;
 }
-.asc_old_Folder>.${ CLASS_TITLE_CONTAINER } .asc_old_folderIcon{
+.asc_old_Folder>.${CLASS_TITLE_CONTAINER} .asc_old_folderIcon{
 	font-size: 0;
 	padding: 5px;
 }
-.asc_old_Folder>.${ CLASS_TITLE_CONTAINER } .asc_old_folderIcon>.material-icons{
+.asc_old_Folder>.${CLASS_TITLE_CONTAINER} .asc_old_folderIcon>.material-icons{
 	font-size: 20px;
 }
 
-.asc_old_Folder>.${ CLASS_TITLE_CONTAINER } .asc_old_closed{
+.asc_old_Folder>.${CLASS_TITLE_CONTAINER} .asc_old_closed{
 	display: none;
 }
-.asc_old_Folder:not(.asc_old_opened)>.${ CLASS_TITLE_CONTAINER } .asc_old_closed{
+.asc_old_Folder:not(.asc_old_opened)>.${CLASS_TITLE_CONTAINER} .asc_old_closed{
 	display: unset;
 }
-.asc_old_Folder:not(.asc_old_opened)>.${ CLASS_TITLE_CONTAINER } .asc_old_opened{
+.asc_old_Folder:not(.asc_old_opened)>.${CLASS_TITLE_CONTAINER} .asc_old_opened{
 	display: none;
 }
 
-.asc_old_Folder>.${ CLASS_TITLE_CONTAINER } .asc_old_folder_title {
+.asc_old_Folder>.${CLASS_TITLE_CONTAINER} .asc_old_folder_title {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;

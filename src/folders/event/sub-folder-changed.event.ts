@@ -1,9 +1,9 @@
-export const EVENT_SUB_FOLDER_CHANGED = 'EVENT_SUB_FOLDER_CHANGED';
+export const EVENT_SUB_FOLDER_CHANGED = "EVENT_SUB_FOLDER_CHANGED";
 export type EVENT_SUB_FOLDER_CHANGED = void;
 
 declare global {
-	// noinspection JSUnusedGlobalSymbols
-	interface DocumentEventMap {
-		[EVENT_SUB_FOLDER_CHANGED]: CustomEvent<EVENT_SUB_FOLDER_CHANGED>
-	}
+    // noinspection JSUnusedGlobalSymbols
+    interface DocumentEventMap {
+        [EVENT_SUB_FOLDER_CHANGED]: CustomEvent<EVENT_SUB_FOLDER_CHANGED>;
+    }
 }

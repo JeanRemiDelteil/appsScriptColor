@@ -1,6 +1,5 @@
-import { ICssThemeOptions } from './cssThemeOptions.interface';
-
+import { ICssThemeOptions } from "./cssThemeOptions.interface";
 
 export interface ICustomThemes {
-	[themeName: string]: ICssThemeOptions
+    [themeName: string]: ICssThemeOptions;
 }

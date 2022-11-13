@@ -1,11 +1,14 @@
-import {detectIde, IdeVersion} from '../../feature-detection';
-import {settingsService} from '../../storage';
-import {CssTheme} from '../class/cssTheme';
-import {ICreateThemeFromOptions, ICustomThemes, IMonacoTheme} from '../interface';
-import {darculaTheme, defaultTheme, defaultThemes} from '../theme';
-import {sendMessageToBack} from "../../background/messager/content-script-messager";
-import {BackgroundMessageEvent} from "../../background/messager/message-event.enum";
-
+import { detectIde, IdeVersion } from "../../feature-detection";
+import { settingsService } from "../../storage";
+import { CssTheme } from "../class/cssTheme";
+import {
+    ICreateThemeFromOptions,
+    ICustomThemes,
+    IMonacoTheme,
+} from "../interface";
+import { darculaTheme, defaultTheme, defaultThemes } from "../theme";
+import { sendMessageToBack } from "../../background/messager/content-script-messager";
+import { BackgroundMessageEvent } from "../../background/messager/message-event.enum";
 
 export class ThemeService {
     private readonly _customStyleId = `cmCustomStyle-${new Date().toISOString()}`;
@@ -14,7 +17,7 @@ export class ThemeService {
     private _customThemeNames: string[] = [];
     private _callbacks: Set<Function> = new Set();
     private _dom_divCmCustomStyle: HTMLElement = null;
-    private _defaultThemeNames: string[] = defaultThemes.map(theme => {
+    private _defaultThemeNames: string[] = defaultThemes.map((theme) => {
         this._themesMap[theme.themeName] = theme;
 
         return theme.themeName;
@@ -31,26 +34,23 @@ export class ThemeService {
     }
 
     get themeNames(): string[] {
-        return [
-            ...this._defaultThemeNames,
-            ...this._customThemeNames,
-        ];
+        return [...this._defaultThemeNames, ...this._customThemeNames];
     }
-
 
     constructor() {
         // Load custom Themes if any
         this._loadCustomThemes();
 
         // Init current theme, but do not apply it automatically
-        this._currentTheme = this.getThemeByName(settingsService.getThemeInUse() || darculaTheme.themeName);
+        this._currentTheme = this.getThemeByName(
+            settingsService.getThemeInUse() || darculaTheme.themeName
+        );
         settingsService.setThemeInUse(this._currentTheme.themeName);
 
         // Init style dom
         this.resetTheme();
         this._setStyleObserver();
     }
-
 
     /**
      * Set the current theme
@@ -86,10 +86,9 @@ export class ThemeService {
      */
     createThemeFrom(
         rootTheme: CssTheme,
-        {themeName, variables = {}, rules = {}}: ICreateThemeFromOptions,
-        saveThemes = true,
+        { themeName, variables = {}, rules = {} }: ICreateThemeFromOptions,
+        saveThemes = true
     ): CssTheme {
-
         while (rootTheme.rootTheme) {
             const themeObject = rootTheme.toObject();
 
@@ -105,8 +104,7 @@ export class ThemeService {
             rootTheme = this.getThemeByName(rootTheme.rootTheme);
         }
 
-
-        const newTheme = rootTheme.createFrom({themeName, variables, rules});
+        const newTheme = rootTheme.createFrom({ themeName, variables, rules });
         this._addTheme(newTheme);
 
         saveThemes && this._saveCustomThemes();
@@ -119,15 +117,19 @@ export class ThemeService {
      *
      * This function return the theme containing the new edited theme
      */
-    updateTheme(theme: CssTheme, {themeName, variables = {}, rules = {}}: ICreateThemeFromOptions) {
+    updateTheme(
+        theme: CssTheme,
+        { themeName, variables = {}, rules = {} }: ICreateThemeFromOptions
+    ) {
         if (defaultThemes.includes(theme)) return;
 
         // Remove theme from custom theme
         delete this._themesMap[theme.themeName];
-        this._customThemeNames = this._customThemeNames
-            .filter(name => name !== theme.themeName);
+        this._customThemeNames = this._customThemeNames.filter(
+            (name) => name !== theme.themeName
+        );
 
-        return this.createThemeFrom(theme, {themeName, variables, rules});
+        return this.createThemeFrom(theme, { themeName, variables, rules });
     }
 
     /**
@@ -138,8 +140,9 @@ export class ThemeService {
 
         // Remove theme from custom theme
         delete this._themesMap[theme.themeName];
-        this._customThemeNames = this._customThemeNames
-            .filter(name => name !== theme.themeName);
+        this._customThemeNames = this._customThemeNames.filter(
+            (name) => name !== theme.themeName
+        );
 
         this._saveCustomThemes();
         this._notifySubscribers();
@@ -186,8 +189,8 @@ export class ThemeService {
     private _applyTheme(theme: CssTheme): void {
         // Init the custom style element
         if (!this._dom_divCmCustomStyle) {
-            this._dom_divCmCustomStyle = document.createElement('style');
-            this._dom_divCmCustomStyle.setAttribute('id', this._customStyleId);
+            this._dom_divCmCustomStyle = document.createElement("style");
+            this._dom_divCmCustomStyle.setAttribute("id", this._customStyleId);
         }
 
         this._dom_divCmCustomStyle.innerHTML = theme.css;
@@ -212,13 +215,17 @@ export class ThemeService {
     private _setStyleObserver(): void {
         // create an observer instance to detect <style> insertion
         // to always be the last styleSheet
-        this._styleObserver = new MutationObserver(mutations => {
-            mutations.forEach(mutation => {
+        this._styleObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
                 for (let item in mutation.addedNodes) {
                     const node = mutation.addedNodes[item] as HTMLElement;
 
                     // Filter for STYLE elements (other than our styleSheet)
-                    if (node.tagName !== 'STYLE' || node.id === this._customStyleId) continue;
+                    if (
+                        node.tagName !== "STYLE" ||
+                        node.id === this._customStyleId
+                    )
+                        continue;
 
                     // Move style node to the end for the HEAD
                     document.head.appendChild(this._dom_divCmCustomStyle);
@@ -239,8 +246,12 @@ export class ThemeService {
     private _saveCustomThemes(): void {
         const customThemes: ICustomThemes = {};
 
-        this._customThemeNames
-            .map(themeName => customThemes[themeName] = JSON.parse(this._themesMap[themeName].toJSON()));
+        this._customThemeNames.map(
+            (themeName) =>
+                (customThemes[themeName] = JSON.parse(
+                    this._themesMap[themeName].toJSON()
+                ))
+        );
 
         settingsService.setCustomThemes(customThemes);
     }
@@ -249,15 +260,15 @@ export class ThemeService {
      * Load custom theme from localStore
      */
     private _loadCustomThemes(): void {
-        Object
-            .values(settingsService.getCustomThemes())
-            .forEach(({rootTheme, themeName, variables, rules}) => {
+        Object.values(settingsService.getCustomThemes()).forEach(
+            ({ rootTheme, themeName, variables, rules }) => {
                 this.createThemeFrom(
                     this.getThemeByName(rootTheme),
-                    {themeName, variables, rules},
-                    false,
+                    { themeName, variables, rules },
+                    false
                 );
-            });
+            }
+        );
     }
 
     /**
@@ -268,7 +279,7 @@ export class ThemeService {
 
         this._themesMap[theme.themeName] = theme;
         this._customThemeNames.push(theme.themeName);
-        this._customThemeNames.sort((a, b) => b > a ? 1 : a === b ? 0 : -1);
+        this._customThemeNames.sort((a, b) => (b > a ? 1 : a === b ? 0 : -1));
 
         this._notifySubscribers();
     }
@@ -278,16 +289,19 @@ export class ThemeService {
      * called on theme added or deleted
      */
     private _notifySubscribers(): void {
-        this._callbacks.forEach(callback => callback());
+        this._callbacks.forEach((callback) => callback());
     }
 
     //</editor-fold>
 
     private static setMonacoThemeFn(themeName: string): void {
-        sendMessageToBack({event: BackgroundMessageEvent.SET_THEME, theme: themeName});
+        sendMessageToBack({
+            event: BackgroundMessageEvent.SET_THEME,
+            theme: themeName,
+        });
     }
 
     private static resetMonacoThemeFn(): void {
-        sendMessageToBack({event: BackgroundMessageEvent.RESET_THEME});
+        sendMessageToBack({ event: BackgroundMessageEvent.RESET_THEME });
     }
 }
