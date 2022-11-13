@@ -1,29 +1,30 @@
-import { ThemeSelector, ThemeService } from '../color-theme';
-import { IdeDomWatcher } from '../feature-detection';
-import { Folders } from '../folders';
-
+import { ThemeSelector, ThemeService } from "../color-theme";
+import { IdeDomWatcher } from "../feature-detection";
+import { Folders } from "../folders";
 
 export class MonacoSetup {
-	private static _themeService: ThemeService;
-	private static _scriptKey: string;
+    private static _themeService: ThemeService;
+    private static _scriptKey: string;
 
-	static init(scriptKey: string) {
-		this._scriptKey = scriptKey;
-		this._themeService = new ThemeService();
+    static init(scriptKey: string) {
+        console.log("Monaco INIT", document.head, document.body, window.monaco);
 
-		Folders.init(this._scriptKey);
-		ThemeSelector.init(this._themeService);
+        this._scriptKey = scriptKey;
+        this._themeService = new ThemeService();
 
-		IdeDomWatcher.init();
-	}
+        Folders.init(this._scriptKey);
+        ThemeSelector.init(this._themeService);
 
-	static destroy() {
-		IdeDomWatcher.destroy();
+        IdeDomWatcher.init();
+    }
 
-		ThemeSelector.destroy();
-		Folders.destroy();
+    static destroy() {
+        IdeDomWatcher.destroy();
 
-		this._themeService?.destroy();
-		this._themeService = undefined;
-	}
+        ThemeSelector.destroy();
+        Folders.destroy();
+
+        this._themeService?.destroy();
+        this._themeService = undefined;
+    }
 }
