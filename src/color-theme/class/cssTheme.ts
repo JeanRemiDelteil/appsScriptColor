@@ -13,14 +13,18 @@ export class CssTheme {
     private readonly _monacoTheme: IMonacoTheme;
     private readonly _rootTheme: string;
 
+    readonly isDarkTheme: boolean;
+
     constructor({
         themeName,
+        isDarkTheme,
         variables,
         rules,
         monacoTheme,
         rootTheme = "",
     }: ICssThemeOptions) {
         this._themeName = themeName;
+        this.isDarkTheme = isDarkTheme;
         this._variables = variables;
         this._rules = rules;
         this._monacoTheme = monacoTheme;
@@ -152,6 +156,7 @@ export class CssTheme {
         const rootTheme = this._themeName;
         const createdTheme = new CssTheme({
             themeName,
+            isDarkTheme: this.isDarkTheme,
             variables: {
                 ...this._variables,
                 ...variables,

@@ -2,6 +2,7 @@ import { CssTheme } from "../class/cssTheme";
 
 export const darculaTheme = new CssTheme({
     themeName: "Darcula",
+    isDarkTheme: true,
     variables: {
         IDE_code_background: "#2B2B2B",
         IDE_code_comment: "#888888",

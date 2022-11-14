@@ -13,7 +13,7 @@ class SettingsStorage {
         return this._setSetting("theme", undefined, themeName);
     }
 
-    setterForThemeInUse(themeName: string): string {
+    setterForThemeInUse(themeName: string): void {
         localStorage.setItem("appScriptColor-theme", themeName);
     }
 

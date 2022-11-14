@@ -2,6 +2,7 @@ import { CssTheme } from "../class/cssTheme";
 
 export const monokaiTheme = new CssTheme({
     themeName: "Monokai",
+    isDarkTheme: true,
     variables: {},
     rules: {
         // Monaco IDE fixes

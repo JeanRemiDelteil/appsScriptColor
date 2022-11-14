@@ -1,3 +1,5 @@
+import { sendMessageToBack } from "../background/messager/content-script-messager";
+import { BackgroundMessageEvent } from "../background/messager/message-event.enum";
 import { ThemeSelector, ThemeService } from "../color-theme";
 import { IdeDomWatcher } from "../feature-detection";
 import { Folders } from "../folders";
@@ -7,10 +9,10 @@ export class MonacoSetup {
     private static _scriptKey: string;
 
     static init(scriptKey: string) {
-        console.log("Monaco INIT", document.head, document.body, window.monaco);
-
         this._scriptKey = scriptKey;
         this._themeService = new ThemeService();
+
+        sendMessageToBack({ event: BackgroundMessageEvent.INIT_SERVICE });
 
         Folders.init(this._scriptKey);
         ThemeSelector.init(this._themeService);

@@ -1,10 +1,19 @@
-export * from "./monaco";
+export * from "./define-theme";
+export * from "./insert-theme-action";
 
 declare global {
     interface Window {
         jsWireMonacoEditor: {
             _themeService: {
                 _knownThemes: Map<string, {}>;
+            };
+
+            _actions: {
+                [key: string]: {
+                    id: string;
+                    label: string;
+                    alias: string;
+                };
             };
 
             addAction: (param: {

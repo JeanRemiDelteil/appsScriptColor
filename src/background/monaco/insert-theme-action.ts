@@ -1,35 +1,29 @@
+import { CssTheme } from "../../color-theme/class/cssTheme";
 import { settingsService } from "../../storage";
 
-export const insertThemeAction = () => {
-    console.log("insertThemeAction");
+export const insertThemeAction = (theme: CssTheme) => {
+    const actionId = `asc-set-theme-${theme.themeName.toLowerCase()}`;
 
-    // Add a command for themes
+    // Action insert guard
+    if (window.jsWireMonacoEditor._actions[actionId]) {
+        return;
+    }
+
+    // console.log(`insertThemeAction for ${theme.themeName}`);
     window.jsWireMonacoEditor.addAction({
-        id: "asc-set-theme-monokai",
-        label: "AppsScriptColor: Use dark theme: Monokai",
+        id: actionId,
+        label: `AppsScriptColor: Use ${
+            theme.isDarkTheme ? "dark" : "light"
+        } theme: ${theme.themeName}`,
 
         precondition: null,
         keybindingContext: null,
         contextMenuGroupId: "navigation",
         contextMenuOrder: 1.5,
 
-        run: function () {
-            window.monaco.editor.setTheme("Monokai");
-            settingsService.setterForThemeInUse("Monokai");
-        },
-    });
-    window.jsWireMonacoEditor.addAction({
-        id: "asc-set-theme-darcula",
-        label: "AppsScriptColor: Use dark theme: Darcula",
-
-        precondition: null,
-        keybindingContext: null,
-        contextMenuGroupId: "navigation",
-        contextMenuOrder: 1.5,
-
-        run: function () {
-            window.monaco.editor.setTheme("Darcula");
-            settingsService.setterForThemeInUse("Darcula");
+        run: () => {
+            window.monaco.editor.setTheme(theme.themeName);
+            settingsService.setterForThemeInUse(theme.themeName);
         },
     });
 };
