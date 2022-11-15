@@ -1,322 +1,406 @@
-import { customElement, html, LitElement, property } from 'lit-element';
-import '../../lib/element/uiDialog';
-import { CssTheme } from '../class/cssTheme';
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
+import "../../lib/element/uiDialog";
+import { CssTheme } from "../class/cssTheme";
 // noinspection TypeScriptPreferShortImport
-import { ThemeService } from '../service/theme.service';
-
+import { ThemeService } from "../service/theme.service";
 
 // Insert style needed to adapt layout
-document.head.insertAdjacentHTML('beforeend', `<style>
-.asc-main-sidebar {
-	display: flex;
-}
-.asc-main-sidebar > div:nth-child(2) {
-    position: relative!important;
-    flex: auto;
-}
-</style>`);
+//document.head.insertAdjacentHTML('beforeend', `<style>
+//.asc-main-sidebar {
+//	display: flex;
+//}
+//.asc-main-sidebar > div:nth-child(2) {
+//    position: relative!important;
+//    flex: auto;
+//}
+//</style>`);
 
-
-@customElement('asc-customize-theme')
+@customElement("asc-customize-theme")
 export class CustomizeTheme extends LitElement {
-	private static _domSidebarParent: HTMLElement = null;
-	private static _opened: boolean = false;
-	private static _themeService: ThemeService;
+    private static _domSidebarParent: HTMLElement = null;
+    private static _opened: boolean = false;
+    private static _themeService: ThemeService;
 
-	private _themeService: ThemeService;
+    private _themeService: ThemeService;
 
-	@property({ type: Array })
-	themes: string[];
-	@property({ type: Function })
-	themeClass: CssTheme = null;
-	@property({ type: Object })
-	newColors: { [variable: string]: string } = {};
-	@property({ type: String })
-	newThemeName: string = '';
-	@property({
-		type: Boolean,
-		reflect: true,
-		attribute: 'fullscreen',
-	})
-	fullScreen: boolean = false;
+    @property({ type: Array }) themes: string[];
 
-	constructor() {
-		super();
+    @property({ type: Function }) themeClass: CssTheme = null;
 
-		this._themeService = CustomizeTheme._themeService;
-		this.themes = CustomizeTheme._themeService.themeNames;
+    @property({ type: Object }) newColors: { [variable: string]: string } = {};
 
-		this._updateThemeList = this._updateThemeList.bind(this);
-	}
+    @property({ type: String }) newThemeName: string = "";
 
+    @property({
+        type: Boolean,
+        reflect: true,
+        attribute: "fullscreen",
+    })
+    fullScreen: boolean = false;
 
-	//<editor-fold desc="# Lifecycle">
+    constructor() {
+        super();
 
-	connectedCallback(): void {
-		super.connectedCallback();
+        this._themeService = CustomizeTheme._themeService;
+        this.themes = CustomizeTheme._themeService.themeNames;
 
-		this._themeService.subscribe(this._updateThemeList);
-	}
+        this._updateThemeList = this._updateThemeList.bind(this);
+    }
 
-	disconnectedCallback(): void {
-		super.disconnectedCallback();
+    //<editor-fold desc="# Lifecycle">
 
-		this._themeService.unsubscribe(this._updateThemeList);
-	}
+    connectedCallback(): void {
+        super.connectedCallback();
 
-	firstUpdated(): void {
-		this._selectTheme(this._themeService.currentTheme.themeName);
-	}
+        this._themeService.subscribe(this._updateThemeList);
+    }
 
-	//</editor-fold>
+    disconnectedCallback(): void {
+        super.disconnectedCallback();
 
-	//<editor-fold desc="# Render">
+        this._themeService.unsubscribe(this._updateThemeList);
+    }
 
-	render() {
-		return html`
-			<style>
-				:host {
-					display: block;
-					color: black;
-				}
-				
-				:host, input, select, button {
-					font-family: Roboto, Arial, sans-serif;
-				}
-				
-				.theme-selector {
-					display: flex;
-					align-items: baseline;
-				}
-				
-				.theme-selector,
-				.theme-name {
-					margin-bottom: 1em;
-				}
-				
-				.theme-name {
-					display: flex;
-				}
-				
-				.theme-variable {
-					display: flex;
-					align-items: baseline;
-					
-					margin-bottom: 0.5em;
-				}
-				
-				.theme-selector > label,
-				.theme-name > label,
-				.theme-variable > label {
-					margin-right: auto;
-				}
-				
-				.theme-selector > select,
-				.theme-name > input,
-				.theme-variable > input {
-					margin-left: 1em;
-				}
-				
-				.actions {
-					display: flex;
-					justify-content: flex-end;
-				}
-				
-				.action-button {
-					margin-left: 1em;
-				}
-			</style>
-			
-			<asc-ui-dialog ?fullscreen="${ this.fullScreen }" header="Customize color Theme" @UI_DIALOG_CLOSE="${ this.close }">
-				
-				<div class="theme-selector">
-					<label for="theme-selector">Select theme:</label>
-					<select id="theme-selector" .value="${ this.themeClass && this.themeClass.themeName || '' }" @input="${ this._onThemeSelection }">${ this._render_ThemeSelector(
-						this.themes) }</select>
-				</div>
-				
-				<div class="theme-name">
-					<label for="theme-name">Theme Name</label>
-					<input id="theme-name" .value="${ this.themeClass ? this.themeClass.themeName : '' }" @input="${ this._onEditThemeName }">
-				</div>
-				
-				<div class="theme-variables">${ this._render_ThemeVariables(this.themeClass) }</div>
-				
-				<div class="actions" slot="action">${ this._render_actions(this.themeClass, this.newThemeName, this.newColors) }</div>
-			</asc-ui-dialog>
-		`;
-	}
+    firstUpdated(): void {
+        this._selectTheme(this._themeService.currentTheme.themeName);
+    }
 
-	private _render_ThemeSelector(allThemeNames: string[]) {
-		return allThemeNames.map(themeName => html`
-			<option value="${ themeName }">${ themeName }</option>`);
-	}
+    //</editor-fold>
 
-	private _render_ThemeVariables(theme: CssTheme) {
-		if (!theme) return html``;
+    //<editor-fold desc="# Render">
 
-		const variables = theme.variables;
+    render() {
+        return html`
+            <style>
+                :host {
+                    display: block;
+                    color: black;
+                }
 
-		return Object.keys(variables)
-			.map(variableName => html`
-				<div class="theme-variable">
-					<label>${ variableName }</label>
-					<input .value="${ variables[variableName] }" @input="${ (event: Event) => this._onVariableChange(variableName, event) }">
-				</div>
-			`);
-	}
+                :host,
+                input,
+                select,
+                button {
+                    font-family: Roboto, Arial, sans-serif;
+                }
 
-	private _render_actions(themeClass: CssTheme, newName: string, newColors: { [variable: string]: string }) {
-		return html`
-			<button class="action-button" @click="${ () => this._onDeleteTheme(themeClass) }" ?disabled="${ this._isDeleteButtonDisabled(themeClass) }">Delete</button>
-			<button class="action-button" @click="${ () => this._onCopyTheme(themeClass, newName, newColors) }">Copy</button>
-			<button class="action-button" @click="${ () => this._onSaveTheme(themeClass, newName, newColors) }" ?disabled="${ this._isSaveButtonDisabled(themeClass) }">Save
-			</button>
-			<button class="action-button" @click="${ () => this._onUseTheme(themeClass) }">Use</button>
-		`;
-	}
+                .theme-selector {
+                    display: flex;
+                    align-items: baseline;
+                }
 
-	//</editor-fold>
+                .theme-selector,
+                .theme-name {
+                    margin-bottom: 1em;
+                }
 
-	//<editor-fold desc="# onEvent">
+                .theme-name {
+                    display: flex;
+                }
 
-	/**
-	 * Close the current Theme editor
-	 */
-	close(): void {
-		this.remove();
+                .theme-variable {
+                    display: flex;
+                    align-items: baseline;
 
-		if (CustomizeTheme._domSidebarParent) {
-			CustomizeTheme._domSidebarParent.classList.remove('asc-main-sidebar');
-			delete CustomizeTheme._domSidebarParent;
-		}
-		CustomizeTheme._opened = false;
+                    margin-bottom: 0.5em;
+                }
 
-		// Reload applied theme
-		this._themeService.setCurrentTheme(this._themeService.currentTheme.themeName);
-	}
+                .theme-selector > label,
+                .theme-name > label,
+                .theme-variable > label {
+                    margin-right: auto;
+                }
 
-	private _onThemeSelection(event: Event): void {
-		const domSelect = event.target as HTMLSelectElement;
+                .theme-selector > select,
+                .theme-name > input,
+                .theme-variable > input {
+                    margin-left: 1em;
+                }
 
-		this.newThemeName = '';
-		this.newColors = {};
+                .actions {
+                    display: flex;
+                    justify-content: flex-end;
+                }
 
-		this._loadTheme(domSelect.value || '');
-	}
+                .action-button {
+                    margin-left: 1em;
+                }
+            </style>
 
-	private _onVariableChange(variableName: string, event: Event): void {
-		const domInput = event.target as HTMLInputElement;
+            <asc-ui-dialog
+                ?fullscreen="${this.fullScreen}"
+                header="Customize color Theme"
+                @UI_DIALOG_CLOSE="${this.close}"
+            >
+                <div class="theme-selector">
+                    <label for="theme-selector">Select theme:</label>
+                    <select
+                        id="theme-selector"
+                        .value="${(this.themeClass &&
+                            this.themeClass.themeName) ||
+                        ""}"
+                        @input="${this._onThemeSelection}"
+                    >
+                        ${this._render_ThemeSelector(this.themes)}
+                    </select>
+                </div>
 
-		this.newColors = {
-			...this.newColors,
-			[variableName]: domInput.value,
-		};
-	}
+                <div class="theme-name">
+                    <label for="theme-name">Theme Name</label>
+                    <input
+                        id="theme-name"
+                        .value="${this.themeClass
+                            ? this.themeClass.themeName
+                            : ""}"
+                        @input="${this._onEditThemeName}"
+                    />
+                </div>
 
-	private _onEditThemeName(event: Event): void {
-		const domInput = event.target as HTMLInputElement;
+                <div class="theme-variables">
+                    ${this._render_ThemeVariables(this.themeClass)}
+                </div>
 
-		this.newThemeName = domInput.value;
-	}
+                <div class="actions" slot="action">
+                    ${this._render_actions(
+                        this.themeClass,
+                        this.newThemeName,
+                        this.newColors
+                    )}
+                </div>
+            </asc-ui-dialog>
+        `;
+    }
 
-	private _onUseTheme(themeClass: CssTheme): void {
-		this._themeService.setCurrentTheme(themeClass.themeName);
-	}
+    private _render_ThemeSelector(allThemeNames: string[]) {
+        return allThemeNames.map(
+            (themeName) => html` <option value="${themeName}">
+                ${themeName}
+            </option>`
+        );
+    }
 
-	private _onCopyTheme(themeClass: CssTheme, themeName: string, themeColors: { [variable: string]: string }): void {
-		if (!themeName) themeName = themeClass.themeName;
+    private _render_ThemeVariables(theme: CssTheme) {
+        if (!theme) return html``;
 
-		if (this._themeService.themeNames.includes(themeName)) {
-			themeName += ' ' + new Date().toISOString();
-		}
+        const variables = theme.variables;
 
-		const newTheme = this._themeService.createThemeFrom(themeClass, { themeName, variables: themeColors });
+        return Object.keys(variables).map(
+            (variableName) => html`
+                <div class="theme-variable">
+                    <label>${variableName}</label>
+                    <input
+                        .value="${variables[variableName]}"
+                        @input="${(event: Event) =>
+                            this._onVariableChange(variableName, event)}"
+                    />
+                </div>
+            `
+        );
+    }
 
-		this._selectTheme(newTheme.themeName);
-	}
+    private _render_actions(
+        themeClass: CssTheme,
+        newName: string,
+        newColors: { [variable: string]: string }
+    ) {
+        return html`
+            <button
+                class="action-button"
+                @click="${() => this._onDeleteTheme(themeClass)}"
+                ?disabled="${this._isDeleteButtonDisabled(themeClass)}"
+            >
+                Delete
+            </button>
+            <button
+                class="action-button"
+                @click="${() =>
+                    this._onCopyTheme(themeClass, newName, newColors)}"
+            >
+                Copy
+            </button>
+            <button
+                class="action-button"
+                @click="${() =>
+                    this._onSaveTheme(themeClass, newName, newColors)}"
+                ?disabled="${this._isSaveButtonDisabled(themeClass)}"
+            >
+                Save
+            </button>
+            <button
+                class="action-button"
+                @click="${() => this._onUseTheme(themeClass)}"
+            >
+                Use
+            </button>
+        `;
+    }
 
-	private _onSaveTheme(themeClass: CssTheme, themeName: string, themeColors: { [variable: string]: string }): void {
-		if (!themeName) themeName = themeClass.themeName;
+    //</editor-fold>
 
-		const theme = this._themeService.updateTheme(
-			themeClass,
-			{ themeName, variables: themeColors },
-		);
+    //<editor-fold desc="# onEvent">
 
-		this._selectTheme(theme.themeName);
-	}
+    /**
+     * Close the current Theme editor
+     */
+    close(): void {
+        this.remove();
 
-	private _onDeleteTheme(themeClass: CssTheme): void {
-		const currentIndex = this.themes.findIndex(name => name === themeClass.themeName);
+        if (CustomizeTheme._domSidebarParent) {
+            CustomizeTheme._domSidebarParent.classList.remove(
+                "asc-main-sidebar"
+            );
+            delete CustomizeTheme._domSidebarParent;
+        }
+        CustomizeTheme._opened = false;
 
-		this._themeService.deleteTheme(themeClass);
+        // Reload applied theme
+        this._themeService.setCurrentTheme(
+            this._themeService.currentTheme.themeName
+        );
+    }
 
-		this.newThemeName = '';
-		this.newColors = {};
+    private _onThemeSelection(event: Event): void {
+        const domSelect = event.target as HTMLSelectElement;
 
-		// It's not possible to delete the first default themes
-		this._selectTheme(this.themes[currentIndex - 1]);
-	}
+        this.newThemeName = "";
+        this.newColors = {};
 
-	//</editor-fold>
+        this._loadTheme(domSelect.value || "");
+    }
 
-	//<editor-fold desc="# Private methods">
+    private _onVariableChange(variableName: string, event: Event): void {
+        const domInput = event.target as HTMLInputElement;
 
-	private _selectTheme(themeName: string): void {
-		window.requestAnimationFrame(() => this.themeClass = this._themeService.getThemeByName(themeName));
-	}
+        this.newColors = {
+            ...this.newColors,
+            [variableName]: domInput.value,
+        };
+    }
 
-	private _loadTheme(themeName: string): void {
-		if (!themeName) return;
+    private _onEditThemeName(event: Event): void {
+        const domInput = event.target as HTMLInputElement;
 
-		this.themeClass = this._themeService.getThemeByName(themeName);
-	}
+        this.newThemeName = domInput.value;
+    }
 
-	private _updateThemeList(): void {
-		this.themes = this._themeService.themeNames;
-	}
+    private _onUseTheme(themeClass: CssTheme): void {
+        this._themeService.setCurrentTheme(themeClass.themeName);
+    }
 
-	private _isDeleteButtonDisabled(themeClass: CssTheme): boolean {
-		return themeClass
-		       && this._themeService
-			       .defaultThemeNames
-			       .includes(themeClass.themeName);
-	}
+    private _onCopyTheme(
+        themeClass: CssTheme,
+        themeName: string,
+        themeColors: { [variable: string]: string }
+    ): void {
+        if (!themeName) themeName = themeClass.themeName;
 
-	private _isSaveButtonDisabled(themeClass: CssTheme): boolean {
-		return themeClass
-		       && this._themeService
-			       .defaultThemeNames
-			       .includes(themeClass.themeName)
-		       || (
-			       !Object.keys(this.newColors).length
-			       && !this.newThemeName
-		       );
-	}
+        if (this._themeService.themeNames.includes(themeName)) {
+            themeName += " " + new Date().toISOString();
+        }
 
-	//</editor-fold>
+        const newTheme = this._themeService.createThemeFrom(themeClass, {
+            themeName,
+            variables: themeColors,
+        });
 
+        this._selectTheme(newTheme.themeName);
+    }
 
-	/**
-	 * Open the theme editor dialog, either in a sidebar, or as a fullscreen dialog
-	 */
-	static open(themeService: ThemeService): void {
-		if (this._opened) return;
-		this._opened = true;
-		this._themeService = themeService;
+    private _onSaveTheme(
+        themeClass: CssTheme,
+        themeName: string,
+        themeColors: { [variable: string]: string }
+    ): void {
+        if (!themeName) themeName = themeClass.themeName;
 
-		const domWorkspace = document.querySelector('.workspace');
+        const theme = this._themeService.updateTheme(themeClass, {
+            themeName,
+            variables: themeColors,
+        });
 
-		if (!domWorkspace) {
-			// Insert as a global dialog box
-			document.body.insertAdjacentHTML('beforeend', `<asc-customize-theme fullscreen></asc-customize-theme>`);
-		}
-		else {
-			this._domSidebarParent = domWorkspace.parentElement.parentElement.parentElement.parentElement;
+        this._selectTheme(theme.themeName);
+    }
 
-			this._domSidebarParent.classList.add('asc-main-sidebar');
-			this._domSidebarParent.insertAdjacentHTML('beforeend', `<asc-customize-theme></asc-customize-theme>`);
-		}
-	}
+    private _onDeleteTheme(themeClass: CssTheme): void {
+        const currentIndex = this.themes.findIndex(
+            (name) => name === themeClass.themeName
+        );
+
+        this._themeService.deleteTheme(themeClass);
+
+        this.newThemeName = "";
+        this.newColors = {};
+
+        // It's not possible to delete the first default themes
+        this._selectTheme(this.themes[currentIndex - 1]);
+    }
+
+    //</editor-fold>
+
+    //<editor-fold desc="# Private methods">
+
+    private _selectTheme(themeName: string): void {
+        window.requestAnimationFrame(
+            () =>
+                (this.themeClass = this._themeService.getThemeByName(themeName))
+        );
+    }
+
+    private _loadTheme(themeName: string): void {
+        if (!themeName) return;
+
+        this.themeClass = this._themeService.getThemeByName(themeName);
+    }
+
+    private _updateThemeList(): void {
+        this.themes = this._themeService.themeNames;
+    }
+
+    private _isDeleteButtonDisabled(themeClass: CssTheme): boolean {
+        return (
+            themeClass &&
+            this._themeService.defaultThemeNames.includes(themeClass.themeName)
+        );
+    }
+
+    private _isSaveButtonDisabled(themeClass: CssTheme): boolean {
+        return (
+            (themeClass &&
+                this._themeService.defaultThemeNames.includes(
+                    themeClass.themeName
+                )) ||
+            (!Object.keys(this.newColors).length && !this.newThemeName)
+        );
+    }
+
+    //</editor-fold>
+
+    /**
+     * Open the theme editor dialog, either in a sidebar, or as a fullscreen dialog
+     */
+    static open(themeService: ThemeService): void {
+        if (this._opened) return;
+        this._opened = true;
+        this._themeService = themeService;
+
+        const domWorkspace = document.querySelector(".workspace");
+
+        if (!domWorkspace) {
+            // Insert as a global dialog box
+            document.body.insertAdjacentHTML(
+                "beforeend",
+                `<asc-customize-theme fullscreen></asc-customize-theme>`
+            );
+        } else {
+            this._domSidebarParent =
+                domWorkspace.parentElement.parentElement.parentElement.parentElement;
+
+            this._domSidebarParent.classList.add("asc-main-sidebar");
+            this._domSidebarParent.insertAdjacentHTML(
+                "beforeend",
+                `<asc-customize-theme></asc-customize-theme>`
+            );
+        }
+    }
 }

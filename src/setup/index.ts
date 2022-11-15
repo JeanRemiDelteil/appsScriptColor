@@ -1,2 +1,2 @@
-export * from './maestroSetup.class';
-export * from './monacoSetup.class';
+export * from "./maestroSetup.class";
+export * from "./monacoSetup.class";

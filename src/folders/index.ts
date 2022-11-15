@@ -1,2 +1,2 @@
-export { Folders } from './folders';
-export * from './folderState.interface';
+export { Folders } from "./folders";
+export * from "./folderState.interface";

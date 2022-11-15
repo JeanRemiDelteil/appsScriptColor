@@ -1,1 +1,1 @@
-export * from './settingsStorage.class';
+export * from "./settingsStorage.class";

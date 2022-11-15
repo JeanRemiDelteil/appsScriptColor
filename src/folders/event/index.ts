@@ -1,1 +1,1 @@
-export * from './sub-folder-changed.event';
+export * from "./sub-folder-changed.event";

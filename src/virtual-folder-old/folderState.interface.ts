@@ -1,8 +1,8 @@
 export interface IFolderState {
-	open: boolean;
-	sub: IFolderStateDictionary;
+    open: boolean;
+    sub: IFolderStateDictionary;
 }
 
 export interface IFolderStateDictionary {
-	[folderName: string]: IFolderState;
+    [folderName: string]: IFolderState;
 }

@@ -1,3 +1,3 @@
 export interface IVariables {
-	[variableName: string]: string;
+    [variableName: string]: string;
 }

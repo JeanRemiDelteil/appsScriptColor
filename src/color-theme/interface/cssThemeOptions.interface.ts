@@ -1,12 +1,12 @@
-import { IMonacoTheme } from './monacoTheme.interface';
-import { IVariables } from './variables.interface';
-import { IRule } from './rule.interface';
-
+import { IMonacoTheme } from "./monacoTheme.interface";
+import { IVariables } from "./variables.interface";
+import { IRule } from "./rule.interface";
 
 export interface ICssThemeOptions {
-	themeName: string;
-	variables: IVariables;
-	rules: IRule;
-	rootTheme?: string;
-	monacoTheme?: IMonacoTheme;
+    themeName: string;
+    isDarkTheme: boolean;
+    variables: IVariables;
+    rules: IRule;
+    rootTheme?: string;
+    monacoTheme?: IMonacoTheme;
 }
