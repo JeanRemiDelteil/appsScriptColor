@@ -1,20 +1,27 @@
 import { ICustomThemes } from "../color-theme";
 import { IFolderStateDictionary } from "../folders";
+import {
+    dispatchEventThemeChanged,
+    EVENT_THEME_CHANGED,
+} from "./theme-changed.event";
 
 class SettingsStorage {
     private readonly _storagePrefix = "appScriptColor";
 
     //<editor-fold desc="# Theme Settings">
     getThemeInUse(): string {
-        return this._getSetting("theme", null);
+        return this._getSetting("theme");
     }
 
     setThemeInUse(themeName: string): void {
-        return this._setSetting("theme", undefined, themeName);
+        this._setSetting("theme", undefined, themeName);
+        dispatchEventThemeChanged(themeName);
     }
 
-    setterForThemeInUse(themeName: string): void {
-        localStorage.setItem("appScriptColor-theme", themeName);
+    listenForThemeChange(onThemeChangedCB: (themeName: string) => void): void {
+        window.addEventListener(EVENT_THEME_CHANGED, ({ detail }) =>
+            onThemeChangedCB(detail)
+        );
     }
 
     useTheme(useTheme?: boolean): boolean {
@@ -73,9 +80,9 @@ class SettingsStorage {
     //</editor-fold>
 
     private _buildSettingKey(store: string, settingName?: string): string {
-        return `${this._storagePrefix}-${store}${
-            settingName ? `-${settingName}` : ""
-        }`;
+        return [this._storagePrefix, store, settingName]
+            .filter((_) => !!_)
+            .join("-");
     }
 
     private _setSetting(

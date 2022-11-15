@@ -50,6 +50,11 @@ export class ThemeService {
         // Init style dom
         this.resetTheme();
         this._setStyleObserver();
+
+        // Listen for changes made in the MAIN world
+        settingsService.listenForThemeChange(
+            (themeName) => (this._currentTheme = this.getThemeByName(themeName))
+        );
     }
 
     /**

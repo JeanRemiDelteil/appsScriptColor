@@ -23,7 +23,7 @@ export const insertThemeAction = (theme: CssTheme) => {
 
         run: () => {
             window.monaco.editor.setTheme(theme.themeName);
-            settingsService.setterForThemeInUse(theme.themeName);
+            settingsService.setThemeInUse(theme.themeName);
         },
     });
 };
