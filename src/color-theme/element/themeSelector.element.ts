@@ -1,5 +1,6 @@
 import "@material/mwc-icon-button-toggle";
-import { customElement, html, internalProperty, LitElement } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators.js";
 import {
     EVENT_IDE_DOM_HIDDEN,
     EVENT_IDE_DOM_UPDATED,
@@ -14,7 +15,7 @@ export class ThemeSelector extends LitElement {
 
     private _themeService: ThemeService;
 
-    @internalProperty()
+    @state()
     get useTheme(): boolean {
         return settingsService.useTheme();
     }

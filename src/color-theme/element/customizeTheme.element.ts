@@ -1,4 +1,5 @@
-import { customElement, html, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
 import "../../lib/element/uiDialog";
 import { CssTheme } from "../class/cssTheme";
 // noinspection TypeScriptPreferShortImport
@@ -23,14 +24,14 @@ export class CustomizeTheme extends LitElement {
 
     private _themeService: ThemeService;
 
-    @property({ type: Array })
-    themes: string[];
-    @property({ type: Function })
-    themeClass: CssTheme = null;
-    @property({ type: Object })
-    newColors: { [variable: string]: string } = {};
-    @property({ type: String })
-    newThemeName: string = "";
+    @property({ type: Array }) themes: string[];
+
+    @property({ type: Function }) themeClass: CssTheme = null;
+
+    @property({ type: Object }) newColors: { [variable: string]: string } = {};
+
+    @property({ type: String }) newThemeName: string = "";
+
     @property({
         type: Boolean,
         reflect: true,
