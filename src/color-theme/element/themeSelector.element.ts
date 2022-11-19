@@ -119,10 +119,14 @@ export class ThemeSelector extends LitElement {
             "beforebegin",
             `<div class="${domToolBox.className}"><asc-theme-selector></asc-theme-selector></div>`
         );
+
+        // Re-insert theme actions in the right menu
+        ThemeSelector._themeService.insertThemeActions();
     };
 
-    private static _onDomHidden = (): void =>
+    private static _onDomHidden = (): void => {
         ThemeSelector._themeService.resetTheme();
+    };
 
     static init(themeService: ThemeService): void {
         this._themeService = themeService;

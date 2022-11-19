@@ -9,6 +9,7 @@ import {
 import { darculaTheme, defaultTheme, defaultThemes } from "../theme";
 import { sendMessageToBack } from "../../background/messager/content-script-messager";
 import { BackgroundMessageEvent } from "../../background/messager/message-event.enum";
+import { Action, dispatchEventAscAction } from "../../com";
 
 export class ThemeService {
     private readonly _customStyleId = `cmCustomStyle-${new Date().toISOString()}`;
@@ -75,8 +76,12 @@ export class ThemeService {
     /**
      * Apply default theme, without saving it in the preference
      */
-    resetTheme() {
+    resetTheme(): void {
         this._applyTheme(defaultTheme);
+    }
+
+    insertThemeActions(): void {
+        dispatchEventAscAction({ action: Action.INSERT_THEME_ACTION });
     }
 
     /**

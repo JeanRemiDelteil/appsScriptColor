@@ -1,4 +1,5 @@
 import { darculaTheme, monokaiTheme } from "../../../color-theme/theme";
+import { Action, EVENT_ASC_ACTION, IEventAction } from "../../../com";
 import { defineTheme } from "../define-theme";
 import { insertThemeAction } from "../insert-theme-action";
 import { IInAppAction } from "./action.interface";
@@ -6,6 +7,9 @@ import { InAppAction } from "./actions.enum";
 import { ASC_IN_APP_SERVICE_KEY } from "./asc-service-key.const";
 
 export class AscInAppService {
+    private _isMonacoInitialized: boolean = false;
+    private _pendingAction: IEventAction | undefined;
+
     constructor() {
         this._init();
     }
@@ -48,13 +52,18 @@ export class AscInAppService {
     }
 
     private _init() {
+        window.addEventListener(EVENT_ASC_ACTION, (event) => {
+            this._onAscAction(event.detail);
+        });
+
         this._waitForMonaco()
             .then(() => {
+                this._isMonacoInitialized = true;
                 this.initializeThemes();
-
-                // console.log("Monaco initialized");
             })
             .then(() => {
+                this._onAscAction(undefined);
+
                 // do pending action if any
                 this.doAction();
             });
@@ -91,6 +100,32 @@ export class AscInAppService {
                 characterData: false,
             });
         });
+    }
+
+    private _onAscAction(event: IEventAction | undefined): void {
+        if (!this._isMonacoInitialized) {
+            this._pendingAction = event;
+
+            return;
+        }
+        if (!event && !this._pendingAction) {
+            return;
+        }
+
+        const { action, ..._content } = event ?? this._pendingAction;
+        this._pendingAction = undefined;
+
+        switch (action) {
+            case Action.INSERT_THEME_ACTION:
+                this.initializeThemes();
+
+                break;
+
+            default:
+                console.error("Unknown action");
+
+                break;
+        }
     }
 
     static init(): void {
