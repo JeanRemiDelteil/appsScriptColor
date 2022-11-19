@@ -3,8 +3,6 @@ import { IdeVersion } from "./ideVersion.enum";
 export const detectIde = (): IdeVersion => {
     return /\/home\/projects\/([^\/]+?)\/edit/.test(document.location.pathname)
         ? IdeVersion.MONACO
-        : /\/([^\/]+?)\/edit/.test(document.location.pathname)
-        ? IdeVersion.OLD
         : IdeVersion.NOT_IDE;
 };
 
