@@ -98,13 +98,16 @@ export class ThemeSelector extends LitElement {
         detail: { node: HTMLElement };
     }): void => {
         // Get IDE dom element container
-        const domListBox = node.querySelector(
-            'div[jsslot] div[role="listbox"]'
-        ) as HTMLElement;
-        if (!domListBox) return;
-
         const domToolBox =
-            domListBox?.parentElement?.parentElement?.parentElement;
+            (
+                node.querySelector(
+                    'div[jsslot] div[role="listbox"]'
+                ) as HTMLElement
+            )?.parentElement?.parentElement?.parentElement ??
+            // [BRITTLE] DOM detection based on minified names
+            (node.querySelector(".Q45Bi") as HTMLElement)?.parentElement;
+        if (!domToolBox) return;
+
         const domToolBoxes = domToolBox.parentElement;
 
         const domSpacer =
