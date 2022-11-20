@@ -1,6 +1,6 @@
 {
     "name": "app-script-color",
-    "version": "1.4.1",
+    "version": "1.5.0",
     "description": "AppScriptColor: Chrome Extension that apply color themes to script.google.com",
     "private": true,
     "repository": {

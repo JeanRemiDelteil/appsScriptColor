@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "AppsScript Color",
     "description": "Provides folders display and a dark color theme to the google apps script editor.",
-    "version": "1.4.2",
+    "version": "1.5.0",
     "icons": {
         "16": "AppScriptColor-16.png",
         "48": "AppScriptColor-48.png",
