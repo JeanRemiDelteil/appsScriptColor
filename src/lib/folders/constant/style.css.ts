@@ -17,6 +17,12 @@ export const css = `
 	padding-left: 3px!important;
 }
 
+/* CSS override for broken selection */
+.asc_FolderRoot li[aria-selected="false"] {
+	background-color: inherit;
+	color: inherit;
+}
+
 /* Folder */
 .asc_Folder>.${CLASS_TITLE_CONTAINER}{
 	display: flex;
