@@ -1,5 +1,5 @@
-import { sendMessageToBack } from "../background/messager/content-script-messager";
-import { BackgroundMessageEvent } from "../background/event/message-event.enum";
+import { sendMessageToBack } from "../../background/messager/content-script-messager";
+import { BackgroundMessageEvent } from "../../background/event/message-event.enum";
 import { ThemeSelector, ThemeService } from "../color-theme";
 import { IdeDomWatcher } from "../feature-detection";
 import { Folders } from "../folders";

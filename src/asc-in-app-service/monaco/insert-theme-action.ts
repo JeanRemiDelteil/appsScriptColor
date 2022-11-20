@@ -1,5 +1,5 @@
-import { CssTheme } from "../../color-theme/class/cssTheme";
-import { settingsService } from "../../storage";
+import { CssTheme } from "../../lib/color-theme/class/cssTheme";
+import { settingsService } from "../../lib/storage";
 
 export const insertThemeAction = (theme: CssTheme) => {
     const actionId = `asc-set-theme-${theme.themeName.toLowerCase()}`;

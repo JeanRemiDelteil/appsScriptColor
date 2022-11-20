@@ -1,7 +1,7 @@
-import "./__webComponents";
+import "../lib/__webComponents";
 // webComponents import MUST BE FIRST
-import { NavigationDetection, NavigationEvent } from "./feature-detection";
-import { MonacoSetup } from "./setup";
+import { NavigationDetection, NavigationEvent } from "../lib/feature-detection";
+import { MonacoSetup } from "../lib/setup";
 
 NavigationDetection.init({
     [NavigationEvent.SCRIPT_OPEN]: ({ scriptKey }) =>

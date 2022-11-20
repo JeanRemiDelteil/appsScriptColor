@@ -1,6 +1,6 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import "../../lib/element/uiDialog";
+import "../../element/uiDialog";
 import { CssTheme } from "../class/cssTheme";
 // noinspection TypeScriptPreferShortImport
 import { ThemeService } from "../service/theme.service";

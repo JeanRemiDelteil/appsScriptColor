@@ -1,10 +1,10 @@
-import { darculaTheme, monokaiTheme } from "../color-theme/theme";
+import { darculaTheme, monokaiTheme } from "../lib/color-theme/theme";
 import {
     Action,
     dispatchAscAction,
     EVENT_ASC_ACTION,
     IEventAction,
-} from "../com";
+} from "../lib/com";
 import { defineTheme } from "./monaco/define-theme";
 import { insertThemeAction } from "./monaco/insert-theme-action";
 

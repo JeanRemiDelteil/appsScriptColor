@@ -1,4 +1,4 @@
-import { CssTheme } from "../../color-theme/class/cssTheme";
+import { CssTheme } from "../../lib/color-theme/class/cssTheme";
 
 export const defineTheme = (theme: CssTheme): void => {
     if (
