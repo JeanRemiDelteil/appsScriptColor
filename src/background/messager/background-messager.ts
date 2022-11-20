@@ -1,9 +1,6 @@
-import { IMessagerEvent } from "../event";
-import { injectInTab, injectScriptInTab } from "../injector";
-import { BackgroundMessageEvent } from "./message-event.enum";
-import { useTheme } from "../monaco/script-use-theme/use-theme";
-import { filename as initServiceFilename } from "../monaco/asc-in-app-service/filename.const";
-import { resetTheme } from "../monaco/script-reset-theme/reset-theme";
+import { IMessagerEvent, BackgroundMessageEvent } from "../event";
+import { injectScriptInTab } from "../injector";
+import { filename as initServiceFilename } from "../../asc-in-app-service/filename.const";
 
 export class BackgroundMessager {
     constructor() {
@@ -20,16 +17,6 @@ export class BackgroundMessager {
                 switch (request.event) {
                     case BackgroundMessageEvent.INIT_SERVICE:
                         injectScriptInTab(sender.tab, initServiceFilename);
-
-                        break;
-
-                    case BackgroundMessageEvent.RESET_THEME:
-                        injectInTab(sender.tab, resetTheme);
-
-                        break;
-
-                    case BackgroundMessageEvent.SET_THEME:
-                        injectInTab(sender.tab, useTheme, [request.theme]);
 
                         break;
 

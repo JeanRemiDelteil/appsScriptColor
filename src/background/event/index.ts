@@ -1,10 +1,4 @@
-import {
-    IInitServiceEvent,
-    IResetThemeEvent,
-    ISetThemeEvent,
-} from "./theme.event";
+import { IInitServiceEvent } from "./theme.event";
 
-export type IMessagerEvent =
-    | IInitServiceEvent
-    | IResetThemeEvent
-    | ISetThemeEvent;
+export * from "./message-event.enum";
+export type IMessagerEvent = IInitServiceEvent;

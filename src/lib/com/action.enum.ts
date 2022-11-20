@@ -1,0 +1,12 @@
+export enum Action {
+    ALL_THEME_CHANGED = "ALL_THEME_CHANGED",
+
+    // Content script 'world'
+    CS_INSERT_THEME_ACTION = "CS_INSERT_THEME_ACTION",
+    CS_SET_THEME = "CS_SET_THEME",
+    CS_RESET_THEME = "CS_RESET_THEME",
+
+    // In App 'world'
+    MAIN_MONACO_READY = "MAIN_MONACO_READY",
+    MAIN_THEME_CHANGED = "MAIN_THEME_CHANGED",
+}
