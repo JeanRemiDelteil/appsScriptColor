@@ -6,6 +6,7 @@ export const darculaTheme = new CssTheme({
     variables: {
         IDE_code_background: "#2B2B2B",
         IDE_code_comment: "#888888",
+        IDE_code_comment_doc: "#6a9955",
         IDE_code_string: "#6a8759",
         IDE_code_keyword: "#cc7832",
         IDE_code_number: "#6897bb",
@@ -18,7 +19,7 @@ export const darculaTheme = new CssTheme({
         IDE_code_css_selector: "#FF861E",
     },
     rules: {
-        // // Page theme
+        // // Page theme █████
         // 'c-wiz': {
         // 	'background-color': '#3c3f41',
         // },
@@ -52,6 +53,10 @@ export const darculaTheme = new CssTheme({
             {
                 foreground: "IDE_code_comment",
                 token: "comment",
+            },
+            {
+                foreground: "IDE_code_comment_doc",
+                token: "comment.doc",
             },
             {
                 foreground: "IDE_code_string",

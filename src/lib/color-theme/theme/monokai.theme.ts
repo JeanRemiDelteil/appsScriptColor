@@ -3,7 +3,9 @@ import { CssTheme } from "../class/cssTheme";
 export const monokaiTheme = new CssTheme({
     themeName: "Monokai",
     isDarkTheme: true,
-    variables: {},
+    variables: {
+        IDE_code_comment_doc: "#6a9955",
+    },
     rules: {
         // Monaco IDE fixes
         ".monaco-editor .reference-zone-widget .preview .reference-decoration":
@@ -23,6 +25,10 @@ export const monokaiTheme = new CssTheme({
             {
                 foreground: "75715e",
                 token: "comment",
+            },
+            {
+                foreground: "IDE_code_comment_doc",
+                token: "comment.doc",
             },
             {
                 foreground: "e6db74",
