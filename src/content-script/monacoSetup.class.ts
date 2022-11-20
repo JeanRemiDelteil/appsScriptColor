@@ -1,8 +1,9 @@
-import { sendMessageToBack } from "../../background/messager/content-script-messager";
-import { BackgroundMessageEvent } from "../../background/event/message-event.enum";
-import { ThemeSelector, ThemeService } from "../color-theme";
-import { IdeDomWatcher } from "../feature-detection";
-import { Folders } from "../folders";
+import { sendMessageToBack } from "../background/messager/content-script-messager";
+import { BackgroundMessageEvent } from "../background/event/message-event.enum";
+import { ThemeSelector, ThemeService } from "../lib/color-theme";
+import { IdeDomWatcher } from "../lib/feature-detection";
+import { Folders } from "../lib/folders";
+import { Action, EVENT_ASC_ACTION, IEventAction } from "../lib/com";
 
 export class MonacoSetup {
     private static _themeService: ThemeService;
