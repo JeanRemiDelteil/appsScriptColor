@@ -94,6 +94,8 @@ export class Folders {
      * Insert all initial folders if any
      */
     private _initFolders(domFileList: HTMLElement): void {
+        // console.log("INIT FOLDER", domFileList);
+
         this.gasStaticRoot?.destroy();
         if (!domFileList) return;
 

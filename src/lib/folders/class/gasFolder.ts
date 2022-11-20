@@ -119,7 +119,7 @@ export class GasFolder {
 
             // First is the start of name editing, second is end of edition
             if (eventCounter === 2) {
-                this.dom.main.dispatchEvent(
+                this.dom.main?.dispatchEvent(
                     new CustomEvent(EVENT_SUB_FOLDER_CHANGED, {
                         bubbles: true,
                         composed: true,

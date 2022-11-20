@@ -10,6 +10,8 @@ export class MonacoSetup {
     private static _scriptKey: string;
 
     static init(scriptKey: string) {
+        // console.log(`SETUP {${scriptKey}}`);
+
         this._scriptKey = scriptKey;
         this._themeService = new ThemeService();
 
@@ -22,6 +24,9 @@ export class MonacoSetup {
     }
 
     static destroy() {
+        // console.log(`DESTROY {${this._scriptKey}}`);
+
+        this._scriptKey = undefined;
         IdeDomWatcher.destroy();
 
         ThemeSelector.destroy();
