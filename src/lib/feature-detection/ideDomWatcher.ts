@@ -41,8 +41,6 @@ export class IdeDomWatcher {
             this._isCWizVisibleCodeIde(node)
         );
 
-        let dynRefToEditorJsRenderer =
-            domFirstRendered?.getAttribute("jsrenderer") || undefined;
         let isIdeShown = !!domFirstRendered;
 
         this._observer = new MutationObserver((mutations) => {
@@ -53,19 +51,11 @@ export class IdeDomWatcher {
                     (node: HTMLElement) => {
                         return (
                             node.tagName === "C-WIZ" &&
-                            ((dynRefToEditorJsRenderer &&
-                                node.getAttribute("jsrenderer") ===
-                                    dynRefToEditorJsRenderer) ||
-                                (!dynRefToEditorJsRenderer &&
-                                    this._isCWizVisibleCodeIde(node)))
+                            this._isCWizVisibleCodeIde(node)
                         );
                     }
                 ) as HTMLElement;
                 if (!node) return;
-
-                if (!dynRefToEditorJsRenderer) {
-                    dynRefToEditorJsRenderer = node.getAttribute("jsrenderer");
-                }
 
                 ideNodeFound = true;
                 isIdeShown = true;
@@ -79,9 +69,6 @@ export class IdeDomWatcher {
             if (
                 !ideNodeFound &&
                 isIdeShown &&
-                !document.body.querySelector(
-                    `c-wiz[jsrenderer="${dynRefToEditorJsRenderer}"][aria-hidden="false"]`
-                ) &&
                 detectIde() !== IdeVersion.MONACO
             ) {
                 isIdeShown = false;

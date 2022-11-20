@@ -208,6 +208,7 @@ export class ThemeService {
         switch (event.action) {
             case Action.MAIN_MONACO_READY:
                 this.setCurrentTheme(this.currentTheme.themeName);
+
                 break;
 
             case Action.ALL_THEME_CHANGED:
@@ -249,6 +250,8 @@ export class ThemeService {
      * One time set up to ensure that our stylesheet will always be the last applied style
      */
     private _setStyleObserver(): void {
+        let nextFrame: number;
+
         // create an observer instance to detect <style> insertion
         // to always be the last styleSheet
         this._styleObserver = new MutationObserver((mutations) => {
@@ -264,7 +267,10 @@ export class ThemeService {
                         continue;
 
                     // Move style node to the end for the HEAD
-                    document.head.appendChild(this._dom_divCmCustomStyle);
+                    cancelAnimationFrame(nextFrame);
+                    nextFrame = requestAnimationFrame(() =>
+                        document.head.appendChild(this._dom_divCmCustomStyle)
+                    );
                 }
             });
         });
@@ -274,6 +280,10 @@ export class ThemeService {
             attributes: false,
             characterData: false,
         });
+
+        nextFrame = requestAnimationFrame(() =>
+            document.head.appendChild(this._dom_divCmCustomStyle)
+        );
     }
 
     /**

@@ -106,6 +106,9 @@ export class ThemeSelector extends LitElement {
             )?.parentElement?.parentElement?.parentElement ??
             // [BRITTLE] DOM detection based on minified names
             (node.querySelector(".Q45Bi") as HTMLElement)?.parentElement;
+
+        // console.log("INIT THEME SELECTOR", { node, domToolBox });
+
         if (!domToolBox) return;
 
         const domToolBoxes = domToolBox.parentElement;

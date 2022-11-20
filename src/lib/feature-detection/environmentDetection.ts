@@ -7,8 +7,4 @@ export const detectIde = (): IdeVersion => {
 };
 
 export const getScriptKey = (): string =>
-    (document.location.pathname.match(/\/([^\/]+?)\/edit/) ||
-        document.location.pathname.match(
-            /\/home\/projects\/([^\/]+?)(?:\/|$)/
-        ) ||
-        [])[1];
+    (document.location.pathname.match(/\/([^\/]+?)\/edit/) || [])[1];
