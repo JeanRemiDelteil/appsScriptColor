@@ -9,8 +9,6 @@ declare global {
     }
 }
 
-export const dispatchEventAscAction = (event: IEventAction) => {
-    console.log(EVENT_ASC_ACTION, event);
-
+export const dispatchAscAction = (event: IEventAction) => {
     window.dispatchEvent(new CustomEvent(EVENT_ASC_ACTION, { detail: event }));
 };

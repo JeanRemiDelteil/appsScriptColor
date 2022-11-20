@@ -1,9 +1,6 @@
 import { ICustomThemes } from "../color-theme";
+import { Action, dispatchAscAction, EVENT_ASC_ACTION } from "../com";
 import { IFolderStateDictionary } from "../folders";
-import {
-    dispatchEventThemeChanged,
-    EVENT_THEME_CHANGED,
-} from "./theme-changed.event";
 
 class SettingsStorage {
     private readonly _storagePrefix = "appScriptColor";
@@ -15,13 +12,7 @@ class SettingsStorage {
 
     setThemeInUse(themeName: string): void {
         this._setSetting("theme", undefined, themeName);
-        dispatchEventThemeChanged(themeName);
-    }
-
-    listenForThemeChange(onThemeChangedCB: (themeName: string) => void): void {
-        window.addEventListener(EVENT_THEME_CHANGED, ({ detail }) =>
-            onThemeChangedCB(detail)
-        );
+        dispatchAscAction({ action: Action.ALL_THEME_CHANGED, themeName });
     }
 
     useTheme(useTheme?: boolean): boolean {

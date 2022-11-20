@@ -1,3 +1,3 @@
-import { BackgroundRunner } from "./backgroundRunner";
+import { BackgroundMessager } from "./messager";
 
-BackgroundRunner.init();
+BackgroundMessager.init();

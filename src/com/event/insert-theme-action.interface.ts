@@ -2,5 +2,5 @@ import { Action } from "../action.enum";
 import { IEventBase } from "./base-action.interface";
 
 export interface IEvent_InsertTheme extends IEventBase {
-    action: Action.INSERT_THEME_ACTION;
+    action: Action.CS_INSERT_THEME_ACTION;
 }

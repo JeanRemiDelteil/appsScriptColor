@@ -1,18 +1,23 @@
 import { detectIde, IdeVersion } from "../../feature-detection";
 import { settingsService } from "../../storage";
 import { CssTheme } from "../class/cssTheme";
-import {
-    ICreateThemeFromOptions,
-    ICustomThemes,
-    IMonacoTheme,
-} from "../interface";
+import { ICreateThemeFromOptions, ICustomThemes } from "../interface";
 import { darculaTheme, defaultTheme, defaultThemes } from "../theme";
-import { sendMessageToBack } from "../../background/messager/content-script-messager";
-import { BackgroundMessageEvent } from "../../background/messager/message-event.enum";
-import { Action, dispatchEventAscAction } from "../../com";
+import {
+    Action,
+    dispatchAscAction,
+    EVENT_ASC_ACTION,
+    IEventAction,
+} from "../../com";
 
 export class ThemeService {
     private readonly _customStyleId = `cmCustomStyle-${new Date().toISOString()}`;
+
+    private readonly _ascActionEventListenerFn = (
+        event: CustomEvent<IEventAction>
+    ): void => {
+        this._onAscAction(event.detail);
+    };
 
     private _themesMap: { [themeName: string]: CssTheme } = {};
     private _customThemeNames: string[] = [];
@@ -53,8 +58,9 @@ export class ThemeService {
         this._setStyleObserver();
 
         // Listen for changes made in the MAIN world
-        settingsService.listenForThemeChange(
-            (themeName) => (this._currentTheme = this.getThemeByName(themeName))
+        window.addEventListener(
+            EVENT_ASC_ACTION,
+            this._ascActionEventListenerFn
         );
     }
 
@@ -81,7 +87,7 @@ export class ThemeService {
     }
 
     insertThemeActions(): void {
-        dispatchEventAscAction({ action: Action.INSERT_THEME_ACTION });
+        dispatchAscAction({ action: Action.CS_INSERT_THEME_ACTION });
     }
 
     /**
@@ -175,6 +181,11 @@ export class ThemeService {
     }
 
     destroy() {
+        window.removeEventListener(
+            EVENT_ASC_ACTION,
+            this._ascActionEventListenerFn
+        );
+
         // Remove styles
         if (this._dom_divCmCustomStyle) {
             const domStyleParent = this._dom_divCmCustomStyle.parentElement;
@@ -192,6 +203,21 @@ export class ThemeService {
     }
 
     //<editor-fold desc="# Private methods">
+
+    private _onAscAction(event: IEventAction): void {
+        switch (event.action) {
+            case Action.MAIN_MONACO_READY:
+                this.setCurrentTheme(this.currentTheme.themeName);
+                break;
+
+            case Action.ALL_THEME_CHANGED:
+                this._currentTheme = this.getThemeByName(event.themeName);
+                break;
+
+            default:
+                break;
+        }
+    }
 
     /**
      * Apply chosen theme
@@ -305,13 +331,10 @@ export class ThemeService {
     //</editor-fold>
 
     private static setMonacoThemeFn(themeName: string): void {
-        sendMessageToBack({
-            event: BackgroundMessageEvent.SET_THEME,
-            theme: themeName,
-        });
+        dispatchAscAction({ action: Action.CS_SET_THEME, themeName });
     }
 
     private static resetMonacoThemeFn(): void {
-        sendMessageToBack({ event: BackgroundMessageEvent.RESET_THEME });
+        dispatchAscAction({ action: Action.CS_RESET_THEME });
     }
 }

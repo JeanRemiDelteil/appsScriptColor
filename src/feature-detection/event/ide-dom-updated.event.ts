@@ -10,9 +10,12 @@ declare global {
     }
 }
 
-export const dispatchEventIdeDomUpdated = (payload: EVENT_IDE_DOM_UPDATED) =>
+export const dispatchEventIdeDomUpdated = (payload: EVENT_IDE_DOM_UPDATED) => {
+    // console.log("EVENT_IDE_DOM_UPDATED");
+
     window.dispatchEvent(
         new CustomEvent(EVENT_IDE_DOM_UPDATED, {
             detail: { node: payload.node },
         })
     );
+};

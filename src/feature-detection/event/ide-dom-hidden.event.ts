@@ -8,5 +8,8 @@ declare global {
     }
 }
 
-export const dispatchEventIdeDomHidden = () =>
+export const dispatchEventIdeDomHidden = () => {
+    // console.log(EVENT_IDE_DOM_HIDDEN);
+
     window.dispatchEvent(new CustomEvent(EVENT_IDE_DOM_HIDDEN));
+};

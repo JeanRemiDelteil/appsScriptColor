@@ -1,10 +1,12 @@
-import { darculaTheme, monokaiTheme } from "../../../color-theme/theme";
-import { Action, EVENT_ASC_ACTION, IEventAction } from "../../../com";
-import { defineTheme } from "../define-theme";
-import { insertThemeAction } from "../insert-theme-action";
-import { IInAppAction } from "./action.interface";
-import { InAppAction } from "./actions.enum";
-import { ASC_IN_APP_SERVICE_KEY } from "./asc-service-key.const";
+import { darculaTheme, monokaiTheme } from "../color-theme/theme";
+import {
+    Action,
+    dispatchAscAction,
+    EVENT_ASC_ACTION,
+    IEventAction,
+} from "../com";
+import { defineTheme } from "./monaco/define-theme";
+import { insertThemeAction } from "./monaco/insert-theme-action";
 
 export class AscInAppService {
     private _isMonacoInitialized: boolean = false;
@@ -12,28 +14,6 @@ export class AscInAppService {
 
     constructor() {
         this._init();
-    }
-
-    doAction(): void {
-        const action = window.__ascInAppAction__;
-
-        if (!action) {
-            return;
-        }
-
-        switch (action.action) {
-            case InAppAction.RESET:
-                this.resetTheme();
-
-                break;
-
-            case InAppAction.SET:
-                this.setTheme(action.themeName ?? undefined);
-
-                break;
-        }
-
-        delete window.__ascInAppAction__;
     }
 
     initializeThemes(): void {
@@ -56,17 +36,13 @@ export class AscInAppService {
             this._onAscAction(event.detail);
         });
 
-        this._waitForMonaco()
-            .then(() => {
-                this._isMonacoInitialized = true;
-                this.initializeThemes();
-            })
-            .then(() => {
-                this._onAscAction(undefined);
+        this._waitForMonaco().then(() => {
+            this.initializeThemes();
+            this._isMonacoInitialized = true;
 
-                // do pending action if any
-                this.doAction();
-            });
+            dispatchAscAction({ action: Action.MAIN_MONACO_READY });
+            this._onAscAction(undefined);
+        });
     }
 
     private async _waitForMonaco(): Promise<void> {
@@ -112,34 +88,41 @@ export class AscInAppService {
             return;
         }
 
-        const { action, ..._content } = event ?? this._pendingAction;
+        const todoAction = event ?? this._pendingAction;
         this._pendingAction = undefined;
 
-        switch (action) {
-            case Action.INSERT_THEME_ACTION:
+        switch (todoAction.action) {
+            case Action.CS_INSERT_THEME_ACTION:
                 this.initializeThemes();
 
                 break;
 
-            default:
-                console.error("Unknown action");
+            case Action.CS_RESET_THEME:
+                this.resetTheme();
 
+                break;
+
+            case Action.CS_SET_THEME:
+                this.setTheme(todoAction.themeName ?? undefined);
+
+                break;
+
+            default:
                 break;
         }
     }
 
     static init(): void {
-        if (window[ASC_IN_APP_SERVICE_KEY]) {
+        if (window["__ascInAppService__"]) {
             return;
         }
 
-        window[ASC_IN_APP_SERVICE_KEY] = new AscInAppService();
+        window["__ascInAppService__"] = new AscInAppService();
     }
 }
 
 declare global {
     interface Window {
         __ascInAppService__?: AscInAppService;
-        __ascInAppAction__?: IInAppAction;
     }
 }
