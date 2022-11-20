@@ -12,4 +12,10 @@ export const defaultThemes = [
     defaultTheme,
 ];
 
-export { defaultTheme, darculaTheme, monokaiTheme };
+export {
+    defaultTheme,
+    darculaTheme,
+    monokaiTheme,
+    blackFoxConsoleTheme,
+    oneDarkTheme,
+};

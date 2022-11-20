@@ -19,7 +19,7 @@ export const darculaTheme = new CssTheme({
         IDE_code_css_selector: "#FF861E",
     },
     rules: {
-        // // Page theme █████
+        // // Page theme
         // 'c-wiz': {
         // 	'background-color': '#3c3f41',
         // },

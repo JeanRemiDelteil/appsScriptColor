@@ -19,7 +19,7 @@ export const insertThemeAction = (theme: CssTheme) => {
         precondition: null,
         keybindingContext: null,
         contextMenuGroupId: "navigation",
-        contextMenuOrder: 1.5,
+        contextMenuOrder: Infinity,
 
         run: () => {
             window.monaco.editor.setTheme(theme.themeName);

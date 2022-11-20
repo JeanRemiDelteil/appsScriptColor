@@ -1,4 +1,8 @@
-import { darculaTheme, monokaiTheme } from "../lib/color-theme/theme";
+import {
+    darculaTheme,
+    monokaiTheme,
+    blackFoxConsoleTheme,
+} from "../lib/color-theme/theme";
 import {
     Action,
     dispatchAscAction,
@@ -17,7 +21,7 @@ export class AscInAppService {
     }
 
     initializeThemes(): void {
-        [monokaiTheme, darculaTheme].forEach((theme) => {
+        [monokaiTheme, darculaTheme, blackFoxConsoleTheme].forEach((theme) => {
             defineTheme(theme);
             insertThemeAction(theme);
         });
