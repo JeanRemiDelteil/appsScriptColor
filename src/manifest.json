@@ -17,8 +17,7 @@
         {
             "matches": ["https://script.google.com/*"],
             "js": ["injectColor.js"],
-            "run_at": "document_start",
-            "world": "MAIN"
+            "run_at": "document_end"
         }
     ]
 }

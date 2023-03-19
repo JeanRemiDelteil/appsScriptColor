@@ -11,6 +11,13 @@ import {
 } from "../../com";
 
 export class ThemeService {
+    private readonly _trustedHTMLPolicy = trustedTypes.createPolicy(
+        "cssInjectionPolicy",
+        {
+            createHTML: (str: string): string => str,
+        }
+    );
+
     private readonly _customStyleId = `cmCustomStyle-${new Date().toISOString()}`;
 
     private readonly _ascActionEventListenerFn = (
@@ -230,7 +237,8 @@ export class ThemeService {
             this._dom_divCmCustomStyle.setAttribute("id", this._customStyleId);
         }
 
-        this._dom_divCmCustomStyle.innerHTML = theme.css;
+        const trustedThemeHtml = this._trustedHTMLPolicy.createHTML(theme.css);
+        this._dom_divCmCustomStyle.innerHTML = trustedThemeHtml;
 
         if (detectIde() === IdeVersion.MONACO) {
             const monacoTheme = theme.monacoTheme;
