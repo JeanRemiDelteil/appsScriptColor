@@ -36,6 +36,10 @@ myFolder/some_subfolder/myfileName
 
 ## ChangeLog
 
+v1.5.1
+
+-   [#39](https://github.com/JeanRemiDelteil/appsScriptColor/issues/39) Fix: issue with Chrome Update
+
 v1.5.0
 
 -   [#31](https://github.com/JeanRemiDelteil/appsScriptColor/issues/31) Updated the extension to support Chrome Extension Manifest V3
